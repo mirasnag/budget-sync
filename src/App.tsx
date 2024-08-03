@@ -1,7 +1,20 @@
+// rrd imports
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+// routes
+import LandingPage from "./pages/LandingPage";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <LandingPage />,
+  },
+]);
+
 function App() {
   return (
     <>
-      <h1>Hi!</h1>
+      <RouterProvider router={router} />
     </>
   );
 }
