@@ -1,13 +1,32 @@
 // rrd imports
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-// routes
-import LandingPage from "./pages/LandingPage";
+// components
+import Dashboard, { dashboardAction, dashboardLoader } from "./pages/Dashboard";
+import Layout from "./components/Layout";
+import TransactionsPage, {
+  transactionsPageAction,
+  transactionsPageLoader,
+} from "./pages/TransactionsPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <LandingPage />,
+    element: <Layout />,
+    children: [
+      {
+        path: "/",
+        element: <Dashboard />,
+        loader: dashboardLoader,
+        action: dashboardAction,
+      },
+      {
+        path: "/transactions",
+        element: <TransactionsPage />,
+        loader: transactionsPageLoader,
+        action: transactionsPageAction,
+      },
+    ],
   },
 ]);
 
