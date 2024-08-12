@@ -2,8 +2,14 @@
 import { Asset } from "../components/Assets";
 import { Category } from "../components/Categories";
 import { Transaction } from "../components/Transactions";
+
 export interface DataItem {
   [key: string]: any;
+}
+
+interface CachedRates {
+  rates: { [key: string]: any };
+  timestamp: number;
 }
 
 // Local storage
@@ -137,7 +143,6 @@ export const deleteItem = (table: string, key: string, value: string) => {
 export const spentByCategory = (
   category: Category,
   currencyRates: DataItem
-  // baseCurrency: string
 ) => {
   const transactions = fetchData("transactions") as Transaction[];
 
@@ -185,11 +190,6 @@ export const getAllMatchingItems = (
 // Get Currency Rates
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 const CACHE_KEY = "currencyRatesCache";
-
-interface CachedRates {
-  rates: { [key: string]: any };
-  timestamp: number;
-}
 
 export const getCurrencyRates = async (baseCurrency: string = "USD") => {
   const cachedData = localStorage.getItem(CACHE_KEY);
@@ -410,4 +410,168 @@ export const formatDateToInputValue = (date: Date): string => {
 
   console.log(`${year}-${monthStr}-${dayStr}`, year, month, day);
   return `${year}-${monthStr}-${dayStr}`;
+};
+
+// Sort-Filter Transactions
+const adjustDate = (date: Date, unit: string, adjustment: number) => {
+  if (unit === "day") {
+    date.setDate(date.getDate() + adjustment);
+  } else if (unit === "week") {
+    date.setDate(date.getDate() + adjustment * 7);
+  } else if (unit === "month") {
+    date.setMonth(date.getMonth() + adjustment);
+  } else if (unit === "year") {
+    date.setFullYear(date.getFullYear() + adjustment);
+  }
+};
+
+const filterTransactions = (
+  transactions: Transaction[],
+  filterOption: string,
+  filterValue: string[]
+) => {
+  if (filterValue.length === 1 && filterValue[0] === "") return transactions;
+  if (filterOption === "None") return transactions;
+
+  let filterFunction: (transaction: Transaction) => boolean;
+
+  switch (filterOption) {
+    case "Name":
+      filterFunction = (transaction) =>
+        transaction.name.toLowerCase().includes(filterValue[0].toLowerCase());
+      break;
+
+    case "Asset":
+      filterFunction = (transaction) => {
+        return transaction.asset_id === filterValue[0];
+      };
+      break;
+
+    case "Category":
+      filterFunction = (transaction) => {
+        return transaction.category_id === filterValue[0];
+      };
+      break;
+
+    case "Type":
+      filterFunction = (transaction) => {
+        return transaction.type === filterValue[0];
+      };
+      break;
+
+    case "Date":
+      const now = new Date();
+      let startDate = new Date();
+      let endDate = new Date();
+
+      if (filterValue[0] === "past") {
+        adjustDate(startDate, filterValue[2], -filterValue[1]);
+      } else if (filterValue[0] === "next") {
+        adjustDate(endDate, filterValue[2], +filterValue[1]);
+      } else if (filterValue[2] === "week") {
+        const dayOfWeek = now.getDay();
+        startDate.setDate(now.getDate() - dayOfWeek + 1);
+        endDate.setDate(now.getDate() + (7 - dayOfWeek));
+      } else if (filterValue[2] === "month") {
+        startDate.setDate(1);
+        endDate.setMonth(now.getMonth() + 1);
+        endDate.setDate(0);
+      } else if (filterValue[2] === "year") {
+        startDate.setMonth(0, 1);
+        endDate.setMonth(11, 31);
+      }
+
+      filterFunction = (transaction) => {
+        return (
+          new Date(transaction.date) >= startDate &&
+          new Date(transaction.date) <= endDate
+        );
+      };
+      break;
+
+    case "Amount":
+      filterFunction = (transaction) => {
+        const minAmount = filterValue[0] === "" ? 0 : Number(filterValue[0]);
+        const maxAmount =
+          filterValue[1] === "" ? Infinity : Number(filterValue[1]);
+        return (
+          transaction.amount >= minAmount && transaction.amount <= maxAmount
+        );
+      };
+      break;
+
+    default:
+      filterFunction = () => true;
+      break;
+  }
+
+  return transactions.filter(filterFunction);
+};
+
+const sortTransactions = (
+  transactions: Transaction[],
+  sortOption: string,
+  sortValue: string
+) => {
+  if (sortValue === "") return transactions;
+
+  let sortFunction: (a: Transaction, b: Transaction) => number;
+  switch (sortOption) {
+    case "None":
+      sortFunction = (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      break;
+    case "Name":
+      sortFunction = (a, b) => a.name.localeCompare(b.name);
+      break;
+    case "Asset":
+      sortFunction = (a, b) => {
+        const assetA =
+          getAllMatchingItems("assets", "id", a.asset_id)[0]?.name ?? "";
+        const assetB =
+          getAllMatchingItems("assets", "id", b.asset_id)[0]?.name ?? "";
+        return assetA.localeCompare(assetB);
+      };
+      break;
+    case "Category":
+      sortFunction = (a, b) => {
+        const categoryA =
+          getAllMatchingItems("categories", "id", a.category_id)[0]?.name ?? "";
+        const categoryB =
+          getAllMatchingItems("categories", "id", b.category_id)[0]?.name ?? "";
+        return categoryA.localeCompare(categoryB);
+      };
+      break;
+    case "Date":
+      sortFunction = (a, b) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime();
+      break;
+    case "Amount":
+      sortFunction = (a, b) => a.amount - b.amount;
+      break;
+    case "Type":
+      sortFunction = (a, b) => a.type.localeCompare(b.type);
+      break;
+    default:
+      sortFunction = () => 0;
+      break;
+  }
+
+  const directionMultiplier = sortValue === "Ascending" ? 1 : -1;
+
+  return transactions.sort((a, b) => directionMultiplier * sortFunction(a, b));
+};
+
+export const sortFilterTransactions = (
+  transactions: Transaction[],
+  filterOption: string,
+  filterValue: string[],
+  sortOption: string,
+  sortValue: string
+) => {
+  return sortTransactions(
+    filterTransactions(transactions, filterOption, filterValue),
+    sortOption,
+    sortValue
+  );
 };

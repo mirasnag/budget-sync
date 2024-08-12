@@ -49,7 +49,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
             />
           </div>
           <div className="form-group">
-            <label htmlFor="totalBudgeted">Total Budgeted</label>
+            <label htmlFor="totalBudgeted">Monthly Budgeted Amount</label>
             <input
               type="number"
               name="totalBudgeted"

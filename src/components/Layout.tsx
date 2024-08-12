@@ -1,45 +1,68 @@
 // rrd imports
-import { Link, Outlet } from "react-router-dom";
-import { deleteUserData } from "../api/helpers";
+import { Link, Outlet, useLocation } from "react-router-dom";
+
+// library imports
+import { FaBullseye, FaChartPie, FaCog, FaPhone } from "react-icons/fa";
+import { FaArrowsRotate, FaHouse } from "react-icons/fa6";
 
 const Layout: React.FC = () => {
+  const location = useLocation();
+
   return (
     <div className="layout">
       <aside className="sidebar">
         <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/transactions">Transactions</Link>
-            </li>
-            <li>
-              <Link to="/spending-analysis">Spending Analysis</Link>
-            </li>
-            <li>
-              <Link to="/budget-goals">Budget Goals</Link>
-            </li>
-            <li>
-              <Link to="/settings">Settings</Link>
-            </li>
-            <li>
-              <Link to="/support">Support</Link>
-            </li>
-          </ul>
+          <div className="menu">
+            <Link
+              to="/"
+              className={`menu-item ${
+                location.pathname === "/" ? "active" : ""
+              }`}
+            >
+              <FaHouse className="icon" /> Home
+            </Link>
+            <Link
+              to="/transactions"
+              className={`menu-item ${
+                location.pathname === "/transactions" ? "active" : ""
+              }`}
+            >
+              <FaArrowsRotate className="icon" /> Transactions
+            </Link>
+            <Link
+              to="/spending-analysis"
+              className={`menu-item ${
+                location.pathname === "/spending-analysis" ? "active" : ""
+              }`}
+            >
+              <FaChartPie className="icon" /> Spending Analysis
+            </Link>
+            <Link
+              to="/budget-goals"
+              className={`menu-item ${
+                location.pathname === "/budget-goals" ? "active" : ""
+              }`}
+            >
+              <FaBullseye className="icon" /> Budget Goals
+            </Link>
+            <Link
+              to="/settings"
+              className={`menu-item ${
+                location.pathname === "/settings" ? "active" : ""
+              }`}
+            >
+              <FaCog className="icon" /> Settings
+            </Link>
+            <Link
+              to="/support"
+              className={`menu-item ${
+                location.pathname === "/support" ? "active" : ""
+              }`}
+            >
+              <FaPhone className="icon" /> Support
+            </Link>
+          </div>
         </nav>
-
-        <button
-          className="btn"
-          onClick={() => {
-            if (!confirm("Are you sure you want to delete all data?")) {
-              return;
-            }
-            deleteUserData();
-          }}
-        >
-          Delete Everything!
-        </button>
       </aside>
       <main className="content">
         <Outlet />

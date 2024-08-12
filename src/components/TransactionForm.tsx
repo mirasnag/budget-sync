@@ -31,7 +31,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   )[0] as Transaction;
 
   const [transactionType, setTransactionType] = useState<string>(
-    isEditForm ? transaction.type : "expense" // Assuming transaction has a 'type' field
+    isEditForm ? transaction.type : "expense"
   );
 
   return (

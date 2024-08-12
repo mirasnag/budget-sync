@@ -193,13 +193,6 @@ const Dashboard: React.FC = () => {
     });
   }, [assets, transactions, categories, currencyRates]);
 
-  const recentTransactions = data.transactions
-    .sort((a, b) => {
-      if (a.date == b.date) return a.createdAt < b.createdAt ? 1 : -1;
-      return a.date < b.date ? 1 : -1;
-    })
-    .slice(0, 5);
-
   return (
     <>
       <div className="grid-lg">
@@ -209,7 +202,7 @@ const Dashboard: React.FC = () => {
           currencyRates={data.currencyRates}
         />
         <TransactionTable
-          transactions={recentTransactions}
+          transactions={data.transactions}
           assets={data.assets}
           categories={data.categories}
         />
