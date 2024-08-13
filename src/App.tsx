@@ -2,12 +2,17 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // components
-import Dashboard, { dashboardAction, dashboardLoader } from "./pages/Dashboard";
 import Layout from "./components/Layout";
+
+// pages
+import Dashboard, { dashboardAction, dashboardLoader } from "./pages/Dashboard";
 import TransactionsPage, {
   transactionsPageAction,
   transactionsPageLoader,
 } from "./pages/TransactionsPage";
+import SpendingAnalysisPage, {
+  spendingAnalysisLoader,
+} from "./pages/SpendingAnalysisPage";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +30,11 @@ const router = createBrowserRouter([
         element: <TransactionsPage />,
         loader: transactionsPageLoader,
         action: transactionsPageAction,
+      },
+      {
+        path: "/spending-analysis",
+        element: <SpendingAnalysisPage />,
+        loader: spendingAnalysisLoader,
       },
     ],
   },

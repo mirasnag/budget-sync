@@ -24,11 +24,13 @@ export interface Category {
 interface CategoriesProps {
   categories: Category[];
   currencyRates: DataItem;
+  showHeader?: boolean;
 }
 
 const Categories: React.FC<CategoriesProps> = ({
   categories,
   currencyRates,
+  showHeader = true,
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState("");
@@ -37,50 +39,67 @@ const Categories: React.FC<CategoriesProps> = ({
     setShowCreateForm(false);
     setShowEditForm("");
   };
+
   const currencies = getAllCurrencies();
 
   return (
     <div className="categories flex-sm">
-      <h2>Categories</h2>
-      <button className="btn btn-green" onClick={() => setShowCreateForm(true)}>
-        <PlusIcon width={20} />
-      </button>
+      {showHeader && (
+        <>
+          <h2>Categories</h2>
+          <button
+            className="btn btn-green"
+            onClick={() => setShowCreateForm(true)}
+          >
+            <PlusIcon width={20} />
+          </button>
+        </>
+      )}
 
-      {categories.map((category) => (
-        <div key={category.id} className="category flex-sm">
-          <span className="category-name">{category.name}</span>
-          <div className="category-bar-wrapper">
-            <div
-              className="category-bar"
-              style={{
-                width: `${
-                  (spentByCategory(category, currencyRates) /
-                    category.totalBudgeted) *
-                  100
-                }%`,
-              }}
-            ></div>
-          </div>
-          <span className="category-totalBudgeted">
-            {formatCurrency(category.totalBudgeted, category.currency)}
-          </span>
-          <div className="flex-sm">
-            <button
-              onClick={() => setShowEditForm(category.id)}
-              className="btn"
-            >
-              <PencilIcon width={20} />
-            </button>
-            <Form method="post">
-              <input type="hidden" name="_action" value="deleteCategory" />
-              <input type="hidden" name="category_id" value={category.id} />
-              <button type="submit" className="btn btn-red">
-                <TrashIcon width={20} />
+      {categories.map((category) => {
+        const total = category.totalBudgeted;
+        const spent = spentByCategory(category, currencyRates, ["None"]);
+        const remaining = total - spent;
+        const currency = category.currency;
+
+        return (
+          <div key={category.id} className="category">
+            <span className="category-name">{category.name}</span>
+            <div className="category-bar-wrapper">
+              <div className="category-bar-back">
+                <div
+                  className="category-bar"
+                  style={{
+                    width: `${(spent / total) * 100}%`,
+                  }}
+                ></div>
+              </div>
+              <div className="labels">
+                <span>
+                  Spent: {formatCurrency(spent, currency)} | Remaining:{" "}
+                  {formatCurrency(remaining, currency)}
+                </span>
+                <span>Total: {formatCurrency(total, currency)}</span>
+              </div>
+            </div>
+            <div className="flex-sm">
+              <button
+                onClick={() => setShowEditForm(category.id)}
+                className="btn"
+              >
+                <PencilIcon width={20} />
               </button>
-            </Form>
+              <Form method="post">
+                <input type="hidden" name="_action" value="deleteCategory" />
+                <input type="hidden" name="category_id" value={category.id} />
+                <button type="submit" className="btn btn-red">
+                  <TrashIcon width={20} />
+                </button>
+              </Form>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {showCreateForm && (
         <CategoryForm

@@ -26,9 +26,13 @@ export interface Asset {
 
 export interface AssetsTableProps {
   assets: Asset[];
+  showHeader?: boolean;
 }
 
-const AssetsTable: React.FC<AssetsTableProps> = ({ assets }) => {
+const AssetsTable: React.FC<AssetsTableProps> = ({
+  assets,
+  showHeader = true,
+}) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState("");
 
@@ -42,10 +46,17 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ assets }) => {
 
   return (
     <div className="assets flex-sm">
-      <h2>Assets</h2>
-      <button className="btn btn-green" onClick={() => setShowCreateForm(true)}>
-        <PlusIcon width={20} />
-      </button>
+      {showHeader && (
+        <>
+          <h2>Assets</h2>
+          <button
+            className="btn btn-green"
+            onClick={() => setShowCreateForm(true)}
+          >
+            <PlusIcon width={20} />
+          </button>
+        </>
+      )}
       <table>
         <thead>
           <tr>
@@ -63,6 +74,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ assets }) => {
               <td>
                 {formatCurrency(getBalanceOfAsset(asset), asset.currency)}
               </td>
+
               <td>
                 <div className="flex-sm">
                   <button

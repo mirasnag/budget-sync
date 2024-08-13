@@ -142,11 +142,16 @@ export const deleteItem = (table: string, key: string, value: string) => {
 // Calculate Spent By Category
 export const spentByCategory = (
   category: Category,
-  currencyRates: DataItem
+  currencyRates: DataItem,
+  period: string[]
 ) => {
   const transactions = fetchData("transactions") as Transaction[];
+  const filteredTransactions =
+    period[0] === "None"
+      ? transactions
+      : filterTransactions(transactions, "Date", period);
 
-  const total = transactions.reduce((spent: number, transaction) => {
+  const total = filteredTransactions.reduce((spent: number, transaction) => {
     if (transaction.category_id === category.id) {
       return (
         spent +
@@ -160,12 +165,63 @@ export const spentByCategory = (
   return total > 0 ? total : 0;
 };
 
-// Calculate Current Balance of Asset
+export const getCategorySpentHistory = () => {
+  const transactions = sortTransactions(
+    fetchData("transactions"),
+    "Date",
+    "Ascending"
+  ) as Transaction[];
+  const categories = fetchData("categories") as Category[];
+
+  const months: string[] = [];
+  const startDate = new Date(transactions[0].date);
+  const endDate = new Date(transactions[transactions.length - 1].date);
+  for (
+    let d = new Date(startDate);
+    d.getFullYear() <= endDate.getFullYear() &&
+    d.getMonth() <= endDate.getMonth();
+    d.setMonth(d.getMonth() + 1)
+  ) {
+    months.push(d.toISOString().slice(0, 7));
+  }
+
+  const spentHistoryMap: DataItem = {};
+  for (let i = 0; i < months.length; i++) {
+    spentHistoryMap[months[i]] = {};
+    for (let j = 0; j < categories.length; j++) {
+      spentHistoryMap[months[i]][categories[j].name] = 0;
+    }
+  }
+
+  transactions.forEach((transaction) => {
+    const month = new Date(transaction.date).toISOString().slice(0, 7);
+    const category = categories.find((a) => a.id === transaction.category_id);
+    if (category) {
+      spentHistoryMap[month][category.name] += +transaction.amount;
+    }
+  });
+
+  const spentHistory = Object.entries(spentHistoryMap).map(
+    ([month, categorySpent]) => {
+      return {
+        ["month"]: month,
+        ...categorySpent,
+      };
+    }
+  );
+
+  return spentHistory;
+};
+
+// Calculate Balance of Asset
 export const getBalanceOfAsset = (asset: Asset): number => {
   const transactions = fetchData("transactions") as Transaction[];
-
+  const now = new Date();
   return transactions.reduce((balance: number, transaction) => {
-    if (transaction.asset_id === asset.id) {
+    if (
+      transaction.asset_id === asset.id &&
+      new Date(transaction.date) <= now
+    ) {
       balance +=
         transaction.type === "income"
           ? Number(transaction.amount)
@@ -174,6 +230,75 @@ export const getBalanceOfAsset = (asset: Asset): number => {
     }
     return balance;
   }, Number(asset.initBalance));
+};
+
+interface balanceHistoryItem {
+  month: string; // (e.g., '2024-06')
+  [key: string]: string | number; // key = asset_id, value = balance
+}
+
+export const getAssetBalanceHistory = () => {
+  const transactions = sortTransactions(
+    fetchData("transactions"),
+    "Date",
+    "Ascending"
+  ) as Transaction[];
+  const assets = fetchData("assets") as Asset[];
+
+  const months: string[] = [];
+  const startDate = new Date(transactions[0].date);
+  const endDate = new Date(transactions[transactions.length - 1].date);
+  for (
+    let d = new Date(startDate);
+    d.getFullYear() <= endDate.getFullYear() &&
+    d.getMonth() <= endDate.getMonth();
+    d.setMonth(d.getMonth() + 1)
+  ) {
+    months.push(d.toISOString().slice(0, 7));
+  }
+
+  const balanceHistoryMap: DataItem = {};
+  for (let i = 0; i < months.length; i++) {
+    balanceHistoryMap[months[i]] = {};
+    for (let j = 0; j < assets.length; j++) {
+      balanceHistoryMap[months[i]][assets[j].name] = 0;
+    }
+  }
+
+  transactions.forEach((transaction) => {
+    const month = new Date(transaction.date).toISOString().slice(0, 7);
+    const asset = assets.find((a) => a.id === transaction.asset_id);
+    if (asset) {
+      balanceHistoryMap[month][asset.name] +=
+        transaction.type === "income"
+          ? +transaction.amount
+          : -transaction.amount;
+    }
+  });
+
+  const curBalances = [];
+  for (let i = 0; i < assets.length; i++) {
+    curBalances.push(assets[i].initBalance);
+  }
+
+  for (let i = 0; i < months.length; i++) {
+    for (let j = 0; j < assets.length; j++) {
+      const change = balanceHistoryMap[months[i]][assets[j].name];
+      curBalances[j] = Number(curBalances[j]) + Number(change);
+      balanceHistoryMap[months[i]][assets[j].name] = curBalances[j];
+    }
+  }
+
+  const balanceHistory: balanceHistoryItem[] = Object.entries(
+    balanceHistoryMap
+  ).map(([month, assetBalances]) => {
+    return {
+      ["month"]: month,
+      ...assetBalances,
+    };
+  });
+
+  return balanceHistory;
 };
 
 // Get matching item

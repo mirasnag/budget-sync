@@ -146,6 +146,7 @@ body {
 
 /* Transactions Table  */
 .transactions {
+  position: relative;
   background-color: #1a1a1a;
   color: #fff;
   padding: 20px;
@@ -297,17 +298,7 @@ body {
   border-bottom: none;
 }
 
-/* Quick Access */
-.quick_access {
-  background-color: #1a1a1a;
-  color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.quick_access h2 {
-  margin-bottom: 20px;
-}
+/* Buttons */
 
 .btn {
   background-color: #cccccc;
@@ -440,23 +431,33 @@ body {
 
 .category {
   display: flex;
+  justify-content: space-evenly;
+  gap: var(--space-lg);
   width: 100%;
   align-items: center;
   margin-bottom: 10px;
 }
 
 .category-name {
-  width: 150px;
   margin-right: 10px;
 }
 
 .category-bar-wrapper {
   flex: 1;
+}
+
+.category-bar-wrapper .labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+.category-bar-back {
+  flex: 1;
   background-color: #333;
   border-radius: 5px;
   overflow: hidden;
   margin-right: 10px;
-  width: 100%;
 }
 
 .category-bar {
@@ -465,9 +466,61 @@ body {
   transition: width 0.3s ease;
 }
 
-.category-totalBudgeted {
-  width: 100px;
-  text-align: right;
+/* Charts */
+.charts {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
-/* Other */
+.charts h2 {
+  margin: 5px;
+}
+
+.category-chart {
+  display: flex;
+  flex-direction: column;
+  background: #1a1a1a;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.category-chart .header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.category-chart .header select {
+  background: #333;
+  color: var(--aqua-color);
+}
+
+.category-chart .legend-container {
+  height: 100px;
+  width: 100px;
+}
+
+.asset-chart {
+  display: flex;
+  flex-direction: column;
+  background: #1a1a1a;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.asset-chart .header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.asset-chart .header select {
+  background: #333;
+  color: var(--aqua-color);
+}
+
+.asset-chart .legend-container {
+  height: 100px;
+  width: 100px;
+}
