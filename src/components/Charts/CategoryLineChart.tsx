@@ -12,16 +12,18 @@ import {
 import randomColor from "randomcolor";
 
 // interfaces
-import { Category } from "../Categories";
+import { Category } from "../Dashboard/Categories";
 import { getCategorySpentHistory } from "../../api/helpers";
 
 interface Props {
   categories: Category[];
+  period: string[];
 }
 
-const CategoryLineChart: React.FC<Props> = ({ categories }) => {
-  const data = getCategorySpentHistory();
+const CategoryLineChart: React.FC<Props> = ({ categories, period }) => {
+  const data = getCategorySpentHistory(period);
   const colors = randomColor({
+    seed: 0,
     count: categories.length,
     luminosity: "light",
   });

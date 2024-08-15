@@ -13,15 +13,21 @@ import randomColor from "randomcolor";
 import { DataItem, spentByCategory } from "../../api/helpers";
 
 // interfaces
-import { Category } from "../Categories";
+import { Category } from "../Dashboard/Categories";
 
 interface Props {
   categories: Category[];
   currencyRates: DataItem;
+  period: string[];
 }
 
-const CategoryPieChart: React.FC<Props> = ({ categories, currencyRates }) => {
+const CategoryPieChart: React.FC<Props> = ({
+  categories,
+  currencyRates,
+  period,
+}) => {
   const colors = randomColor({
+    seed: 0,
     count: categories.length,
     luminosity: "light",
   });
@@ -29,7 +35,7 @@ const CategoryPieChart: React.FC<Props> = ({ categories, currencyRates }) => {
   const data = categories.map((category, index) => {
     return {
       name: category.name,
-      value: spentByCategory(category, currencyRates, ["None"]),
+      value: spentByCategory(category, currencyRates, period),
       color: colors[index],
     };
   });

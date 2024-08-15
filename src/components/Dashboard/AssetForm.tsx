@@ -2,59 +2,53 @@
 import { Form } from "react-router-dom";
 
 // helper functions
-import { getAllMatchingItems } from "../api/helpers";
+import { getAllMatchingItems } from "../../api/helpers";
+import { Asset } from "./Assets";
 
-// interfaces
-import { Category } from "./Categories";
-
-interface CategoryFormProps {
+interface AssetFormProps {
   currencies: string[];
-  category_id: string;
+  asset_id: string;
   onClose: () => void;
 }
 
-const CategoryForm: React.FC<CategoryFormProps> = ({
+const AssetForm: React.FC<AssetFormProps> = ({
   currencies,
-  category_id,
+  asset_id,
   onClose,
 }) => {
-  const isEditForm = category_id !== "";
-  const category = getAllMatchingItems(
-    "categories",
-    "id",
-    category_id
-  )[0] as Category;
+  const isEditForm = asset_id !== "";
+  const asset = getAllMatchingItems("assets", "id", asset_id)[0] as Asset;
 
   return (
     <div className="popup">
       <div className="popup-content">
-        <h3>{isEditForm ? "Editing Category" : "Create New Category"}</h3>
+        <h3>{isEditForm ? "Editing Asset" : "Create New Asset"}</h3>
         <Form method="post" onSubmit={onClose}>
           <input
             type="hidden"
             name="_action"
-            value={isEditForm ? "editCategory" : "createCategory"}
+            value={isEditForm ? "editAsset" : "createAsset"}
           />
           {isEditForm && (
-            <input type="hidden" name="category_id" value={category.id} />
+            <input type="hidden" name="asset_id" value={asset.id} />
           )}
           <div className="form-group">
-            <label htmlFor="category">Category Name</label>
+            <label htmlFor="assetName">Asset Name</label>
             <input
               type="text"
               name="name"
-              id="category"
-              defaultValue={isEditForm ? category.name : ""}
+              id="assetName"
+              defaultValue={isEditForm ? asset.name : ""}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="totalBudgeted">Monthly Budgeted Amount</label>
+            <label htmlFor="initBalance">Initial Balance</label>
             <input
               type="number"
-              name="totalBudgeted"
-              id="totalBudgeted"
-              defaultValue={isEditForm ? category.totalBudgeted : ""}
+              name="initBalance"
+              id="initBalance"
+              defaultValue={isEditForm ? asset.initBalance : ""}
               required
             />
           </div>
@@ -63,7 +57,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
             <select
               name="currency"
               id="currency"
-              defaultValue={isEditForm ? category.currency : "USD"}
+              defaultValue={isEditForm ? asset.currency : "USD"}
             >
               {currencies.map((currency) => (
                 <option key={currency} value={currency}>
@@ -84,4 +78,4 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
   );
 };
 
-export default CategoryForm;
+export default AssetForm;

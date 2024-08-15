@@ -13,28 +13,33 @@ import TransactionsPage, {
 import SpendingAnalysisPage, {
   spendingAnalysisLoader,
 } from "./pages/SpendingAnalysisPage";
+import ErrorPage from "./pages/Error";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "/",
         element: <Dashboard />,
         loader: dashboardLoader,
         action: dashboardAction,
+        errorElement: <ErrorPage />,
       },
       {
         path: "/transactions",
         element: <TransactionsPage />,
         loader: transactionsPageLoader,
         action: transactionsPageAction,
+        errorElement: <ErrorPage />,
       },
       {
         path: "/spending-analysis",
         element: <SpendingAnalysisPage />,
         loader: spendingAnalysisLoader,
+        errorElement: <ErrorPage />,
       },
     ],
   },

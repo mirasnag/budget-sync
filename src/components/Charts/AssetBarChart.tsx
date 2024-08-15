@@ -13,15 +13,20 @@ import {
 // Interfaces
 import { getAssetBalanceHistory } from "../../api/helpers";
 import randomColor from "randomcolor";
-import { Asset } from "../Assets";
+import { Asset } from "../Dashboard/Assets";
 
 interface Props {
   assets: Asset[];
+  period: string[];
 }
 
-const AssetBarChart: React.FC<Props> = ({ assets }) => {
-  const data = getAssetBalanceHistory();
-  const colors = randomColor({ count: assets.length, luminosity: "light" });
+const AssetBarChart: React.FC<Props> = ({ assets, period }) => {
+  const data = getAssetBalanceHistory(period);
+  const colors = randomColor({
+    seed: 0,
+    count: assets.length,
+    luminosity: "light",
+  });
 
   return (
     <ResponsiveContainer width="100%" height={400}>
@@ -33,6 +38,7 @@ const AssetBarChart: React.FC<Props> = ({ assets }) => {
         <XAxis dataKey="month" />
         <YAxis />
         <Tooltip
+          cursor={false}
           contentStyle={{ backgroundColor: "#333", borderColor: "#666" }}
         />
         <Legend />

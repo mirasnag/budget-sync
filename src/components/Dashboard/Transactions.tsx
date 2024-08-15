@@ -26,7 +26,7 @@ import {
   formatDate,
   getAllMatchingItems,
   sortFilterTransactions,
-} from "../api/helpers";
+} from "../../api/helpers";
 
 export interface Transaction {
   id: string;
@@ -263,7 +263,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
   return (
     <div className="transactions">
-      <div className="btns-wrapper">
+      <div className="header">
         <h2>{isRecent && "Recent"} Transactions</h2>
         <div className="btns">
           <button
@@ -405,7 +405,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 </div>
               </td>
               <td>
-                <div className="flex-sm">
+                <div className="table-btns">
                   <button
                     onClick={() => setShowEditForm(transaction.id)}
                     className="btn"

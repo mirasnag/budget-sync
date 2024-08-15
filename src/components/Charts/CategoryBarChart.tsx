@@ -11,17 +11,22 @@ import {
 } from "recharts";
 
 // Interfaces
-import { Category } from "../Categories";
+import { Category } from "../Dashboard/Categories";
 import { getCategorySpentHistory } from "../../api/helpers";
 import randomColor from "randomcolor";
 
 interface Props {
   categories: Category[];
+  period: string[];
 }
 
-const CategoryBarChart: React.FC<Props> = ({ categories }) => {
-  const data = getCategorySpentHistory();
-  const colors = randomColor({ count: categories.length, luminosity: "light" });
+const CategoryBarChart: React.FC<Props> = ({ categories, period }) => {
+  const data = getCategorySpentHistory(period);
+  const colors = randomColor({
+    seed: 0,
+    count: categories.length,
+    luminosity: "light",
+  });
 
   return (
     <ResponsiveContainer width="100%" height={400}>
@@ -33,6 +38,7 @@ const CategoryBarChart: React.FC<Props> = ({ categories }) => {
         <XAxis dataKey="month" />
         <YAxis />
         <Tooltip
+          cursor={false}
           contentStyle={{ backgroundColor: "#333", borderColor: "#666" }}
         />
         <Legend />

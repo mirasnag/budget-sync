@@ -12,16 +12,18 @@ import {
 import randomColor from "randomcolor";
 
 // interfaces
-import { Asset } from "../Assets";
+import { Asset } from "../Dashboard/Assets";
 import { getAssetBalanceHistory } from "../../api/helpers";
 
 interface Props {
   assets: Asset[];
+  period: string[];
 }
 
-const AssetLineChart: React.FC<Props> = ({ assets }) => {
-  const data = getAssetBalanceHistory();
+const AssetLineChart: React.FC<Props> = ({ assets, period }) => {
+  const data = getAssetBalanceHistory(period);
   const colors = randomColor({
+    seed: 0,
     count: assets.length,
     luminosity: "light",
   });

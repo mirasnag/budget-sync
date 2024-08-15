@@ -10,7 +10,7 @@ import {
   formatCurrency,
   getAllCurrencies,
   spentByCategory,
-} from "../api/helpers";
+} from "../../api/helpers";
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/20/solid";
 import CategoryForm from "./CategoryForm";
 
@@ -25,15 +25,22 @@ interface CategoriesProps {
   categories: Category[];
   currencyRates: DataItem;
   showHeader?: boolean;
+  period: string[];
 }
 
 const Categories: React.FC<CategoriesProps> = ({
   categories,
   currencyRates,
   showHeader = true,
+  period,
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState("");
+  const [categoryPeriod, setCategoryPeriod] = useState([
+    period[0],
+    period[1],
+    period[2],
+  ]);
 
   const closeForm = () => {
     setShowCreateForm(false);
@@ -41,30 +48,83 @@ const Categories: React.FC<CategoriesProps> = ({
   };
 
   const currencies = getAllCurrencies();
-
   return (
-    <div className="categories flex-sm">
+    <div className="categories">
       {showHeader && (
-        <>
+        <div className="header">
           <h2>Categories</h2>
-          <button
-            className="btn btn-green"
-            onClick={() => setShowCreateForm(true)}
-          >
-            <PlusIcon width={20} />
-          </button>
-        </>
+          <div className="chart-menu">
+            <button
+              className="btn btn-green"
+              onClick={() => setShowCreateForm(true)}
+            >
+              <PlusIcon width={20} />
+            </button>
+            <div className="period-selector">
+              <select
+                defaultValue={categoryPeriod[0]}
+                onChange={(e) => {
+                  setCategoryPeriod([
+                    e.target.value,
+                    categoryPeriod[1],
+                    categoryPeriod[2],
+                  ]);
+                }}
+              >
+                <option value="past">Past</option>
+                <option value="this">This</option>
+                <option value="next">Next</option>
+              </select>
+              {categoryPeriod[0] !== "this" && (
+                <input
+                  type="number"
+                  defaultValue={categoryPeriod[1]}
+                  min={1}
+                  max={99}
+                  onChange={(e) => {
+                    setCategoryPeriod([
+                      categoryPeriod[0],
+                      e.target.value,
+                      categoryPeriod[2],
+                    ]);
+                  }}
+                />
+              )}
+              <select
+                defaultValue={categoryPeriod[2]}
+                onChange={(e) => {
+                  setCategoryPeriod([
+                    categoryPeriod[0],
+                    categoryPeriod[1],
+                    e.target.value,
+                  ]);
+                }}
+              >
+                <option value="day">Day</option>
+                <option value="week">Week</option>
+                <option value="month">Month</option>
+                <option value="year">Year</option>
+              </select>
+            </div>
+          </div>
+        </div>
       )}
 
       {categories.map((category) => {
         const total = category.totalBudgeted;
-        const spent = spentByCategory(category, currencyRates, ["None"]);
+        const spent = spentByCategory(
+          category,
+          currencyRates,
+          showHeader ? categoryPeriod : period
+        );
         const remaining = total - spent;
         const currency = category.currency;
 
         return (
           <div key={category.id} className="category">
-            <span className="category-name">{category.name}</span>
+            <span className="category-name frame color-aqua">
+              {category.name}
+            </span>
             <div className="category-bar-wrapper">
               <div className="category-bar-back">
                 <div
@@ -82,7 +142,7 @@ const Categories: React.FC<CategoriesProps> = ({
                 <span>Total: {formatCurrency(total, currency)}</span>
               </div>
             </div>
-            <div className="flex-sm">
+            <div className="table-btns">
               <button
                 onClick={() => setShowEditForm(category.id)}
                 className="btn"

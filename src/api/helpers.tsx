@@ -1,7 +1,7 @@
 // Interfaces
-import { Asset } from "../components/Assets";
-import { Category } from "../components/Categories";
-import { Transaction } from "../components/Transactions";
+import { Asset } from "../components/Dashboard/Assets";
+import { Category } from "../components/Dashboard/Categories";
+import { Transaction } from "../components/Dashboard/Transactions";
 
 export interface DataItem {
   [key: string]: any;
@@ -165,12 +165,16 @@ export const spentByCategory = (
   return total > 0 ? total : 0;
 };
 
-export const getCategorySpentHistory = () => {
-  const transactions = sortTransactions(
+export const getCategorySpentHistory = (period: string[]) => {
+  const transactions = sortFilterTransactions(
     fetchData("transactions"),
+    "Date",
+    period,
     "Date",
     "Ascending"
   ) as Transaction[];
+  if (!transactions || transactions.length === 0) return undefined;
+
   const categories = fetchData("categories") as Category[];
 
   const months: string[] = [];
@@ -214,22 +218,40 @@ export const getCategorySpentHistory = () => {
 };
 
 // Calculate Balance of Asset
-export const getBalanceOfAsset = (asset: Asset): number => {
-  const transactions = fetchData("transactions") as Transaction[];
+export const getBalanceOfAsset = (asset: Asset, period: string[]) => {
+  const transactions = getAllMatchingItems(
+    "transactions",
+    "asset_id",
+    asset.id
+  ) as Transaction[];
+
+  const transactions_period = filterTransactions(
+    transactions,
+    "Date",
+    period
+  ) as Transaction[];
+
   const now = new Date();
-  return transactions.reduce((balance: number, transaction) => {
-    if (
-      transaction.asset_id === asset.id &&
-      new Date(transaction.date) <= now
-    ) {
+  let balance = +asset.initBalance;
+  let expense = 0;
+  let income = 0;
+
+  transactions.forEach((transaction) => {
+    if (new Date(transaction.date) <= new Date(now)) {
       balance +=
         transaction.type === "income"
           ? Number(transaction.amount)
           : -Number(transaction.amount);
-      return balance;
     }
-    return balance;
-  }, Number(asset.initBalance));
+  });
+
+  transactions_period.forEach((transaction) => {
+    transaction.type === "income"
+      ? (income += Number(transaction.amount))
+      : (expense += Number(transaction.amount));
+  });
+
+  return { balance: balance, expense: expense, income: income };
 };
 
 interface balanceHistoryItem {
@@ -237,12 +259,16 @@ interface balanceHistoryItem {
   [key: string]: string | number; // key = asset_id, value = balance
 }
 
-export const getAssetBalanceHistory = () => {
-  const transactions = sortTransactions(
+export const getAssetBalanceHistory = (period: string[]) => {
+  const transactions = sortFilterTransactions(
     fetchData("transactions"),
+    "Date",
+    period,
     "Date",
     "Ascending"
   ) as Transaction[];
+  if (!transactions || transactions.length === 0) return undefined;
+
   const assets = fetchData("assets") as Asset[];
 
   const months: string[] = [];
@@ -513,7 +539,8 @@ export const getAllCurrencies = () => [
 
 // Format Currency
 export const formatCurrency = (amount: number, currency: string) => {
-  return amount + " " + currency;
+  const amountStr = +(+amount).toFixed(2);
+  return amountStr + " " + currency;
 };
 
 // Format Date
@@ -585,6 +612,10 @@ const filterTransactions = (
       break;
 
     case "Date":
+      if (filterValue[0] === "allTime") {
+        filterFunction = () => true;
+        break;
+      }
       const now = new Date();
       let startDate = new Date();
       let endDate = new Date();
@@ -598,7 +629,7 @@ const filterTransactions = (
         startDate.setDate(now.getDate() - dayOfWeek + 1);
         endDate.setDate(now.getDate() + (7 - dayOfWeek));
       } else if (filterValue[2] === "month") {
-        startDate.setDate(1);
+        startDate.setDate(0);
         endDate.setMonth(now.getMonth() + 1);
         endDate.setDate(0);
       } else if (filterValue[2] === "year") {

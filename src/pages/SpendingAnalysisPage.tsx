@@ -5,8 +5,8 @@ import { useLoaderData } from "react-router-dom";
 import { DataItem, fetchData, getCurrencyRates } from "../api/helpers";
 
 // interfaces
-import AssetsTable, { Asset } from "../components/Assets";
-import Categories, { Category } from "../components/Categories";
+import AssetsTable, { Asset } from "../components/Dashboard/Assets";
+import Categories, { Category } from "../components/Dashboard/Categories";
 import CategoryPieChart from "../components/Charts/CategoryPieChart";
 import AssetLineChart from "../components/Charts/AssetLineChart";
 import { useState } from "react";
@@ -34,90 +34,194 @@ const SpendingAnalysisPage: React.FC = () => {
     currencyRates: DataItem;
   };
 
-  const [categoryChartType, setCategoryChartType] = useState("horizontal-bar");
+  const [categoryChartType, setCategoryChartType] = useState("table");
+  const [categoryPeriod, setCategoryPeriod] = useState(["this", "1", "month"]);
   const [assetChartType, setAssetChartType] = useState("table");
+  const [assetPeriod, setAssetPeriod] = useState(["this", "1", "month"]);
 
   const renderCategoryChart = () => {
-    if (categoryChartType === "horizontal-bar") {
+    if (categoryChartType === "table") {
       return (
         <Categories
           categories={categories}
           currencyRates={currencyRates}
+          period={categoryPeriod}
           showHeader={false}
         />
       );
     }
-    if (categoryChartType === "vertical-bar") {
-      return <CategoryBarChart categories={categories} />;
+    if (categoryChartType === "bar") {
+      return (
+        <CategoryBarChart categories={categories} period={categoryPeriod} />
+      );
     }
     if (categoryChartType === "pie") {
       return (
         <CategoryPieChart
           categories={categories}
           currencyRates={currencyRates}
+          period={categoryPeriod}
         />
       );
     }
     if (categoryChartType === "line") {
-      return <CategoryLineChart categories={categories} />;
+      return (
+        <CategoryLineChart categories={categories} period={categoryPeriod} />
+      );
     }
     return (
       <Categories
         categories={categories}
         currencyRates={currencyRates}
         showHeader={false}
+        period={categoryPeriod}
       />
     );
   };
+
   const renderAssetChart = () => {
     if (assetChartType === "table") {
-      return <AssetsTable assets={assets} showHeader={false} />;
+      return (
+        <AssetsTable assets={assets} showHeader={false} period={assetPeriod} />
+      );
     }
-    if (assetChartType === "vertical-bar") {
-      return <AssetBarChart assets={assets} />;
+    if (assetChartType === "bar") {
+      return <AssetBarChart assets={assets} period={assetPeriod} />;
     }
     if (assetChartType === "line") {
-      return <AssetLineChart assets={assets} />;
+      return <AssetLineChart assets={assets} period={assetPeriod} />;
     }
     return (
-      <Categories
-        categories={categories}
-        currencyRates={currencyRates}
-        showHeader={false}
-      />
+      <AssetsTable assets={assets} showHeader={false} period={assetPeriod} />
     );
   };
 
   return (
     <div className="charts">
-      <div className="category-chart">
-        <div className="header">
-          <h2>Category Chart</h2>
-          <select
-            defaultValue={categoryChartType}
-            onChange={(e) => setCategoryChartType(e.target.value)}
-          >
-            <option value="horizontal-bar">Horizontal Bar Chart</option>
-            <option value="vertical-bar">Vertical Bar Chart</option>
-            <option value="pie">Pie Chart</option>
-            <option value="line">Line Chart</option>
-          </select>
-        </div>
-        {renderCategoryChart()}
-      </div>
       <div className="asset-chart">
         <div className="header">
           <h2>Asset Chart</h2>
-          <select
-            defaultValue={assetChartType}
-            onChange={(e) => setAssetChartType(e.target.value)}
-          >
-            <option value="table">Table</option>
-            <option value="vertical-bar">Vertical Bar Chart</option>
-            <option value="line">Line Chart</option>
-          </select>
+          <div className="chart-menu">
+            <div className="period-selector">
+              <select
+                defaultValue={assetPeriod[0]}
+                onChange={(e) => {
+                  setAssetPeriod([
+                    e.target.value,
+                    assetPeriod[1],
+                    assetPeriod[2],
+                  ]);
+                }}
+              >
+                <option value="past">Past</option>
+                <option value="this">This</option>
+                <option value="next">Next</option>
+              </select>
+              {assetPeriod[0] !== "this" && (
+                <input
+                  type="number"
+                  defaultValue={assetPeriod[1]}
+                  min={1}
+                  max={99}
+                  onChange={(e) => {
+                    setAssetPeriod([
+                      assetPeriod[0],
+                      e.target.value,
+                      assetPeriod[2],
+                    ]);
+                  }}
+                />
+              )}
+              <select
+                defaultValue={assetPeriod[2]}
+                onChange={(e) => {
+                  setAssetPeriod([
+                    assetPeriod[0],
+                    assetPeriod[1],
+                    e.target.value,
+                  ]);
+                }}
+              >
+                <option value="day">Day</option>
+                <option value="week">Week</option>
+                <option value="month">Month</option>
+                <option value="year">Year</option>
+              </select>
+            </div>
+            <select
+              defaultValue={assetChartType}
+              onChange={(e) => setAssetChartType(e.target.value)}
+            >
+              <option value="table">Table</option>
+              <option value="bar">Bar Chart</option>
+              <option value="line">Line Chart</option>
+            </select>
+          </div>
         </div>
         {renderAssetChart()}
+      </div>
+      <div className="category-chart">
+        <div className="header">
+          <h2>Category Chart</h2>
+          <div className="chart-menu">
+            <div className="period-selector">
+              <select
+                defaultValue={categoryPeriod[0]}
+                onChange={(e) => {
+                  setCategoryPeriod([
+                    e.target.value,
+                    categoryPeriod[1],
+                    categoryPeriod[2],
+                  ]);
+                }}
+              >
+                <option value="past">Past</option>
+                <option value="this">This</option>
+                <option value="next">Next</option>
+              </select>
+              {categoryPeriod[0] !== "this" && (
+                <input
+                  type="number"
+                  defaultValue={categoryPeriod[1]}
+                  min={1}
+                  max={99}
+                  onChange={(e) => {
+                    setCategoryPeriod([
+                      categoryPeriod[0],
+                      e.target.value,
+                      categoryPeriod[2],
+                    ]);
+                  }}
+                />
+              )}
+              <select
+                defaultValue={categoryPeriod[2]}
+                onChange={(e) => {
+                  setCategoryPeriod([
+                    categoryPeriod[0],
+                    categoryPeriod[1],
+                    e.target.value,
+                  ]);
+                }}
+              >
+                <option value="day">Day</option>
+                <option value="week">Week</option>
+                <option value="month">Month</option>
+                <option value="year">Year</option>
+              </select>
+            </div>
+            <select
+              defaultValue={categoryChartType}
+              onChange={(e) => setCategoryChartType(e.target.value)}
+            >
+              <option value="table">Table</option>
+              <option value="bar">Bar Chart</option>
+              <option value="pie">Pie Chart</option>
+              <option value="line">Line Chart</option>
+            </select>
+          </div>
+        </div>
+        {renderCategoryChart()}
       </div>
     </div>
   );

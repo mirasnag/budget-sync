@@ -5,9 +5,11 @@ import { ActionFunction, useLoaderData } from "react-router-dom";
 import { createTransaction, deleteItem, fetchData } from "../api/helpers";
 
 // interfaces
-import { Asset } from "../components/Assets";
-import { Category } from "../components/Categories";
-import TransactionTable, { Transaction } from "../components/Transactions";
+import { Asset } from "../components/Dashboard/Assets";
+import { Category } from "../components/Dashboard/Categories";
+import TransactionTable, {
+  Transaction,
+} from "../components/Dashboard/Transactions";
 
 // loader
 export async function transactionsPageLoader(): Promise<{
