@@ -165,7 +165,11 @@ export const spentByCategory = (
   return total > 0 ? total : 0;
 };
 
-export const getCategorySpentHistory = (period: string[]) => {
+export const getCategorySpentHistory = (
+  period: string[],
+  baseCurrency: string | null,
+  rates: DataItem
+) => {
   const transactions = sortFilterTransactions(
     fetchData("transactions"),
     "Date",
@@ -204,6 +208,20 @@ export const getCategorySpentHistory = (period: string[]) => {
       spentHistoryMap[month][category.name] += +transaction.amount;
     }
   });
+
+  for (let i = 0; i < months.length; i++) {
+    for (let j = 0; j < categories.length; j++) {
+      const change = spentHistoryMap[months[i]][categories[j].name];
+      spentHistoryMap[months[i]][categories[j].name] = baseCurrency
+        ? +convertCurrency(
+            rates,
+            categories[j].currency,
+            baseCurrency,
+            change
+          ).toFixed(2)
+        : change;
+    }
+  }
 
   const spentHistory = Object.entries(spentHistoryMap).map(
     ([month, categorySpent]) => {
@@ -256,10 +274,14 @@ export const getBalanceOfAsset = (asset: Asset, period: string[]) => {
 
 interface balanceHistoryItem {
   month: string; // (e.g., '2024-06')
-  [key: string]: string | number; // key = asset_id, value = balance
+  [key: string]: string | number; // key = id, value = amount
 }
 
-export const getAssetBalanceHistory = (period: string[]) => {
+export const getAssetBalanceHistory = (
+  period: string[],
+  baseCurrency: string | null,
+  rates: DataItem
+) => {
   const transactions = sortFilterTransactions(
     fetchData("transactions"),
     "Date",
@@ -311,7 +333,14 @@ export const getAssetBalanceHistory = (period: string[]) => {
     for (let j = 0; j < assets.length; j++) {
       const change = balanceHistoryMap[months[i]][assets[j].name];
       curBalances[j] = Number(curBalances[j]) + Number(change);
-      balanceHistoryMap[months[i]][assets[j].name] = curBalances[j];
+      balanceHistoryMap[months[i]][assets[j].name] = baseCurrency
+        ? convertCurrency(
+            rates,
+            assets[j].currency,
+            baseCurrency,
+            curBalances[j]
+          )
+        : curBalances[j];
     }
   }
 
@@ -543,6 +572,18 @@ export const formatCurrency = (amount: number, currency: string) => {
   return amountStr + " " + currency;
 };
 
+// Convert Currency
+export const convertCurrency = (
+  rates: DataItem,
+  currencyFrom: string,
+  currencyTo: string,
+  amount: number
+) => {
+  return (
+    (Number(rates[currencyTo]) * Number(amount)) / Number(rates[currencyFrom])
+  );
+};
+
 // Format Date
 export const formatDate = (date: Date): string => {
   const day = new Date(date).getDate();
@@ -550,6 +591,14 @@ export const formatDate = (date: Date): string => {
   const year = new Date(date).getFullYear();
 
   return `${month} ${day}, ${year}`;
+};
+
+export const formatDateMonthStr = (monthYear: string): string => {
+  const date = new Date(monthYear + "-01");
+  const month = new Date(date).toLocaleString("default", { month: "long" });
+  const year = new Date(date).getFullYear();
+
+  return `${month} ${year}`;
 };
 
 export const formatDateToInputValue = (date: Date): string => {

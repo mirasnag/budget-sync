@@ -13,17 +13,20 @@ import randomColor from "randomcolor";
 
 // interfaces
 import { Category } from "../Dashboard/Categories";
-import { getCategorySpentHistory } from "../../api/helpers";
 
 interface Props {
   categories: Category[];
-  period: string[];
+  data: any[];
+  formatter: (value: number, index: number) => string;
 }
 
-const CategoryLineChart: React.FC<Props> = ({ categories, period }) => {
-  const data = getCategorySpentHistory(period);
+const CategoryLineChart: React.FC<Props> = ({
+  categories,
+  data,
+  formatter,
+}) => {
   const colors = randomColor({
-    seed: 0,
+    seed: 100,
     count: categories.length,
     luminosity: "light",
   });
@@ -37,7 +40,10 @@ const CategoryLineChart: React.FC<Props> = ({ categories, period }) => {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="month" />
         <YAxis />
-        <Tooltip contentStyle={{ backgroundColor: "#333" }} />
+        <Tooltip
+          contentStyle={{ backgroundColor: "#333" }}
+          formatter={(value, ...props) => formatter(Number(value), props[2])}
+        />
         <Legend />
         {categories.map((category, index) => (
           <Line
@@ -45,6 +51,7 @@ const CategoryLineChart: React.FC<Props> = ({ categories, period }) => {
             type="monotone"
             dataKey={category.name}
             stroke={colors[index]}
+            strokeWidth={3}
             activeDot={{ r: 8 }}
           />
         ))}

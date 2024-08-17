@@ -12,18 +12,17 @@ import {
 
 // Interfaces
 import { Category } from "../Dashboard/Categories";
-import { getCategorySpentHistory } from "../../api/helpers";
 import randomColor from "randomcolor";
 
 interface Props {
   categories: Category[];
-  period: string[];
+  data: any[];
+  formatter: (value: number, index: number) => string;
 }
 
-const CategoryBarChart: React.FC<Props> = ({ categories, period }) => {
-  const data = getCategorySpentHistory(period);
+const CategoryBarChart: React.FC<Props> = ({ categories, data, formatter }) => {
   const colors = randomColor({
-    seed: 0,
+    seed: 100,
     count: categories.length,
     luminosity: "light",
   });
@@ -40,6 +39,7 @@ const CategoryBarChart: React.FC<Props> = ({ categories, period }) => {
         <Tooltip
           cursor={false}
           contentStyle={{ backgroundColor: "#333", borderColor: "#666" }}
+          formatter={(value, ...props) => formatter(Number(value), props[2])}
         />
         <Legend />
         {categories.map((category, index) => (

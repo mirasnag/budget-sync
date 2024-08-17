@@ -13,15 +13,14 @@ import randomColor from "randomcolor";
 
 // interfaces
 import { Asset } from "../Dashboard/Assets";
-import { getAssetBalanceHistory } from "../../api/helpers";
 
 interface Props {
   assets: Asset[];
-  period: string[];
+  data: any[];
+  formatter: (value: number, index: number) => string;
 }
 
-const AssetLineChart: React.FC<Props> = ({ assets, period }) => {
-  const data = getAssetBalanceHistory(period);
+const AssetLineChart: React.FC<Props> = ({ assets, data, formatter }) => {
   const colors = randomColor({
     seed: 0,
     count: assets.length,
@@ -37,7 +36,10 @@ const AssetLineChart: React.FC<Props> = ({ assets, period }) => {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="month" />
         <YAxis />
-        <Tooltip contentStyle={{ backgroundColor: "#333" }} />
+        <Tooltip
+          contentStyle={{ backgroundColor: "#333" }}
+          formatter={(value, ...props) => formatter(Number(value), props[2])}
+        />
         <Legend />
         {assets.map((asset, index) => (
           <Line
@@ -45,6 +47,7 @@ const AssetLineChart: React.FC<Props> = ({ assets, period }) => {
             type="monotone"
             dataKey={asset.name}
             stroke={colors[index]}
+            strokeWidth={3}
             activeDot={{ r: 8 }}
           />
         ))}

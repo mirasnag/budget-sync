@@ -55,7 +55,7 @@ const CurrencyWidget: React.FC<Props> = ({ rates }) => {
 
   return (
     <div className="currency-widget">
-      <h2>Currency Rate Converter</h2>
+      <h2>Currency Converter</h2>
       <div>
         <input
           type="number"

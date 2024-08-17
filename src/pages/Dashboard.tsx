@@ -20,12 +20,13 @@ import {
 } from "../api/helpers";
 
 // components
-import AssetsTable, { Asset } from "../components/Dashboard/Assets";
+import { Asset } from "../components/Dashboard/Assets";
 import TransactionTable, {
   Transaction,
 } from "../components/Dashboard/Transactions";
 import Categories, { Category } from "../components/Dashboard/Categories";
 import CurrencyWidget from "../components/CurrencyWidget";
+import Assets from "../components/Dashboard/Assets";
 
 // loader
 export async function dashboardLoader(): Promise<{
@@ -200,11 +201,10 @@ const Dashboard: React.FC = () => {
     <>
       <div className="grid-lg">
         <CurrencyWidget rates={data.currencyRates} />
-        <AssetsTable assets={data.assets} />
+        <Assets assets={data.assets} currencyRates={data.currencyRates} />
         <Categories
           categories={data.categories}
           currencyRates={data.currencyRates}
-          period={["this", "1", "month"]}
         />
         <TransactionTable
           transactions={data.transactions}

@@ -2,7 +2,13 @@
 import { ActionFunction, useLoaderData } from "react-router-dom";
 
 // helper functions
-import { createTransaction, deleteItem, fetchData } from "../api/helpers";
+import {
+  DataItem,
+  createTransaction,
+  deleteItem,
+  fetchData,
+  getCurrencyRates,
+} from "../api/helpers";
 
 // interfaces
 import { Asset } from "../components/Dashboard/Assets";
@@ -10,18 +16,21 @@ import { Category } from "../components/Dashboard/Categories";
 import TransactionTable, {
   Transaction,
 } from "../components/Dashboard/Transactions";
+import CurrencyWidget from "../components/CurrencyWidget";
 
 // loader
 export async function transactionsPageLoader(): Promise<{
   assets: Asset[];
   transactions: Transaction[];
   categories: Category[];
+  currencyRates: DataItem;
 }> {
   const assets = fetchData("assets") as Asset[];
   const transactions = fetchData("transactions") as Transaction[];
   const categories = fetchData("categories") as Category[];
+  const currencyRates = await getCurrencyRates();
 
-  return { assets, transactions, categories };
+  return { assets, transactions, categories, currencyRates };
 }
 
 // action
@@ -81,21 +90,26 @@ export const transactionsPageAction: ActionFunction = async ({ request }) => {
 };
 
 const TransactionsPage = () => {
-  const { assets, transactions, categories } = useLoaderData() as {
-    assets: Asset[];
-    transactions: Transaction[];
-    categories: Category[];
-  };
+  const { assets, transactions, categories, currencyRates } =
+    useLoaderData() as {
+      assets: Asset[];
+      transactions: Transaction[];
+      categories: Category[];
+      currencyRates: DataItem[];
+    };
 
   return (
-    <TransactionTable
-      assets={assets}
-      transactions={transactions.sort((a, b) =>
-        a.createdAt < b.createdAt ? 1 : -1
-      )}
-      categories={categories}
-      isRecent={false}
-    />
+    <>
+      <CurrencyWidget rates={currencyRates} />
+      <TransactionTable
+        assets={assets}
+        transactions={transactions.sort((a, b) =>
+          a.createdAt < b.createdAt ? 1 : -1
+        )}
+        categories={categories}
+        isRecent={false}
+      />
+    </>
   );
 };
 

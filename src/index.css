@@ -173,6 +173,10 @@ input {
   margin-left: 20px !important;
 }
 
+.transactions .header .view-all-transactions {
+  text-decoration: none;
+}
+
 .sort-filter-container {
   position: absolute;
   /* right: 0; */
@@ -251,26 +255,26 @@ input {
   margin: 5px;
 }
 
-.transactions table {
+table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.transactions th {
+th {
   font-size: large;
 }
 
-.transactions th,
-.transactions td {
+th,
+td {
   padding: 10px;
   text-align: left;
 }
 
-.transactions th {
+th {
   border-bottom: 1px solid #333;
 }
 
-.transactions tbody tr {
+tbody tr {
   border-bottom: none;
 }
 
@@ -502,6 +506,16 @@ input {
   margin: 5px;
 }
 
+.pie-chart-wrapper {
+  display: flex;
+  overflow-x: scroll;
+  /* flex-wrap: wrap; */
+}
+
+.pie-chart-wrapper div {
+  flex: 1;
+}
+
 .category-chart,
 .asset-chart {
   display: flex;
@@ -532,8 +546,13 @@ input {
   gap: 20px;
 }
 
+.chart-menu select {
+  border-radius: 5px;
+}
+
 .period-selector {
   display: flex;
+  gap: 5px;
   width: 200px;
 }
 

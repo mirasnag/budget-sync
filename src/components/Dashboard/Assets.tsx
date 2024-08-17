@@ -9,6 +9,8 @@ import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/20/solid";
 
 // helper functions
 import {
+  DataItem,
+  convertCurrency,
   formatCurrency,
   getAllCurrencies,
   getBalanceOfAsset,
@@ -24,96 +26,101 @@ export interface Asset {
   currency: string;
 }
 
-export interface AssetsTableProps {
+export interface AssetsProps {
   assets: Asset[];
+  currencyRates: DataItem;
   showHeader?: boolean;
   period?: string[];
 }
 
-const AssetsTable: React.FC<AssetsTableProps> = ({
-  assets,
-  showHeader = true,
-  period = ["this", "1", "month"],
-}) => {
+const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState("");
-  const [assetPeriod, setAssetPeriod] = useState(period);
+  const [assetPeriod, setAssetPeriod] = useState(["this", "1", "month"]);
+  const [baseCurrency, setBaseCurrency] = useState<string | null>(null);
 
   const closeForm = () => {
     setShowCreateForm(false);
     setShowEditForm("");
   };
 
-  const tableHeader: string[] = [
-    "Name",
-    "Balance",
-    "Total Income",
-    "Total Expenses",
-    "",
-  ];
+  const tableHeader: string[] = ["Name", "Balance", "Income", "Expenses", ""];
   const currencies = getAllCurrencies();
+  let totalBalance = 0,
+    totalIncome = 0,
+    totalExpense = 0;
 
   return (
     <div className="assets">
-      {showHeader && (
-        <div className="header">
-          <h2>Assets</h2>
-          <div className="chart-menu">
-            <button
-              className="btn btn-green"
-              onClick={() => setShowCreateForm(true)}
+      <div className="header">
+        <h2>Assets</h2>
+        <div className="chart-menu">
+          <select
+            defaultValue={baseCurrency ?? ""}
+            onChange={(e) =>
+              setBaseCurrency(e.target.value === "" ? null : e.target.value)
+            }
+          >
+            <option value="">{baseCurrency ? "Revert" : "Convert"}</option>
+            {currencies.map((currency) => {
+              return <option value={currency}>{currency}</option>;
+            })}
+          </select>
+          <button
+            className="btn btn-green"
+            onClick={() => setShowCreateForm(true)}
+          >
+            <PlusIcon width={20} />
+          </button>
+          <div className="period-selector">
+            <select
+              defaultValue={assetPeriod[0]}
+              onChange={(e) => {
+                setAssetPeriod([
+                  e.target.value,
+                  assetPeriod[1],
+                  assetPeriod[2],
+                ]);
+              }}
             >
-              <PlusIcon width={20} />
-            </button>
-            <div className="period-selector">
-              <select
-                defaultValue={assetPeriod[0]}
-                onChange={(e) => {
-                  setAssetPeriod([
-                    e.target.value,
-                    assetPeriod[1],
-                    assetPeriod[2],
-                  ]);
-                }}
-              >
-                <option value="past">Past</option>
-                <option value="this">This</option>
-                <option value="next">Next</option>
-              </select>
-              {assetPeriod[0] !== "this" && (
-                <input
-                  type="number"
-                  defaultValue={assetPeriod[1]}
-                  min={1}
-                  max={99}
-                  onChange={(e) => {
-                    setAssetPeriod([
-                      assetPeriod[0],
-                      e.target.value,
-                      assetPeriod[2],
-                    ]);
-                  }}
-                />
-              )}
-              <select
-                defaultValue={assetPeriod[2]}
+              <option value="past">Past</option>
+              <option value="this">This</option>
+              <option value="next">Next</option>
+            </select>
+            {assetPeriod[0] !== "this" && (
+              <input
+                type="number"
+                defaultValue={assetPeriod[1]}
+                min={1}
+                max={99}
                 onChange={(e) => {
                   setAssetPeriod([
                     assetPeriod[0],
-                    assetPeriod[1],
                     e.target.value,
+                    assetPeriod[2],
                   ]);
                 }}
-              >
-                <option value="day">Day</option>
-                <option value="week">Week</option>
-                <option value="month">Month</option>
-                <option value="year">Year</option>
-              </select>
-            </div>
+              />
+            )}
+            <select
+              defaultValue={assetPeriod[2]}
+              onChange={(e) => {
+                setAssetPeriod([
+                  assetPeriod[0],
+                  assetPeriod[1],
+                  e.target.value,
+                ]);
+              }}
+            >
+              <option value="day">Day</option>
+              <option value="week">Week</option>
+              <option value="month">Month</option>
+              <option value="year">Year</option>
+            </select>
           </div>
         </div>
-      )}
+      </div>
+
       <table>
         <thead>
           <tr>
@@ -124,19 +131,50 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
         </thead>
         <tbody>
           {assets.map((asset, index) => {
-            const { balance, expense, income } = getBalanceOfAsset(
+            let { balance, expense, income } = getBalanceOfAsset(
               asset,
-              showHeader ? assetPeriod : period
+              assetPeriod
             );
+
+            if (baseCurrency) {
+              balance = convertCurrency(
+                currencyRates,
+                asset.currency,
+                baseCurrency,
+                balance
+              );
+              expense = convertCurrency(
+                currencyRates,
+                asset.currency,
+                baseCurrency,
+                expense
+              );
+              income = convertCurrency(
+                currencyRates,
+                asset.currency,
+                baseCurrency,
+                income
+              );
+
+              totalBalance += +balance;
+              totalExpense += +expense;
+              totalIncome += +income;
+            }
 
             return (
               <tr key={index}>
                 <td>
                   <div className="frame color-aqua">{asset.name}</div>
                 </td>
-                <td>{formatCurrency(balance, asset.currency)}</td>
-                <td>{formatCurrency(income, asset.currency)}</td>
-                <td>{formatCurrency(expense, asset.currency)}</td>
+                <td>
+                  {formatCurrency(balance, baseCurrency ?? asset.currency)}
+                </td>
+                <td>
+                  {formatCurrency(income, baseCurrency ?? asset.currency)}
+                </td>
+                <td>
+                  {formatCurrency(expense, baseCurrency ?? asset.currency)}
+                </td>
                 <td>
                   <div className="table-btns">
                     <button
@@ -157,6 +195,14 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
               </tr>
             );
           })}
+          {baseCurrency && (
+            <tr key="summary">
+              <td></td>
+              <td>{formatCurrency(totalBalance, baseCurrency ?? "")}</td>
+              <td>{formatCurrency(totalIncome, baseCurrency ?? "")}</td>
+              <td>{formatCurrency(totalExpense, baseCurrency ?? "")}</td>
+            </tr>
+          )}
         </tbody>
       </table>
 
@@ -175,4 +221,4 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
   );
 };
 
-export default AssetsTable;
+export default Assets;

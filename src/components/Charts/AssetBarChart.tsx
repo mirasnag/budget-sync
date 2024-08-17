@@ -11,17 +11,16 @@ import {
 } from "recharts";
 
 // Interfaces
-import { getAssetBalanceHistory } from "../../api/helpers";
 import randomColor from "randomcolor";
 import { Asset } from "../Dashboard/Assets";
 
 interface Props {
   assets: Asset[];
-  period: string[];
+  data: any[];
+  formatter: (value: number, index: number) => string;
 }
 
-const AssetBarChart: React.FC<Props> = ({ assets, period }) => {
-  const data = getAssetBalanceHistory(period);
+const AssetBarChart: React.FC<Props> = ({ assets, data, formatter }) => {
   const colors = randomColor({
     seed: 0,
     count: assets.length,
@@ -40,6 +39,7 @@ const AssetBarChart: React.FC<Props> = ({ assets, period }) => {
         <Tooltip
           cursor={false}
           contentStyle={{ backgroundColor: "#333", borderColor: "#666" }}
+          formatter={(value, ...props) => formatter(Number(value), props[2])}
         />
         <Legend />
         {assets.map((asset, index) => (

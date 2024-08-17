@@ -46,14 +46,6 @@ const Layout: React.FC = () => {
               <FaBullseye className="icon" /> Budget Goals
             </Link>
             <Link
-              to="/settings"
-              className={`menu-item ${
-                location.pathname === "/settings" ? "active" : ""
-              }`}
-            >
-              <FaCog className="icon" /> Settings
-            </Link>
-            <Link
               to="/support"
               className={`menu-item ${
                 location.pathname === "/support" ? "active" : ""

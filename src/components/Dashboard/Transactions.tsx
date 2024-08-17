@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 
 // rrd imports
-import { Form } from "react-router-dom";
+import { Form, Link } from "react-router-dom";
 
 // library imports
 import {
@@ -100,13 +100,21 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     "Amount",
     "Type",
   ];
-  const processedTransactions = sortFilterTransactions(
-    transactions,
-    filterOption,
-    filterValue,
-    sortOption,
-    sortValue
-  );
+  const processedTransactions = isRecent
+    ? sortFilterTransactions(
+        transactions,
+        "Date",
+        ["past", "99", "year"],
+        "Date",
+        "Descending"
+      ).slice(0, 5)
+    : sortFilterTransactions(
+        transactions,
+        filterOption,
+        filterValue,
+        sortOption,
+        sortValue
+      );
 
   const renderFilterValueInput = () => {
     switch (filterOption) {
@@ -288,25 +296,36 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           >
             <PlusIcon width={20} />
           </button>
-          <button
-            className={showSortMenu ? "btn color-green" : "btn"}
-            onClick={() => {
-              setShowSortMenu(!showSortMenu);
-              setShowFilterMenu(false);
-            }}
-          >
-            <ArrowsUpDownIcon width={20} />
-          </button>
 
-          <button
-            className={showFilterMenu ? "btn color-green" : "btn"}
-            onClick={() => {
-              setShowFilterMenu(!showFilterMenu);
-              setShowSortMenu(false);
-            }}
-          >
-            <FunnelIcon width={20} />
-          </button>
+          {isRecent && (
+            <Link to="/transactions" className="btn view-all-transactions">
+              <span>View All</span>
+            </Link>
+          )}
+
+          {!isRecent && (
+            <button
+              className={showSortMenu ? "btn color-green" : "btn"}
+              onClick={() => {
+                setShowSortMenu(!showSortMenu);
+                setShowFilterMenu(false);
+              }}
+            >
+              <ArrowsUpDownIcon width={20} />
+            </button>
+          )}
+
+          {!isRecent && (
+            <button
+              className={showFilterMenu ? "btn color-green" : "btn"}
+              onClick={() => {
+                setShowFilterMenu(!showFilterMenu);
+                setShowSortMenu(false);
+              }}
+            >
+              <FunnelIcon width={20} />
+            </button>
+          )}
 
           {showSortMenu && (
             <div className="sort-filter-container">
