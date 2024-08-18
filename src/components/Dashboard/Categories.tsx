@@ -53,9 +53,15 @@ const Categories: React.FC<CategoriesProps> = ({
               setBaseCurrency(e.target.value === "" ? null : e.target.value)
             }
           >
-            <option value="">{baseCurrency ? "Revert" : "Convert"}</option>
+            <option key="" value="">
+              {baseCurrency ? "Revert" : "Convert"}
+            </option>
             {currencies.map((currency) => {
-              return <option value={currency}>{currency}</option>;
+              return (
+                <option key={currency} value={currency}>
+                  {currency}
+                </option>
+              );
             })}
           </select>
           <button
@@ -70,7 +76,7 @@ const Categories: React.FC<CategoriesProps> = ({
               onChange={(e) => {
                 setCategoryPeriod([
                   e.target.value,
-                  categoryPeriod[1],
+                  e.target.value === "this" ? "1" : categoryPeriod[1],
                   categoryPeriod[2],
                 ]);
               }}
@@ -114,14 +120,36 @@ const Categories: React.FC<CategoriesProps> = ({
       </div>
 
       {categories.map((category) => {
+        let periodBudgeted;
+        switch (categoryPeriod[2]) {
+          case "year":
+            periodBudgeted =
+              category.totalBudgeted * 12 * Number(categoryPeriod[1]);
+            break;
+          case "month":
+            periodBudgeted = category.totalBudgeted * Number(categoryPeriod[1]);
+            break;
+          case "week":
+            periodBudgeted =
+              category.totalBudgeted * (7 / 30) * Number(categoryPeriod[1]);
+            break;
+          case "day":
+            periodBudgeted =
+              category.totalBudgeted * (1 / 30) * Number(categoryPeriod[1]);
+            break;
+          default:
+            periodBudgeted = category.totalBudgeted;
+        }
+
         const total = baseCurrency
           ? convertCurrency(
               currencyRates,
               category.currency,
               baseCurrency,
-              category.totalBudgeted
+              periodBudgeted
             )
-          : category.totalBudgeted;
+          : periodBudgeted;
+
         const spent = baseCurrency
           ? convertCurrency(
               currencyRates,
@@ -130,6 +158,7 @@ const Categories: React.FC<CategoriesProps> = ({
               spentByCategory(category, currencyRates, categoryPeriod)
             )
           : spentByCategory(category, currencyRates, categoryPeriod);
+
         const remaining = total - spent;
         const currency = baseCurrency ?? category.currency;
 

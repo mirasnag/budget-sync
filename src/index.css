@@ -496,12 +496,6 @@ tbody tr {
 }
 
 /* Charts */
-.charts {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
 .charts h2 {
   margin: 5px;
 }
@@ -527,7 +521,6 @@ tbody tr {
 
 .charts .header {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
 }
 
@@ -566,10 +559,6 @@ tbody tr {
   width: 100%;
 }
 
-.charts .chart-menu select {
-  width: 100px;
-}
-
 .table-btns {
   display: flex;
   gap: 20px;
@@ -584,7 +573,88 @@ tbody tr {
   border-radius: 10px;
 }
 
-/* Error-page*/
+/* Error Page*/
 .error-page {
+  width: 100vw;
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.error-page h1 {
+  color: var(--red-color);
+  margin-bottom: 20px;
+}
+
+.error-page a {
+  text-decoration: none;
+}
+
+.error-page span {
+  font-size: large;
+}
+
+/* Support page */
+.contact-container {
+  padding: 20px;
+  background-color: #1c1c1c;
+  border-radius: 10px;
   color: #fff;
+}
+
+.contact-section {
+  margin-bottom: 20px;
+}
+
+.contact-section h3 {
+  color: var(--aqua-color);
+}
+
+.contact-section ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.contact-section li {
+  margin-bottom: 5px;
+}
+
+.contact-section span {
+  color: var(--aqua-color);
+  text-decoration: underline;
+}
+
+.social-links a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 40px;
+  margin: 0px 5px;
+}
+
+.social-links a:hover {
+  color: var(--aqua-color);
+}
+
+.contact-form {
+  margin-top: 10px;
+}
+
+.contact-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0px;
+  border: 1px solid #444;
+  background-color: #333;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.contact-form button {
+  background-color: #fff;
+}
+
+.contact-form button:hover {
+  background-color: var(--aqua-color);
 }

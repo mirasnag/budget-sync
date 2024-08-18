@@ -186,7 +186,7 @@ const SpendingAnalysisPage: React.FC = () => {
 
   return (
     <>
-      <div className="charts">
+      <div className="charts grid-lg">
         <CurrencyWidget rates={currencyRates} />
         <div className="asset-chart">
           <div className="header">
@@ -269,7 +269,6 @@ const SpendingAnalysisPage: React.FC = () => {
           </div>
           {renderAssetChart()}
         </div>
-
         <div className="category-chart">
           <div className="header">
             <h2>Category Chart</h2>

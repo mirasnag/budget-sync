@@ -14,6 +14,7 @@ import SpendingAnalysisPage, {
   spendingAnalysisLoader,
 } from "./pages/SpendingAnalysisPage";
 import ErrorPage from "./pages/Error";
+import Contact, { contactAction } from "./pages/Contact";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,11 @@ const router = createBrowserRouter([
         element: <SpendingAnalysisPage />,
         loader: spendingAnalysisLoader,
         errorElement: <ErrorPage />,
+      },
+      {
+        path: "/contact",
+        element: <Contact />,
+        action: contactAction,
       },
     ],
   },

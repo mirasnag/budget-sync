@@ -2,7 +2,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 // library imports
-import { FaBullseye, FaChartPie, FaCog, FaPhone } from "react-icons/fa";
+import { FaChartPie, FaPhone } from "react-icons/fa";
 import { FaArrowsRotate, FaHouse } from "react-icons/fa6";
 
 const Layout: React.FC = () => {
@@ -38,20 +38,12 @@ const Layout: React.FC = () => {
               <FaChartPie className="icon" /> Spending Analysis
             </Link>
             <Link
-              to="/budget-goals"
+              to="/contact"
               className={`menu-item ${
-                location.pathname === "/budget-goals" ? "active" : ""
+                location.pathname === "/contact" ? "active" : ""
               }`}
             >
-              <FaBullseye className="icon" /> Budget Goals
-            </Link>
-            <Link
-              to="/support"
-              className={`menu-item ${
-                location.pathname === "/support" ? "active" : ""
-              }`}
-            >
-              <FaPhone className="icon" /> Support
+              <FaPhone className="icon" /> Contact
             </Link>
           </div>
         </nav>

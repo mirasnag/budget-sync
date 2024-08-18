@@ -19,7 +19,6 @@ const CategoryTable: React.FC<Props> = ({ categories, data, formatter }) => {
     luminosity: "light",
   });
 
-  console.log(data);
   return (
     <table>
       <thead>

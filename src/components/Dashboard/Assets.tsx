@@ -61,9 +61,15 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
               setBaseCurrency(e.target.value === "" ? null : e.target.value)
             }
           >
-            <option value="">{baseCurrency ? "Revert" : "Convert"}</option>
+            <option key={""} value="">
+              {baseCurrency ? "Revert" : "Convert"}
+            </option>
             {currencies.map((currency) => {
-              return <option value={currency}>{currency}</option>;
+              return (
+                <option key={currency} value={currency}>
+                  {currency}
+                </option>
+              );
             })}
           </select>
           <button
@@ -195,14 +201,27 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
               </tr>
             );
           })}
-          {baseCurrency && (
-            <tr key="summary">
-              <td></td>
-              <td>{formatCurrency(totalBalance, baseCurrency ?? "")}</td>
-              <td>{formatCurrency(totalIncome, baseCurrency ?? "")}</td>
-              <td>{formatCurrency(totalExpense, baseCurrency ?? "")}</td>
-            </tr>
-          )}
+
+          <tr key="summary">
+            <td>
+              <div className="frame">Total</div>
+            </td>
+            <td>
+              {baseCurrency
+                ? formatCurrency(totalBalance, baseCurrency ?? "")
+                : "-"}
+            </td>
+            <td>
+              {baseCurrency
+                ? formatCurrency(totalIncome, baseCurrency ?? "")
+                : "-"}
+            </td>
+            <td>
+              {baseCurrency
+                ? formatCurrency(totalExpense, baseCurrency ?? "")
+                : "-"}
+            </td>
+          </tr>
         </tbody>
       </table>
 
