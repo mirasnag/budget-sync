@@ -668,10 +668,6 @@ tbody tr {
   border-radius: 4px;
 }
 
-.contact-form button {
-  background-color: var(--text-light-color);
-}
-
 .contact-form button:hover {
   background-color: var(--aqua-color);
 }
