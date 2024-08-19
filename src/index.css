@@ -1,22 +1,29 @@
 :root {
+  /* Spacing */
   --space-sm: 16px;
   --space-md: 24px;
   --space-lg: 32px;
 
+  /* Background Colors */
+  --bg-component-color: #1a1a1a;
+  --bg-color: #1c1c1c;
+  --bg-dark-button-color: #333333;
+  --bg-light-button-color: #cccccc;
+  --bg-effect-color: #2b2b2b;
+
+  /* Text Colors */
+  --text-dark-color: #000000;
+  --text-light-color: #ffffff;
+
+  /* Accent Colors */
   --aqua-color: #00ffff;
-
-  /* --green-color: #7cfc00; */
   --green-color: #acf3ae;
-
-  /* --yellow-color: #ffcc00; */
   --yellow-color: #fafb92;
-
-  /* --red-color: #f26161;  */
   --red-color: #fa6b84;
 }
 
 body {
-  background-color: #1a1a1a;
+  background-color: var(--bg-color);
 }
 
 .content {
@@ -84,12 +91,12 @@ body {
 /* General */
 
 select {
-  background: #333;
+  background: var(--bg-dark-button-color);
   color: var(--aqua-color);
 }
 
 input {
-  background: #333;
+  background: var(--bg-dark-button-color);
   color: var(--aqua-color);
 }
 
@@ -101,8 +108,8 @@ input {
 
 .sidebar {
   min-width: 200px;
-  background-color: #1c1c1c;
-  color: #fff;
+  background-color: var(--bg-color);
+  color: var(--text-light-color);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -118,7 +125,7 @@ input {
   display: flex;
   margin: 10px 0px;
   text-decoration: none;
-  color: #fff;
+  color: var(--text-light-color);
   border-radius: 15px;
   padding: 20px 10px;
   border: 0.5px solid rgba(0, 0, 0, 0);
@@ -130,7 +137,7 @@ input {
 }
 
 .menu-item:hover {
-  background-color: #2b2b2b;
+  background-color: var(--bg-effect-color);
   border-color: var(--yellow-color);
 }
 
@@ -140,33 +147,36 @@ input {
 }
 
 .content {
-  padding: 20px;
   flex-grow: 1;
-  background-color: #f5f5f5;
-}
-
-.content {
-  flex-grow: 1;
-  background-color: #2b2b2b;
+  background-color: var(--bg-effect-color);
   padding: 20px;
-  color: #fff;
+  color: var(--text-light-color);
 }
 
 .menu-link span {
   margin-left: 10px;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.header select {
+  text-align: center;
+}
+
+.header h2 {
+  margin: 5px;
+}
+
 /* Transactions Table  */
 .transactions {
   position: relative;
-  background-color: #1a1a1a;
-  color: #fff;
+  background-color: var(--bg-component-color);
+  color: var(--text-light-color);
   padding: 20px;
   border-radius: 10px;
-}
-.transactions .header {
-  display: flex;
-  justify-content: space-between;
 }
 
 .transactions .header .btn {
@@ -179,12 +189,11 @@ input {
 
 .sort-filter-container {
   position: absolute;
-  /* right: 0; */
   display: flex;
   flex-direction: column;
   padding: 5px;
-  background-color: #333;
-  border: 1px solid #fff;
+  background-color: var(--bg-dark-button-color);
+  border: 1px solid var(--text-light-color);
   border-radius: 10px;
   width: 250px;
 }
@@ -197,8 +206,6 @@ input {
 
 .sort-filter-container select {
   width: 100%;
-  background-color: #333;
-  color: white;
   border: 0px;
   outline: 0px;
 }
@@ -251,10 +258,6 @@ input {
   margin: 0;
 }
 
-.transactions h2 {
-  margin: 5px;
-}
-
 table {
   width: 100%;
   border-collapse: collapse;
@@ -270,29 +273,16 @@ td {
   text-align: left;
 }
 
-th {
-  border-bottom: 1px solid #333;
-}
-
 tbody tr {
   border-bottom: none;
 }
 
 /* Assets Table  */
 .assets {
-  background-color: #1a1a1a;
-  color: #fff;
+  background-color: var(--bg-component-color);
+  color: var(--text-light-color);
   padding: 20px;
   border-radius: 10px;
-}
-
-.assets .header {
-  display: flex;
-  justify-content: space-between;
-}
-
-.assets h2 {
-  margin: 5px;
 }
 
 .assets table {
@@ -310,10 +300,6 @@ tbody tr {
   text-align: left;
 }
 
-.assets th {
-  border-bottom: 1px solid #333;
-}
-
 .assets tbody tr {
   border-bottom: none;
 }
@@ -321,8 +307,8 @@ tbody tr {
 /* Buttons */
 
 .btn {
-  background-color: #cccccc;
-  color: #000000;
+  background-color: var(--bg-light-button-color);
+  color: var(--text-dark-color);
   border: none;
   padding: 12px 20px 8px 20px;
   margin: 0px 5px 0px 0px;
@@ -333,15 +319,15 @@ tbody tr {
 }
 
 .btn:hover {
-  background-color: var(--yellow-color);
+  background-color: var(--yellow-color) !important;
 }
 
 .btn-red:hover {
-  background-color: var(--red-color);
+  background-color: var(--red-color) !important;
 }
 
 .btn-green:hover {
-  background-color: var(--green-color);
+  background-color: var(--green-color) !important;
 }
 
 /* Pop-up */
@@ -359,8 +345,7 @@ tbody tr {
 }
 
 .popup-content {
-  /* background: #06402b; */
-  background: #222;
+  background: var(--bg-effect-color);
   padding: 20px;
   border-radius: 5px;
   max-width: 500px;
@@ -391,9 +376,9 @@ tbody tr {
 }
 
 .btn-rect {
-  background: #fff;
-  color: #000000;
-  width: 50%;
+  background: var(--text-light-color);
+  color: var(--text-dark-color);
+  width: 33%;
   padding: 8px 0px;
   display: inline-flex;
   justify-content: center;
@@ -414,19 +399,34 @@ tbody tr {
   font-weight: bold;
 }
 
+.btn-rect-yellow {
+  background-color: var(--yellow-color);
+  font-weight: bold;
+}
+
 .color-green {
-  background: var(--green-color);
-  color: #000000;
+  background: var(--green-color) !important;
+  color: var(--text-dark-color) !important;
 }
 
 .color-red {
-  background: var(--red-color);
-  color: #000000;
+  background: var(--red-color) !important;
+  color: var(--text-dark-color) !important;
 }
 
 .color-aqua {
-  background: var(--aqua-color);
-  color: #000000;
+  background: var(--aqua-color) !important;
+  color: var(--text-dark-color) !important;
+}
+
+.color-yellow {
+  background: var(--yellow-color) !important;
+  color: var(--text-dark-color) !important;
+}
+
+.color-white {
+  background: white !important;
+  color: var(--text-dark-color) !important;
 }
 
 .frame {
@@ -442,20 +442,14 @@ tbody tr {
 
 /* Categories */
 .categories {
-  background-color: #1a1a1a;
-  color: #fff;
+  background-color: var(--bg-component-color);
+  color: var(--text-light-color);
   padding: 20px;
   border-radius: 10px;
 }
 
 .categories .header {
-  display: flex;
-  justify-content: space-between;
   margin-bottom: 20px;
-}
-
-.categories h2 {
-  margin: 5px;
 }
 
 .category {
@@ -483,7 +477,7 @@ tbody tr {
 
 .category-bar-back {
   flex: 1;
-  background-color: #333;
+  background-color: var(--bg-dark-button-color);
   border-radius: 5px;
   overflow: hidden;
   margin-right: 10px;
@@ -496,9 +490,6 @@ tbody tr {
 }
 
 /* Charts */
-.charts h2 {
-  margin: 5px;
-}
 
 .pie-chart-wrapper {
   display: flex;
@@ -514,18 +505,9 @@ tbody tr {
 .asset-chart {
   display: flex;
   flex-direction: column;
-  background: #1a1a1a;
+  background: var(--bg-component-color);
   border-radius: 10px;
   padding: 20px;
-}
-
-.charts .header {
-  display: flex;
-  justify-content: space-between;
-}
-
-.header select {
-  text-align: center;
 }
 
 .charts .legend-container {
@@ -554,8 +536,6 @@ tbody tr {
 }
 
 .period-selector select {
-  background: #333;
-  color: var(--aqua-color);
   width: 100%;
 }
 
@@ -565,10 +545,14 @@ tbody tr {
   align-items: flex-end;
 }
 
+/* .table-btns .btn {
+  background-color: ;
+} */
+
 /* Currency Wdiget */
 .currency-widget {
-  background-color: #1a1a1a;
-  color: #fff;
+  background-color: var(--bg-component-color);
+  color: var(--text-light-color);
   padding: 20px;
   border-radius: 10px;
 }
@@ -599,9 +583,9 @@ tbody tr {
 /* Support page */
 .contact-container {
   padding: 20px;
-  background-color: #1c1c1c;
+  background-color: var(--bg-color);
   border-radius: 10px;
-  color: #fff;
+  color: var(--text-light-color);
 }
 
 .contact-section {
@@ -627,7 +611,7 @@ tbody tr {
 }
 
 .social-links a {
-  color: #fff;
+  color: var(--text-light-color);
   text-decoration: none;
   font-size: 40px;
   margin: 0px 5px;
@@ -645,16 +629,27 @@ tbody tr {
   width: 100%;
   padding: 10px;
   margin: 5px 0px;
-  border: 1px solid #444;
-  background-color: #333;
-  color: #fff;
+  border: 1px solid var(--aqua-color);
+  background-color: var(--bg-dark-button-color);
+  color: var(--text-light-color);
   border-radius: 4px;
 }
 
 .contact-form button {
-  background-color: #fff;
+  background-color: var(--text-light-color);
 }
 
 .contact-form button:hover {
   background-color: var(--aqua-color);
+}
+
+/* Other */
+.transaction-details {
+  display: flex;
+  flex: row;
+  color: var(--aqua-color);
+}
+
+.transaction-details div {
+  gap: 5px;
 }

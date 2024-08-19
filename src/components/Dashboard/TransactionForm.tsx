@@ -33,7 +33,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   const [transactionType, setTransactionType] = useState<string>(
     isEditForm ? transaction.type : "expense"
   );
-
+  console.log(transaction);
   return (
     <div className="popup">
       <div className="popup-content">
@@ -58,48 +58,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             />
           </div>
           <div className="form-group">
-            <label htmlFor="asset_id">Asset</label>
-            <select
-              name="asset_id"
-              id="asset_id"
-              defaultValue={isEditForm ? transaction.asset_id : ""}
-              required
-            >
-              {assets.map((asset) => (
-                <option key={asset.id} value={asset.id}>
-                  {asset.name} ({asset.currency})
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="category_id">Category</label>
-            <select
-              name="category_id"
-              id="category_id"
-              defaultValue={isEditForm ? transaction.category_id : ""}
-              required
-            >
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="date">Date</label>
-            <input
-              type="date"
-              name="date"
-              id="date"
-              defaultValue={
-                isEditForm ? formatDateToInputValue(transaction.date) : ""
-              }
-              required
-            />
-          </div>
-          <div className="form-group">
             <label htmlFor="type">Type</label>
             <input
               type="hidden"
@@ -117,12 +75,95 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             </div>
             <div
               className={`btn-rect ${
+                transactionType === "transfer" ? "btn-rect-yellow" : ""
+              }`}
+              onClick={() => setTransactionType("transfer")}
+            >
+              Transfer
+            </div>
+            <div
+              className={`btn-rect ${
                 transactionType === "income" ? "btn-rect-green" : ""
               }`}
               onClick={() => setTransactionType("income")}
             >
               Income
             </div>
+          </div>
+          {transactionType === "expense" && (
+            <div className="form-group">
+              <label htmlFor="category_id">Category of Expense</label>
+              <select
+                name="category_id"
+                id="category_id"
+                defaultValue={isEditForm ? transaction.category_id : ""}
+                required
+              >
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          {transactionType === "income" && (
+            <div className="form-group">
+              <label htmlFor="source">Source of Income</label>
+              <input
+                type="text"
+                name="source"
+                id="source"
+                defaultValue={isEditForm ? transaction.source : ""}
+                required
+              />
+            </div>
+          )}
+          {transactionType === "transfer" && (
+            <div className="form-group">
+              <label htmlFor="asset_from_id">Transfer From</label>
+              <select
+                name="asset_from_id"
+                id="asset_from_id"
+                defaultValue={isEditForm ? transaction.asset_from_id : ""}
+                required
+              >
+                {assets.map((asset) => (
+                  <option key={asset.id} value={asset.id}>
+                    {asset.name} ({asset.currency})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div className="form-group">
+            <label htmlFor="asset_id">
+              {transactionType === "transfer" ? "Transfer To" : "Asset"}
+            </label>
+            <select
+              name="asset_id"
+              id="asset_id"
+              defaultValue={isEditForm ? transaction.asset_id : ""}
+              required
+            >
+              {assets.map((asset) => (
+                <option key={asset.id} value={asset.id}>
+                  {asset.name} ({asset.currency})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="date">Date</label>
+            <input
+              type="date"
+              name="date"
+              id="date"
+              defaultValue={
+                isEditForm ? formatDateToInputValue(transaction.date) : ""
+              }
+              required
+            />
           </div>
           <div className="form-group">
             <label htmlFor="amount">Amount</label>

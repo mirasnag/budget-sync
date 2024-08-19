@@ -6,6 +6,7 @@ import { Form, Link } from "react-router-dom";
 
 // library imports
 import {
+  ArrowLongRightIcon,
   ArrowsUpDownIcon,
   FunnelIcon,
   PencilIcon,
@@ -27,12 +28,16 @@ import {
   getAllMatchingItems,
   sortFilterTransactions,
 } from "../../api/helpers";
+import { FaTags, FaWallet } from "react-icons/fa";
+import { FaSackDollar } from "react-icons/fa6";
 
 export interface Transaction {
   id: string;
   name: string;
   asset_id: string;
   category_id: string;
+  source: string;
+  asset_from_id: string;
   amount: number;
   currency: string;
   date: Date;
@@ -90,7 +95,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     setShowEditForm("");
   };
 
-  const tableHeader = ["Name", "Asset", "Category", "Date", "Amount", ""];
+  const tableHeader = ["Name", "Date", "Amount", "Details", ""];
   const sortFilterOptions = [
     "None",
     "Name",
@@ -306,7 +311,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           {!isRecent && (
             <button
               className={showSortMenu ? "btn color-green" : "btn"}
-              onClick={() => {
+              onMouseEnter={() => {
                 setShowSortMenu(!showSortMenu);
                 setShowFilterMenu(false);
               }}
@@ -318,7 +323,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           {!isRecent && (
             <button
               className={showFilterMenu ? "btn color-green" : "btn"}
-              onClick={() => {
+              onMouseEnter={() => {
                 setShowFilterMenu(!showFilterMenu);
                 setShowSortMenu(false);
               }}
@@ -328,7 +333,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           )}
 
           {showSortMenu && (
-            <div className="sort-filter-container">
+            <div
+              className="sort-filter-container"
+              onMouseLeave={() => {
+                setShowSortMenu(false);
+              }}
+            >
               <div className="sort-filter-menu">
                 <span>Sort By</span>
                 <div className="sort-filter-options">
@@ -360,7 +370,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           )}
 
           {showFilterMenu && (
-            <div className="sort-filter-container">
+            <div
+              className="sort-filter-container"
+              onMouseLeave={() => {
+                setShowFilterMenu(false);
+              }}
+            >
               <div className="sort-filter-menu">
                 <span>Filter By</span>
                 <div className="sort-filter-options">
@@ -393,63 +408,119 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {processedTransactions.map((transaction, index) => (
-            <tr key={index}>
-              <td>{transaction.name}</td>
-              <td>
-                <div className="frame color-aqua">
-                  {getAllMatchingItems("assets", "id", transaction.asset_id)[0]
-                    ?.name ?? ""}
-                </div>
-              </td>
-              <td>
-                <div className="frame color-aqua">
-                  {getAllMatchingItems(
-                    "categories",
-                    "id",
-                    transaction.category_id
-                  )[0]?.name ?? ""}
-                </div>
-              </td>
-              <td>{formatDate(transaction.date)}</td>
-              <td>
-                <div
-                  className={
-                    transaction.type === "income"
-                      ? "frame color-green"
-                      : "frame color-red"
-                  }
-                >
-                  {formatCurrency(transaction.amount, transaction.currency)}
-                </div>
-              </td>
-              <td>
-                <div className="table-btns">
-                  <button
-                    onClick={() => setShowEditForm(transaction.id)}
-                    className="btn"
-                  >
-                    <PencilIcon width={20} />
-                  </button>
-                  <Form method="post">
-                    <input
-                      type="hidden"
-                      name="_action"
-                      value="deleteTransaction"
-                    />
-                    <input
-                      type="hidden"
-                      name="transaction_id"
-                      value={transaction.id}
-                    />
-                    <button type="submit" className="btn btn-red">
-                      <TrashIcon width={20} />
+          {processedTransactions.map((transaction, index) => {
+            const assetName =
+              getAllMatchingItems("assets", "id", transaction.asset_id)[0]
+                ?.name ?? "";
+            const categoryName =
+              getAllMatchingItems(
+                "categories",
+                "id",
+                transaction.category_id
+              )[0]?.name ?? "";
+            const assetFromName =
+              getAllMatchingItems("assets", "id", transaction.asset_from_id)[0]
+                ?.name ?? "";
+            const source = transaction.source;
+
+            return (
+              <tr key={index}>
+                <td>{transaction.name}</td>
+                <td>{formatDate(transaction.date)}</td>
+                <td>
+                  {transaction.type === "income" && (
+                    <div className="frame color-green">
+                      {"+ " +
+                        formatCurrency(
+                          transaction.amount,
+                          transaction.currency
+                        )}
+                    </div>
+                  )}
+                  {transaction.type === "expense" && (
+                    <div className="frame color-red">
+                      {"- " +
+                        formatCurrency(
+                          transaction.amount,
+                          transaction.currency
+                        )}
+                    </div>
+                  )}
+                  {transaction.type === "transfer" && (
+                    <div className="frame color-yellow">
+                      {formatCurrency(transaction.amount, transaction.currency)}
+                    </div>
+                  )}
+                </td>
+                <td>
+                  {transaction.type === "expense" && (
+                    <div className="transaction-details">
+                      <div className="frame color-aqua">
+                        <FaWallet width={15} />
+                        {assetName}
+                      </div>
+                      <ArrowLongRightIcon width={20} />
+                      <div className="frame color-aqua">
+                        <FaTags width={15} />
+                        {categoryName}
+                      </div>
+                    </div>
+                  )}
+                  {transaction.type === "income" && (
+                    <div className="transaction-details">
+                      <div className="frame color-aqua">
+                        <FaSackDollar width={20} />
+                        {source}
+                      </div>
+                      <ArrowLongRightIcon width={20} />
+                      <div className="frame color-aqua">
+                        <FaWallet width={15} />
+                        {assetName}
+                      </div>
+                    </div>
+                  )}
+                  {transaction.type === "transfer" && (
+                    <div className="transaction-details">
+                      <div className="frame color-aqua">
+                        <FaWallet width={15} />
+                        {assetFromName}
+                      </div>
+                      <ArrowLongRightIcon width={20} />
+                      <div className="frame color-aqua">
+                        <FaWallet width={15} />
+                        {assetName}
+                      </div>
+                    </div>
+                  )}
+                </td>
+                <td>
+                  <div className="table-btns">
+                    <button
+                      onClick={() => setShowEditForm(transaction.id)}
+                      className="btn"
+                    >
+                      <PencilIcon width={20} />
                     </button>
-                  </Form>
-                </div>
-              </td>
-            </tr>
-          ))}
+                    <Form method="post">
+                      <input
+                        type="hidden"
+                        name="_action"
+                        value="deleteTransaction"
+                      />
+                      <input
+                        type="hidden"
+                        name="transaction_id"
+                        value={transaction.id}
+                      />
+                      <button type="submit" className="btn btn-red">
+                        <TrashIcon width={20} />
+                      </button>
+                    </Form>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 

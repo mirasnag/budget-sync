@@ -69,6 +69,8 @@ export const createTransaction = (values: Transaction) => {
     name: values.name,
     asset_id: values.asset_id,
     category_id: values.category_id,
+    source: values.source,
+    asset_from_id: values.asset_from_id,
     amount: values.amount,
     currency:
       values.currency ??
@@ -162,7 +164,7 @@ export const spentByCategory = (
     }
     return spent;
   }, 0);
-  return total > 0 ? total : 0;
+  return total;
 };
 
 export const getCategorySpentHistory = (
@@ -236,40 +238,65 @@ export const getCategorySpentHistory = (
 };
 
 // Calculate Balance of Asset
-export const getBalanceOfAsset = (asset: Asset, period: string[]) => {
-  const transactions = getAllMatchingItems(
-    "transactions",
-    "asset_id",
-    asset.id
-  ) as Transaction[];
-
-  const transactions_period = filterTransactions(
-    transactions,
-    "Date",
-    period
-  ) as Transaction[];
-
-  const now = new Date();
+export const getBalanceOfAsset = (asset: Asset) => {
+  const transactions = fetchData("transactions") as Transaction[];
   let balance = +asset.initBalance;
-  let expense = 0;
-  let income = 0;
+  const now = new Date();
 
   transactions.forEach((transaction) => {
-    if (new Date(transaction.date) <= new Date(now)) {
+    if (
+      new Date(transaction.date) < new Date(now) &&
+      transaction.asset_id === asset.id
+    ) {
       balance +=
-        transaction.type === "income"
-          ? Number(transaction.amount)
-          : -Number(transaction.amount);
+        transaction.type === "expense"
+          ? -Number(transaction.amount)
+          : +Number(transaction.amount);
+    } else if (
+      new Date(transaction.date) < new Date(now) &&
+      transaction.asset_from_id === asset.id
+    ) {
+      balance -= Number(transaction.amount);
     }
   });
 
-  transactions_period.forEach((transaction) => {
-    transaction.type === "income"
-      ? (income += Number(transaction.amount))
-      : (expense += Number(transaction.amount));
+  return balance;
+};
+
+export const getAssetDetails = (asset: Asset, period: string[]) => {
+  const transactions = filterTransactions(
+    fetchData("transactions"),
+    "Date",
+    period
+  );
+  let income = 0;
+  let expense = 0;
+  let transferTo = 0;
+  let transferFrom = 0;
+
+  transactions.forEach((transaction) => {
+    if (asset.id === transaction.asset_id) {
+      switch (transaction.type) {
+        case "income":
+          income += Number(transaction.amount);
+          break;
+        case "expense":
+          expense += Number(transaction.amount);
+          break;
+        case "transfer":
+          transferTo += Number(transaction.amount);
+      }
+    } else if (asset.id === transaction.asset_from_id) {
+      transferFrom += Number(transaction.amount);
+    }
   });
 
-  return { balance: balance, expense: expense, income: income };
+  return {
+    income: income,
+    expense: expense,
+    transferTo: transferTo,
+    transferFrom: transferFrom,
+  };
 };
 
 interface balanceHistoryItem {
@@ -317,10 +344,22 @@ export const getAssetBalanceHistory = (
     const month = new Date(transaction.date).toISOString().slice(0, 7);
     const asset = assets.find((a) => a.id === transaction.asset_id);
     if (asset) {
-      balanceHistoryMap[month][asset.name] +=
-        transaction.type === "income"
-          ? +transaction.amount
-          : -transaction.amount;
+      switch (transaction.type) {
+        case "income":
+          balanceHistoryMap[month][asset.name] += +transaction.amount;
+          break;
+        case "expense":
+          balanceHistoryMap[month][asset.name] += -transaction.amount;
+          break;
+        case "transfer":
+          balanceHistoryMap[month][asset.name] += +transaction.amount;
+          const assetFrom = assets.find(
+            (a) => a.id === transaction.asset_from_id
+          );
+          if (assetFrom)
+            balanceHistoryMap[month][assetFrom.name] += -transaction.amount;
+          break;
+      }
     }
   });
 
@@ -609,7 +648,6 @@ export const formatDateToInputValue = (date: Date): string => {
   const dayStr = day < 10 ? `0${day}` : `${day}`;
   const monthStr = month < 10 ? `0${month}` : `${month}`;
 
-  console.log(`${year}-${monthStr}-${dayStr}`, year, month, day);
   return `${year}-${monthStr}-${dayStr}`;
 };
 
@@ -644,7 +682,10 @@ const filterTransactions = (
 
     case "Asset":
       filterFunction = (transaction) => {
-        return transaction.asset_id === filterValue[0];
+        return (
+          transaction.asset_id === filterValue[0] ||
+          transaction.asset_from_id === filterValue[0]
+        );
       };
       break;
 

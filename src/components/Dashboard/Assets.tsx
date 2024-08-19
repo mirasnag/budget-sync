@@ -13,6 +13,7 @@ import {
   convertCurrency,
   formatCurrency,
   getAllCurrencies,
+  getAssetDetails,
   getBalanceOfAsset,
 } from "../../api/helpers";
 
@@ -137,7 +138,8 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
         </thead>
         <tbody>
           {assets.map((asset, index) => {
-            let { balance, expense, income } = getBalanceOfAsset(
+            let balance = getBalanceOfAsset(asset);
+            let { income, expense, transferTo, transferFrom } = getAssetDetails(
               asset,
               assetPeriod
             );
@@ -204,22 +206,16 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
 
           <tr key="summary">
             <td>
-              <div className="frame">Total</div>
+              <div className="frame color-white">Total</div>
             </td>
             <td>
-              {baseCurrency
-                ? formatCurrency(totalBalance, baseCurrency ?? "")
-                : "-"}
+              {baseCurrency ? formatCurrency(totalBalance, baseCurrency) : ""}
             </td>
             <td>
-              {baseCurrency
-                ? formatCurrency(totalIncome, baseCurrency ?? "")
-                : "-"}
+              {baseCurrency ? formatCurrency(totalIncome, baseCurrency) : ""}
             </td>
             <td>
-              {baseCurrency
-                ? formatCurrency(totalExpense, baseCurrency ?? "")
-                : "-"}
+              {baseCurrency ? formatCurrency(totalExpense, baseCurrency) : ""}
             </td>
           </tr>
         </tbody>
