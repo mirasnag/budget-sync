@@ -16,7 +16,9 @@ const AssetTable: React.FC<Props> = ({ assets, data, formatter }) => {
   const colors = randomColor({
     seed: 0,
     count: assets.length,
-    luminosity: "light",
+    luminosity: window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "light"
+      : "dark",
   });
 
   return (

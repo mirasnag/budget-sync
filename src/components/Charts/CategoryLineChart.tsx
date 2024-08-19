@@ -28,7 +28,9 @@ const CategoryLineChart: React.FC<Props> = ({
   const colors = randomColor({
     seed: 100,
     count: categories.length,
-    luminosity: "light",
+    luminosity: window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "light"
+      : "dark",
   });
 
   return (
