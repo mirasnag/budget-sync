@@ -139,10 +139,7 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
         <tbody>
           {assets.map((asset, index) => {
             let balance = getBalanceOfAsset(asset);
-            let { income, expense, transferTo, transferFrom } = getAssetDetails(
-              asset,
-              assetPeriod
-            );
+            let { income, expense } = getAssetDetails(asset, assetPeriod);
 
             if (baseCurrency) {
               balance = convertCurrency(
