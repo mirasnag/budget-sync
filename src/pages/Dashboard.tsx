@@ -203,7 +203,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
-      <div className="grid-lg">
+      <div className="page">
         <CurrencyWidget rates={data.currencyRates} />
         <Assets assets={data.assets} currencyRates={data.currencyRates} />
         <Categories

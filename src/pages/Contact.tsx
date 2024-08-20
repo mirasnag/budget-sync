@@ -36,7 +36,7 @@ const Contact: React.FC = () => {
   const actionData = useActionData() as DataItem;
 
   return (
-    <div className="contact-container">
+    <div className="contact component">
       <h2>Contact Me</h2>
 
       <div className="contact-section">

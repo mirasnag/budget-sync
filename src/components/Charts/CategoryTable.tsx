@@ -13,18 +13,19 @@ const CategoryTable: React.FC<Props> = ({ categories, data, formatter }) => {
     "Name",
     ...data?.map((d) => formatDateMonthStr(d.month)),
   ];
+  const colorMode = window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
   const colors = randomColor({
-    seed: 100,
+    seed: 462,
     count: categories.length,
-    luminosity: window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "light"
-      : "dark",
+    luminosity: colorMode === "dark" ? "light" : "dark",
   });
 
   return (
     <table>
       <thead>
-        <tr>
+        <tr style={{ borderBottom: "1px solid #888" }}>
           {tableHeader.map((d, index) => (
             <th key={index}>{d}</th>
           ))}
@@ -37,7 +38,11 @@ const CategoryTable: React.FC<Props> = ({ categories, data, formatter }) => {
               <td key="-1">
                 <div
                   className="frame"
-                  style={{ background: colors[categoryIndex], color: "black" }}
+                  style={
+                    colorMode === "dark"
+                      ? { background: colors[categoryIndex], color: "#000" }
+                      : { background: colors[categoryIndex], color: "#fff" }
+                  }
                 >
                   {category.name}
                 </div>

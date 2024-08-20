@@ -103,7 +103,7 @@ const TransactionsPage = () => {
     };
 
   return (
-    <div className="grid-lg">
+    <div className="page">
       <CurrencyWidget rates={currencyRates} />
       <TransactionTable
         assets={assets}

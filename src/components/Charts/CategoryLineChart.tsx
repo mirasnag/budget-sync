@@ -25,12 +25,13 @@ const CategoryLineChart: React.FC<Props> = ({
   data,
   formatter,
 }) => {
+  const colorMode = window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
   const colors = randomColor({
-    seed: 100,
+    seed: 0,
     count: categories.length,
-    luminosity: window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "light"
-      : "dark",
+    luminosity: colorMode === "dark" ? "light" : "dark",
   });
 
   return (
@@ -43,7 +44,11 @@ const CategoryLineChart: React.FC<Props> = ({
         <XAxis dataKey="month" />
         <YAxis />
         <Tooltip
-          contentStyle={{ backgroundColor: "#333" }}
+          contentStyle={
+            colorMode === "dark"
+              ? { backgroundColor: "#333", color: "#fff" }
+              : { backgroundColor: "#ccc", color: "#000" }
+          }
           formatter={(value, ...props) => formatter(Number(value), props[2])}
         />
         <Legend />

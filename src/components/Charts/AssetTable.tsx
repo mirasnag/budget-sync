@@ -13,18 +13,19 @@ const AssetTable: React.FC<Props> = ({ assets, data, formatter }) => {
     "Name",
     ...data?.map((d) => formatDateMonthStr(d.month)),
   ];
+  const colorMode = window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
   const colors = randomColor({
     seed: 0,
     count: assets.length,
-    luminosity: window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "light"
-      : "dark",
+    luminosity: colorMode === "dark" ? "light" : "dark",
   });
 
   return (
     <table>
       <thead>
-        <tr>
+        <tr style={{ borderBottom: "1px solid #888" }}>
           {tableHeader.map((d, index) => (
             <th key={index}>{d}</th>
           ))}
@@ -37,7 +38,11 @@ const AssetTable: React.FC<Props> = ({ assets, data, formatter }) => {
               <td>
                 <div
                   className="frame"
-                  style={{ background: colors[assetIndex], color: "black" }}
+                  style={
+                    colorMode === "dark"
+                      ? { background: colors[assetIndex], color: "#000" }
+                      : { background: colors[assetIndex], color: "#fff" }
+                  }
                 >
                   {asset.name}
                 </div>

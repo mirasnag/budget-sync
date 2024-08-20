@@ -21,12 +21,13 @@ interface Props {
 }
 
 const CategoryBarChart: React.FC<Props> = ({ categories, data, formatter }) => {
+  const colorMode = window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
   const colors = randomColor({
-    seed: 100,
+    seed: 0,
     count: categories.length,
-    luminosity: window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "light"
-      : "dark",
+    luminosity: colorMode === "dark" ? "light" : "dark",
   });
 
   return (
@@ -40,7 +41,11 @@ const CategoryBarChart: React.FC<Props> = ({ categories, data, formatter }) => {
         <YAxis />
         <Tooltip
           cursor={false}
-          contentStyle={{ backgroundColor: "#333", borderColor: "#666" }}
+          contentStyle={
+            colorMode === "dark"
+              ? { backgroundColor: "#333", color: "#fff" }
+              : { backgroundColor: "#ccc", color: "#000" }
+          }
           formatter={(value, ...props) => formatter(Number(value), props[2])}
         />
         <Legend />

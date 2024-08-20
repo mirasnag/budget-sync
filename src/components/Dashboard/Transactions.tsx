@@ -188,6 +188,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
               </option>
               <option value="income">Income</option>
               <option value="expense">Expense</option>
+              <option value="transfer">Transfer</option>
             </select>
           </div>
         );
@@ -280,7 +281,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         <h2>{isRecent && "Recent"} Transactions</h2>
         <div className="btns">
           <button
-            className="btn btn-green"
+            className="btn"
             onClick={() => {
               if (assets.length === 0 && categories.length === 0) {
                 alert(
@@ -310,8 +311,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
           {!isRecent && (
             <button
-              className={showSortMenu ? "btn color-green" : "btn"}
-              onMouseEnter={() => {
+              className={showSortMenu ? "btn color-yellow" : "btn"}
+              onClick={() => {
                 setShowSortMenu(!showSortMenu);
                 setShowFilterMenu(false);
               }}
@@ -322,8 +323,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
           {!isRecent && (
             <button
-              className={showFilterMenu ? "btn color-green" : "btn"}
-              onMouseEnter={() => {
+              className={showFilterMenu ? "btn color-yellow" : "btn"}
+              onClick={() => {
                 setShowFilterMenu(!showFilterMenu);
                 setShowSortMenu(false);
               }}
@@ -333,12 +334,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           )}
 
           {showSortMenu && (
-            <div
-              className="sort-filter-container"
-              onMouseLeave={() => {
-                setShowSortMenu(false);
-              }}
-            >
+            <div className="sort-filter-container">
               <div className="sort-filter-menu">
                 <span>Sort By</span>
                 <div className="sort-filter-options">
@@ -370,12 +366,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           )}
 
           {showFilterMenu && (
-            <div
-              className="sort-filter-container"
-              onMouseLeave={() => {
-                setShowFilterMenu(false);
-              }}
-            >
+            <div className="sort-filter-container">
               <div className="sort-filter-menu">
                 <span>Filter By</span>
                 <div className="sort-filter-options">
@@ -401,7 +392,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
       <table>
         <thead>
-          <tr>
+          <tr style={{ borderBottom: "1px solid #888" }}>
             {tableHeader.map((t, index) => (
               <th key={index}>{t}</th>
             ))}
@@ -455,12 +446,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 <td>
                   {transaction.type === "expense" && (
                     <div className="transaction-details">
-                      <div className="frame color-aqua">
+                      <div className="frame color-blue">
                         <FaWallet width={15} />
                         {assetName}
                       </div>
                       <ArrowLongRightIcon width={20} />
-                      <div className="frame color-aqua">
+                      <div className="frame color-blue">
                         <FaTags width={15} />
                         {categoryName}
                       </div>
@@ -468,12 +459,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   )}
                   {transaction.type === "income" && (
                     <div className="transaction-details">
-                      <div className="frame color-aqua">
+                      <div className="frame color-blue">
                         <FaSackDollar width={20} />
                         {source}
                       </div>
                       <ArrowLongRightIcon width={20} />
-                      <div className="frame color-aqua">
+                      <div className="frame color-blue">
                         <FaWallet width={15} />
                         {assetName}
                       </div>
@@ -481,12 +472,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   )}
                   {transaction.type === "transfer" && (
                     <div className="transaction-details">
-                      <div className="frame color-aqua">
+                      <div className="frame color-blue">
                         <FaWallet width={15} />
                         {assetFromName}
                       </div>
                       <ArrowLongRightIcon width={20} />
-                      <div className="frame color-aqua">
+                      <div className="frame color-blue">
                         <FaWallet width={15} />
                         {assetName}
                       </div>
@@ -497,7 +488,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   <div className="table-btns">
                     <button
                       onClick={() => setShowEditForm(transaction.id)}
-                      className="btn"
+                      className="btn btn-yellow"
                     >
                       <PencilIcon width={20} />
                     </button>

@@ -20,12 +20,13 @@ interface Props {
 }
 
 const CategoryPieChart: React.FC<Props> = ({ categories, data, formatter }) => {
+  const colorMode = window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
   const colors = randomColor({
-    seed: 100,
+    seed: 0,
     count: categories.length,
-    luminosity: window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "light"
-      : "dark",
+    luminosity: colorMode === "dark" ? "light" : "dark",
   });
 
   return (
@@ -40,7 +41,7 @@ const CategoryPieChart: React.FC<Props> = ({ categories, data, formatter }) => {
         });
 
         return (
-          <div>
+          <div className="pie-chart">
             <h3>{formatDateMonthStr(monthData.month)}</h3>
             <ResponsiveContainer width="80%" height={300}>
               <PieChart>
@@ -61,6 +62,11 @@ const CategoryPieChart: React.FC<Props> = ({ categories, data, formatter }) => {
                 <Tooltip
                   formatter={(value, ...props) =>
                     formatter(Number(value), props[2])
+                  }
+                  contentStyle={
+                    colorMode === "dark"
+                      ? { backgroundColor: "#ccc" }
+                      : { backgroundColor: "#ccc" }
                   }
                 />
                 <Legend

@@ -186,12 +186,12 @@ const SpendingAnalysisPage: React.FC = () => {
 
   return (
     <>
-      <div className="charts grid-lg">
+      <div className="page charts">
         <CurrencyWidget rates={currencyRates} />
         <div className="asset-chart">
           <div className="header">
             <h2>Asset Chart</h2>
-            <div className="chart-menu">
+            <div className="header-menu">
               <select
                 defaultValue={assetBaseCurrency ?? ""}
                 onChange={(e) =>
@@ -272,7 +272,7 @@ const SpendingAnalysisPage: React.FC = () => {
         <div className="category-chart">
           <div className="header">
             <h2>Category Chart</h2>
-            <div className="chart-menu">
+            <div className="header-menu">
               <select
                 defaultValue={categoryBaseCurrency ?? ""}
                 onChange={(e) =>

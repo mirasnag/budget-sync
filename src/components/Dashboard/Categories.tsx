@@ -43,10 +43,10 @@ const Categories: React.FC<CategoriesProps> = ({
 
   const currencies = getAllCurrencies();
   return (
-    <div className="categories">
+    <div className="categories component">
       <div className="header">
         <h2>Categories</h2>
-        <div className="chart-menu">
+        <div className="header-menu">
           <select
             defaultValue={baseCurrency ?? ""}
             onChange={(e) =>
@@ -64,10 +64,7 @@ const Categories: React.FC<CategoriesProps> = ({
               );
             })}
           </select>
-          <button
-            className="btn btn-green"
-            onClick={() => setShowCreateForm(true)}
-          >
+          <button className="btn" onClick={() => setShowCreateForm(true)}>
             <PlusIcon width={20} />
           </button>
           <div className="period-selector">
@@ -164,7 +161,7 @@ const Categories: React.FC<CategoriesProps> = ({
 
         return (
           <div key={category.id} className="category">
-            <span className="category-name frame color-aqua">
+            <span className="category-name frame color-blue">
               {category.name}
             </span>
             <div className="category-bar-wrapper">
@@ -187,7 +184,7 @@ const Categories: React.FC<CategoriesProps> = ({
             <div className="table-btns">
               <button
                 onClick={() => setShowEditForm(category.id)}
-                className="btn"
+                className="btn btn-yellow"
               >
                 <PencilIcon width={20} />
               </button>

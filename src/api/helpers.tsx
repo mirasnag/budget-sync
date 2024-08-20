@@ -317,7 +317,6 @@ export const getAssetBalanceHistory = (
     "Ascending"
   ) as Transaction[];
   if (!transactions || transactions.length === 0) return undefined;
-
   const assets = fetchData("assets") as Asset[];
 
   const months: string[] = [];
@@ -719,7 +718,7 @@ const filterTransactions = (
         startDate.setDate(now.getDate() - dayOfWeek + 1);
         endDate.setDate(now.getDate() + (7 - dayOfWeek));
       } else if (filterValue[2] === "month") {
-        startDate.setDate(0);
+        startDate.setDate(1);
         endDate.setMonth(now.getMonth() + 1);
         endDate.setDate(0);
       } else if (filterValue[2] === "year") {
@@ -763,9 +762,9 @@ const sortTransactions = (
 
   let sortFunction: (a: Transaction, b: Transaction) => number;
   switch (sortOption) {
-    case "None":
+    case "Last Edited":
       sortFunction = (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       break;
     case "Name":
       sortFunction = (a, b) => a.name.localeCompare(b.name);
