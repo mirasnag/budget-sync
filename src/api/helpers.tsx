@@ -1,6 +1,7 @@
 // Interfaces
 import { Asset } from "../components/Dashboard/Assets";
 import { Category } from "../components/Dashboard/Categories";
+import { Goal } from "../components/Dashboard/Goals";
 import { Transaction } from "../components/Dashboard/Transactions";
 
 export interface DataItem {
@@ -125,6 +126,40 @@ export const deleteCategory = (category_id: string) => {
 
   localStorage.setItem("transactions", JSON.stringify(filteredTransactions));
   return deleteItem("categories", "id", category_id);
+};
+
+// Create Goal
+export const createGoal = (values: Goal) => {
+  const newGoal = {
+    id: values.id === "" ? crypto.randomUUID() : values.id,
+    name: values.name,
+    amount: values.amount,
+    currency: values.currency,
+  };
+
+  const goals = fetchData("goals") ?? [];
+
+  return localStorage.setItem("goals", JSON.stringify([...goals, newGoal]));
+};
+
+// Edit Goal
+export const editGoal = (goal_id: string, values: Goal) => {
+  deleteItem("goals", "id", goal_id as string);
+  createGoal({
+    id: goal_id as string,
+    name: values.name as string,
+    amount: values.amount as unknown as number,
+    currency: values.currency as string,
+  });
+};
+
+// Delete Goal
+export const deleteGoal = (goal_id: string) => {
+  const goals = fetchData("goals") as Goal[];
+  const filteredGoals = goals.filter((d) => d.id !== goal_id);
+
+  localStorage.setItem("goals", JSON.stringify(filteredGoals));
+  return deleteItem("goals", "id", goal_id);
 };
 
 // Delete User Data

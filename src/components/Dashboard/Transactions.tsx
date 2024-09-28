@@ -9,9 +9,6 @@ import {
   ArrowLongRightIcon,
   ArrowsUpDownIcon,
   FunnelIcon,
-  PencilIcon,
-  PlusIcon,
-  TrashIcon,
 } from "@heroicons/react/20/solid";
 
 // interfaces
@@ -30,6 +27,9 @@ import {
 } from "../../api/helpers";
 import { FaTags, FaWallet } from "react-icons/fa";
 import { FaSackDollar } from "react-icons/fa6";
+import AddButton from "../Buttons/AddButton";
+import EditButton from "../Buttons/EditButton";
+import DeleteButton from "../Buttons/DeleteButton";
 
 export interface Transaction {
   id: string;
@@ -280,9 +280,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       <div className="header">
         <h2>{isRecent && "Recent"} Transactions</h2>
         <div className="btns">
-          <button
-            className="btn"
-            onClick={() => {
+          <AddButton
+            handleClick={() => {
               if (assets.length === 0 && categories.length === 0) {
                 alert(
                   "No assets and categories available. Please add them first."
@@ -299,9 +298,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
               }
               setShowCreateForm(true);
             }}
-          >
-            <PlusIcon width={20} />
-          </button>
+          />
 
           {isRecent && (
             <Link to="/transactions" className="btn view-all-transactions">
@@ -486,12 +483,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 </td>
                 <td>
                   <div className="table-btns">
-                    <button
-                      onClick={() => setShowEditForm(transaction.id)}
-                      className="btn btn-yellow"
-                    >
-                      <PencilIcon width={20} />
-                    </button>
+                    <EditButton
+                      handleClick={() => setShowEditForm(transaction.id)}
+                    />
                     <Form method="post">
                       <input
                         type="hidden"
@@ -503,9 +497,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                         name="transaction_id"
                         value={transaction.id}
                       />
-                      <button type="submit" className="btn btn-red">
-                        <TrashIcon width={20} />
-                      </button>
+                      <DeleteButton />
                     </Form>
                   </div>
                 </td>

@@ -424,7 +424,8 @@ tbody tr {
 }
 
 /* Categories */
-.category {
+.category,
+.goal {
   display: flex;
   justify-content: space-evenly;
   gap: 20px;
@@ -437,24 +438,28 @@ tbody tr {
   margin-right: 10px;
 }
 
-.category-bar-wrapper {
+.category-bar-wrapper,
+.goal-bar-wrapper {
   flex: 1;
 }
 
-.category-bar-wrapper .labels {
+.category-bar-wrapper .labels,
+.goal-bar-wrapper .labels {
   display: flex;
   justify-content: space-between;
   margin-top: 5px;
 }
 
-.category-bar-back {
+.category-bar-back,
+.goal-bar-back {
   flex: 1;
   background: var(--bg-dark-button);
   border-radius: 5px;
   overflow: hidden;
 }
 
-.category-bar {
+.category-bar,
+.goal-bar {
   height: 20px;
   background: var(--yellow);
   transition: width 0.3s ease;

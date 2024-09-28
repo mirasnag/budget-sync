@@ -1,50 +1,45 @@
-// rrd imports
 import { Form } from "react-router-dom";
-
-// helper functions
 import { getAllCurrencies, getAllMatchingItems } from "../../api/helpers";
-import { Asset } from "./Assets";
+import { Goal } from "./Goals";
 
-interface AssetFormProps {
-  asset_id: string;
+interface GoalFormProps {
+  goal_id: string;
   onClose: () => void;
 }
 
-const AssetForm: React.FC<AssetFormProps> = ({ asset_id, onClose }) => {
-  const isEditForm = asset_id !== "";
-  const asset = getAllMatchingItems("assets", "id", asset_id)[0] as Asset;
+const GoalForm: React.FC<GoalFormProps> = ({ onClose, goal_id }) => {
+  const isEditForm = goal_id !== "";
+  const goal = getAllMatchingItems("goals", "id", goal_id)[0] as Goal;
   const currencies = getAllCurrencies();
 
   return (
     <div className="popup">
       <div className="popup-content">
-        <h3>{isEditForm ? "Editing Asset" : "Create New Asset"}</h3>
+        <h3>{isEditForm ? "Editing Goal" : "Create New Goal"}</h3>
         <Form method="post" onSubmit={onClose}>
           <input
             type="hidden"
             name="_action"
-            value={isEditForm ? "editAsset" : "createAsset"}
+            value={isEditForm ? "editGoal" : "createGoal"}
           />
-          {isEditForm && (
-            <input type="hidden" name="asset_id" value={asset.id} />
-          )}
+          {isEditForm && <input type="hidden" name="goal_id" value={goal.id} />}
           <div className="form-group">
-            <label htmlFor="assetName">Asset Name</label>
+            <label htmlFor="goal">Goal Name</label>
             <input
               type="text"
               name="name"
-              id="assetName"
-              defaultValue={isEditForm ? asset.name : ""}
+              id="goal"
+              defaultValue={isEditForm ? goal.name : ""}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="initBalance">Initial Balance</label>
+            <label htmlFor="amount">Goal Amount</label>
             <input
               type="number"
-              name="initBalance"
-              id="initBalance"
-              defaultValue={isEditForm ? asset.initBalance : ""}
+              name="amount"
+              id="amount"
+              defaultValue={isEditForm ? goal.amount : ""}
               required
             />
           </div>
@@ -53,7 +48,7 @@ const AssetForm: React.FC<AssetFormProps> = ({ asset_id, onClose }) => {
             <select
               name="currency"
               id="currency"
-              defaultValue={isEditForm ? asset.currency : "USD"}
+              defaultValue={isEditForm ? goal.currency : "USD"}
             >
               {currencies.map((currency) => (
                 <option key={currency} value={currency}>
@@ -74,4 +69,4 @@ const AssetForm: React.FC<AssetFormProps> = ({ asset_id, onClose }) => {
   );
 };
 
-export default AssetForm;
+export default GoalForm;

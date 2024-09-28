@@ -6,7 +6,6 @@ import {
   DataItem,
   fetchData,
   formatCurrency,
-  getAllCurrencies,
   getAssetBalanceHistory,
   getCategorySpentHistory,
   getCurrencyRates,
@@ -24,6 +23,8 @@ import AssetBarChart from "../components/Charts/AssetBarChart";
 import AssetTable from "../components/Charts/AssetTable";
 import CategoryTable from "../components/Charts/CategoryTable";
 import CurrencyWidget from "../components/CurrencyWidget";
+import PeriodSelector from "../components/Buttons/PeriodSelector";
+import CurrencySelector from "../components/Buttons/CurrencySelector";
 
 // loader
 export async function spendingAnalysisLoader(): Promise<{
@@ -64,8 +65,6 @@ const SpendingAnalysisPage: React.FC = () => {
       categoryBaseCurrency,
       currencyRates
     ) ?? [];
-
-  const currencies = getAllCurrencies();
 
   const renderAssetChart = () => {
     if (assetChartType === "table") {
@@ -192,71 +191,11 @@ const SpendingAnalysisPage: React.FC = () => {
           <div className="header">
             <h2>Asset Chart</h2>
             <div className="header-menu">
-              <select
-                defaultValue={assetBaseCurrency ?? ""}
-                onChange={(e) =>
-                  setAssetBaseCurrency(
-                    e.target.value === "" ? null : e.target.value
-                  )
-                }
-              >
-                <option key="" value="">
-                  {assetBaseCurrency ? "Revert" : "Convert"}
-                </option>
-                {currencies.map((currency) => {
-                  return (
-                    <option key={currency} value={currency}>
-                      {currency}
-                    </option>
-                  );
-                })}
-              </select>
-              <div className="period-selector">
-                <select
-                  defaultValue={assetPeriod[0]}
-                  onChange={(e) => {
-                    setAssetPeriod([
-                      e.target.value,
-                      assetPeriod[1],
-                      assetPeriod[2],
-                    ]);
-                  }}
-                >
-                  <option value="past">Past</option>
-                  <option value="this">This</option>
-                  <option value="next">Next</option>
-                </select>
-                {assetPeriod[0] !== "this" && (
-                  <input
-                    type="number"
-                    defaultValue={assetPeriod[1]}
-                    min={1}
-                    max={99}
-                    onChange={(e) => {
-                      setAssetPeriod([
-                        assetPeriod[0],
-                        e.target.value,
-                        assetPeriod[2],
-                      ]);
-                    }}
-                  />
-                )}
-                <select
-                  defaultValue={assetPeriod[2]}
-                  onChange={(e) => {
-                    setAssetPeriod([
-                      assetPeriod[0],
-                      assetPeriod[1],
-                      e.target.value,
-                    ]);
-                  }}
-                >
-                  <option value="day">Day</option>
-                  <option value="week">Week</option>
-                  <option value="month">Month</option>
-                  <option value="year">Year</option>
-                </select>
-              </div>
+              <CurrencySelector
+                baseCurrency={assetBaseCurrency}
+                setBaseCurrency={setAssetBaseCurrency}
+              />
+              <PeriodSelector period={assetPeriod} setPeriod={setAssetPeriod} />
               <select
                 defaultValue={assetChartType}
                 onChange={(e) => setAssetChartType(e.target.value)}
@@ -273,71 +212,14 @@ const SpendingAnalysisPage: React.FC = () => {
           <div className="header">
             <h2>Category Chart</h2>
             <div className="header-menu">
-              <select
-                defaultValue={categoryBaseCurrency ?? ""}
-                onChange={(e) =>
-                  setCategoryBaseCurrency(
-                    e.target.value === "" ? null : e.target.value
-                  )
-                }
-              >
-                <option key="" value="">
-                  {categoryBaseCurrency ? "Revert" : "Convert"}
-                </option>
-                {currencies.map((currency) => {
-                  return (
-                    <option key={currency} value={currency}>
-                      {currency}
-                    </option>
-                  );
-                })}
-              </select>
-              <div className="period-selector">
-                <select
-                  defaultValue={categoryPeriod[0]}
-                  onChange={(e) => {
-                    setCategoryPeriod([
-                      e.target.value,
-                      categoryPeriod[1],
-                      categoryPeriod[2],
-                    ]);
-                  }}
-                >
-                  <option value="past">Past</option>
-                  <option value="this">This</option>
-                  <option value="next">Next</option>
-                </select>
-                {categoryPeriod[0] !== "this" && (
-                  <input
-                    type="number"
-                    defaultValue={categoryPeriod[1]}
-                    min={1}
-                    max={99}
-                    onChange={(e) => {
-                      setCategoryPeriod([
-                        categoryPeriod[0],
-                        e.target.value,
-                        categoryPeriod[2],
-                      ]);
-                    }}
-                  />
-                )}
-                <select
-                  defaultValue={categoryPeriod[2]}
-                  onChange={(e) => {
-                    setCategoryPeriod([
-                      categoryPeriod[0],
-                      categoryPeriod[1],
-                      e.target.value,
-                    ]);
-                  }}
-                >
-                  <option value="day">Day</option>
-                  <option value="week">Week</option>
-                  <option value="month">Month</option>
-                  <option value="year">Year</option>
-                </select>
-              </div>
+              <CurrencySelector
+                baseCurrency={categoryBaseCurrency}
+                setBaseCurrency={setCategoryBaseCurrency}
+              />
+              <PeriodSelector
+                period={categoryPeriod}
+                setPeriod={setCategoryPeriod}
+              />
               <select
                 defaultValue={categoryChartType}
                 onChange={(e) => setCategoryChartType(e.target.value)}

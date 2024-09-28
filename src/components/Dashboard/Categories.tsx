@@ -9,11 +9,16 @@ import {
   DataItem,
   convertCurrency,
   formatCurrency,
-  getAllCurrencies,
   spentByCategory,
 } from "../../api/helpers";
-import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/20/solid";
+
+// components
 import CategoryForm from "./CategoryForm";
+import AddButton from "../Buttons/AddButton";
+import EditButton from "../Buttons/EditButton";
+import DeleteButton from "../Buttons/DeleteButton";
+import PeriodSelector from "../Buttons/PeriodSelector";
+import CurrencySelector from "../Buttons/CurrencySelector";
 
 export interface Category {
   id: string;
@@ -41,78 +46,20 @@ const Categories: React.FC<CategoriesProps> = ({
     setShowEditForm("");
   };
 
-  const currencies = getAllCurrencies();
   return (
     <div className="categories component">
       <div className="header">
         <h2>Categories</h2>
         <div className="header-menu">
-          <select
-            defaultValue={baseCurrency ?? ""}
-            onChange={(e) =>
-              setBaseCurrency(e.target.value === "" ? null : e.target.value)
-            }
-          >
-            <option key="" value="">
-              {baseCurrency ? "Revert" : "Convert"}
-            </option>
-            {currencies.map((currency) => {
-              return (
-                <option key={currency} value={currency}>
-                  {currency}
-                </option>
-              );
-            })}
-          </select>
-          <button className="btn" onClick={() => setShowCreateForm(true)}>
-            <PlusIcon width={20} />
-          </button>
-          <div className="period-selector">
-            <select
-              defaultValue={categoryPeriod[0]}
-              onChange={(e) => {
-                setCategoryPeriod([
-                  e.target.value,
-                  e.target.value === "this" ? "1" : categoryPeriod[1],
-                  categoryPeriod[2],
-                ]);
-              }}
-            >
-              <option value="past">Past</option>
-              <option value="this">This</option>
-              <option value="next">Next</option>
-            </select>
-            {categoryPeriod[0] !== "this" && (
-              <input
-                type="number"
-                defaultValue={categoryPeriod[1]}
-                min={1}
-                max={99}
-                onChange={(e) => {
-                  setCategoryPeriod([
-                    categoryPeriod[0],
-                    e.target.value,
-                    categoryPeriod[2],
-                  ]);
-                }}
-              />
-            )}
-            <select
-              defaultValue={categoryPeriod[2]}
-              onChange={(e) => {
-                setCategoryPeriod([
-                  categoryPeriod[0],
-                  categoryPeriod[1],
-                  e.target.value,
-                ]);
-              }}
-            >
-              <option value="day">Day</option>
-              <option value="week">Week</option>
-              <option value="month">Month</option>
-              <option value="year">Year</option>
-            </select>
-          </div>
+          <CurrencySelector
+            baseCurrency={baseCurrency}
+            setBaseCurrency={setBaseCurrency}
+          />
+          <AddButton handleClick={() => setShowCreateForm(true)} />
+          <PeriodSelector
+            period={categoryPeriod}
+            setPeriod={setCategoryPeriod}
+          />
         </div>
       </div>
 
@@ -182,38 +129,21 @@ const Categories: React.FC<CategoriesProps> = ({
               </div>
             </div>
             <div className="table-btns">
-              <button
-                onClick={() => setShowEditForm(category.id)}
-                className="btn btn-yellow"
-              >
-                <PencilIcon width={20} />
-              </button>
+              <EditButton handleClick={() => setShowEditForm(category.id)} />
               <Form method="post">
                 <input type="hidden" name="_action" value="deleteCategory" />
                 <input type="hidden" name="category_id" value={category.id} />
-                <button type="submit" className="btn btn-red">
-                  <TrashIcon width={20} />
-                </button>
+                <DeleteButton />
               </Form>
             </div>
           </div>
         );
       })}
 
-      {showCreateForm && (
-        <CategoryForm
-          currencies={currencies}
-          onClose={closeForm}
-          category_id=""
-        />
-      )}
+      {showCreateForm && <CategoryForm onClose={closeForm} category_id="" />}
 
       {showEditForm !== "" && (
-        <CategoryForm
-          currencies={currencies}
-          onClose={closeForm}
-          category_id={showEditForm}
-        />
+        <CategoryForm onClose={closeForm} category_id={showEditForm} />
       )}
     </div>
   );

@@ -9,12 +9,15 @@ import {
   DataItem,
   createAsset,
   createCategory,
+  // createGoal,
   createTransaction,
   deleteAsset,
   deleteCategory,
+  // deleteGoal,
   deleteItem,
   editAsset,
   editCategory,
+  // editGoal,
   fetchData,
   getCurrencyRates,
 } from "../api/helpers";
@@ -27,17 +30,20 @@ import TransactionTable, {
 import Categories, { Category } from "../components/Dashboard/Categories";
 import CurrencyWidget from "../components/CurrencyWidget";
 import Assets from "../components/Dashboard/Assets";
+// import Goals, { Goal } from "../components/Dashboard/Goals";
 
 // loader
 export async function dashboardLoader(): Promise<{
   assets: Asset[];
   transactions: Transaction[];
   categories: Category[];
+  // goals: Goal[];
   currencyRates: DataItem;
 }> {
   const assets = fetchData("assets") as Asset[];
   const transactions = fetchData("transactions") as Transaction[];
   const categories = fetchData("categories") as Category[];
+  // const goals = fetchData("goals") as Goal[];
   const currencyRates = await getCurrencyRates();
 
   return { assets, transactions, categories, currencyRates };
@@ -173,6 +179,42 @@ export const dashboardAction: ActionFunction = async ({ request }) => {
     }
   }
 
+  // if (_action === "createGoal") {
+  //   try {
+  //     createGoal({
+  //       id: "",
+  //       name: values.name as string,
+  //       amount: values.amount as unknown as number,
+  //       currency: values.currency as string,
+  //     });
+  //     return null;
+  //   } catch (e) {
+  //     console.log(e);
+  //     throw new Error("Goal is not created!");
+  //   }
+  // }
+
+  // if (_action === "editGoal") {
+  //   console.log(values);
+  //   try {
+  //     editGoal(values.goal_id as string, values as unknown as Goal);
+  //     return null;
+  //   } catch (e) {
+  //     console.log(e);
+  //     throw new Error("Goal is not updated!");
+  //   }
+  // }
+
+  // if (_action === "deleteGoal") {
+  //   try {
+  //     deleteGoal(values.goal_id as string);
+  //     return null;
+  //   } catch (e) {
+  //     console.log(e);
+  //     throw new Error("Goal is not deleted!");
+  //   }
+  // }
+
   return null;
 };
 
@@ -182,6 +224,7 @@ const Dashboard: React.FC = () => {
       assets: Asset[];
       transactions: Transaction[];
       categories: Category[];
+      // goals: Goal[];
       currencyRates: DataItem;
     };
 
@@ -189,6 +232,7 @@ const Dashboard: React.FC = () => {
     assets,
     transactions,
     categories,
+    // goals,
     currencyRates,
   });
 
@@ -197,6 +241,7 @@ const Dashboard: React.FC = () => {
       assets,
       transactions,
       categories,
+      // goals,
       currencyRates,
     });
   }, [assets, transactions, categories, currencyRates]);
@@ -210,6 +255,7 @@ const Dashboard: React.FC = () => {
           categories={data.categories}
           currencyRates={data.currencyRates}
         />
+        {/* <Goals goals={data.goals} /> */}
         <TransactionTable
           transactions={data.transactions}
           assets={data.assets}

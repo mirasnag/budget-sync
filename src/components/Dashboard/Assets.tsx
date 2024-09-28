@@ -4,21 +4,22 @@ import { useState } from "react";
 // rrd imports
 import { Form } from "react-router-dom";
 
-// library imports
-import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/20/solid";
-
 // helper functions
 import {
   DataItem,
   convertCurrency,
   formatCurrency,
-  getAllCurrencies,
   getAssetDetails,
   getBalanceOfAsset,
 } from "../../api/helpers";
 
 // components
 import AssetForm from "./AssetForm";
+import AddButton from "../Buttons/AddButton";
+import EditButton from "../Buttons/EditButton";
+import DeleteButton from "../Buttons/DeleteButton";
+import PeriodSelector from "../Buttons/PeriodSelector";
+import CurrencySelector from "../Buttons/CurrencySelector";
 
 export interface Asset {
   id: string;
@@ -46,82 +47,21 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
   };
 
   const tableHeader: string[] = ["Name", "Balance", "Income", "Expenses", ""];
-  const currencies = getAllCurrencies();
-  let totalBalance = 0,
-    totalIncome = 0,
-    totalExpense = 0;
+  let totalBalance = 0;
+  let totalIncome = 0;
+  let totalExpense = 0;
 
   return (
     <div className="assets component">
       <div className="header">
         <h2>Assets</h2>
         <div className="header-menu">
-          <select
-            defaultValue={baseCurrency ?? ""}
-            onChange={(e) =>
-              setBaseCurrency(e.target.value === "" ? null : e.target.value)
-            }
-          >
-            <option key={""} value="">
-              {baseCurrency ? "Revert" : "Convert"}
-            </option>
-            {currencies.map((currency) => {
-              return (
-                <option key={currency} value={currency}>
-                  {currency}
-                </option>
-              );
-            })}
-          </select>
-          <button className="btn" onClick={() => setShowCreateForm(true)}>
-            <PlusIcon width={20} />
-          </button>
-          <div className="period-selector">
-            <select
-              defaultValue={assetPeriod[0]}
-              onChange={(e) => {
-                setAssetPeriod([
-                  e.target.value,
-                  assetPeriod[1],
-                  assetPeriod[2],
-                ]);
-              }}
-            >
-              <option value="past">Past</option>
-              <option value="this">This</option>
-              <option value="next">Next</option>
-            </select>
-            {assetPeriod[0] !== "this" && (
-              <input
-                type="number"
-                defaultValue={assetPeriod[1]}
-                min={1}
-                max={99}
-                onChange={(e) => {
-                  setAssetPeriod([
-                    assetPeriod[0],
-                    e.target.value,
-                    assetPeriod[2],
-                  ]);
-                }}
-              />
-            )}
-            <select
-              defaultValue={assetPeriod[2]}
-              onChange={(e) => {
-                setAssetPeriod([
-                  assetPeriod[0],
-                  assetPeriod[1],
-                  e.target.value,
-                ]);
-              }}
-            >
-              <option value="day">Day</option>
-              <option value="week">Week</option>
-              <option value="month">Month</option>
-              <option value="year">Year</option>
-            </select>
-          </div>
+          <CurrencySelector
+            baseCurrency={baseCurrency}
+            setBaseCurrency={setBaseCurrency}
+          />
+          <AddButton handleClick={() => setShowCreateForm(true)} />
+          <PeriodSelector period={assetPeriod} setPeriod={setAssetPeriod} />
         </div>
       </div>
 
@@ -179,18 +119,11 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
                 </td>
                 <td>
                   <div className="table-btns">
-                    <button
-                      onClick={() => setShowEditForm(asset.id)}
-                      className="btn btn-yellow"
-                    >
-                      <PencilIcon width={20} />
-                    </button>
+                    <EditButton handleClick={() => setShowEditForm(asset.id)} />
                     <Form method="post">
                       <input type="hidden" name="_action" value="deleteAsset" />
                       <input type="hidden" name="asset_id" value={asset.id} />
-                      <button type="submit" className="btn btn-red">
-                        <TrashIcon width={20} />
-                      </button>
+                      <DeleteButton />
                     </Form>
                   </div>
                 </td>
@@ -215,16 +148,10 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
         </tbody>
       </table>
 
-      {showCreateForm && (
-        <AssetForm currencies={currencies} onClose={closeForm} asset_id="" />
-      )}
+      {showCreateForm && <AssetForm onClose={closeForm} asset_id="" />}
 
       {showEditForm !== "" && (
-        <AssetForm
-          currencies={currencies}
-          onClose={closeForm}
-          asset_id={showEditForm}
-        />
+        <AssetForm onClose={closeForm} asset_id={showEditForm} />
       )}
     </div>
   );

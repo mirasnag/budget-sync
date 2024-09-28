@@ -2,19 +2,17 @@
 import { Form } from "react-router-dom";
 
 // helper functions
-import { getAllMatchingItems } from "../../api/helpers";
+import { getAllCurrencies, getAllMatchingItems } from "../../api/helpers";
 
 // interfaces
 import { Category } from "./Categories";
 
 interface CategoryFormProps {
-  currencies: string[];
   category_id: string;
   onClose: () => void;
 }
 
 const CategoryForm: React.FC<CategoryFormProps> = ({
-  currencies,
   category_id,
   onClose,
 }) => {
@@ -24,6 +22,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
     "id",
     category_id
   )[0] as Category;
+  const currencies = getAllCurrencies();
 
   return (
     <div className="popup">
