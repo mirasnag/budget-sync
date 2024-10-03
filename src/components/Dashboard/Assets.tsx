@@ -18,7 +18,7 @@ import AssetForm from "./AssetForm";
 import AddButton from "../Buttons/AddButton";
 import EditButton from "../Buttons/EditButton";
 import DeleteButton from "../Buttons/DeleteButton";
-import PeriodSelector from "../Buttons/PeriodSelector";
+import PeriodSelector, { Period } from "../Buttons/PeriodSelector";
 import CurrencySelector from "../Buttons/CurrencySelector";
 
 export interface Asset {
@@ -38,7 +38,12 @@ export interface AssetsProps {
 const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState("");
-  const [assetPeriod, setAssetPeriod] = useState(["this", "1", "month"]);
+  const [assetPeriod, setAssetPeriod] = useState<Period>({
+    type: "relative",
+    option: "This",
+    value: null,
+    unit: "Month",
+  });
   const [baseCurrency, setBaseCurrency] = useState<string | null>(null);
 
   const closeForm = () => {

@@ -1,4 +1,5 @@
 // Interfaces
+import { Period } from "../components/Buttons/PeriodSelector";
 import { Asset } from "../components/Dashboard/Assets";
 import { Category } from "../components/Dashboard/Categories";
 import { Goal } from "../components/Dashboard/Goals";
@@ -180,13 +181,14 @@ export const deleteItem = (table: string, key: string, value: string) => {
 export const spentByCategory = (
   category: Category,
   currencyRates: DataItem,
-  period: string[]
+  period: Period
 ) => {
   const transactions = fetchData("transactions") as Transaction[];
-  const filteredTransactions =
-    period[0] === "None"
-      ? transactions
-      : filterTransactions(transactions, "Date", period);
+  const filteredTransactions = filterTransactions(
+    transactions,
+    "Date",
+    convertPeriodToString(period)
+  );
 
   const total = filteredTransactions.reduce((spent: number, transaction) => {
     if (transaction.category_id === category.id) {
@@ -203,14 +205,14 @@ export const spentByCategory = (
 };
 
 export const getCategorySpentHistory = (
-  period: string[],
+  period: Period,
   baseCurrency: string | null,
   rates: DataItem
 ) => {
   const transactions = sortFilterTransactions(
     fetchData("transactions"),
     "Date",
-    period,
+    convertPeriodToString(period),
     "Date",
     "Ascending"
   ) as Transaction[];
@@ -298,11 +300,11 @@ export const getBalanceOfAsset = (asset: Asset) => {
   return balance;
 };
 
-export const getAssetDetails = (asset: Asset, period: string[]) => {
+export const getAssetDetails = (asset: Asset, period: Period) => {
   const transactions = filterTransactions(
     fetchData("transactions"),
     "Date",
-    period
+    convertPeriodToString(period)
   );
   let income = 0;
   let expense = 0;
@@ -340,14 +342,14 @@ interface balanceHistoryItem {
 }
 
 export const getAssetBalanceHistory = (
-  period: string[],
+  period: Period,
   baseCurrency: string | null,
   rates: DataItem
 ) => {
   const transactions = sortFilterTransactions(
     fetchData("transactions"),
     "Date",
-    period,
+    convertPeriodToString(period),
     "Date",
     "Ascending"
   ) as Transaction[];
@@ -698,6 +700,32 @@ const adjustDate = (date: Date, unit: string, adjustment: number) => {
   }
 };
 
+const convertPeriodToString = (period: Period): string[] => {
+  if (period.type === "absolute") return [period.start, period.end];
+
+  const now = new Date();
+  let startDate = new Date();
+  let endDate = new Date();
+  if (period.option === "Past") {
+    adjustDate(startDate, period.unit, -Number(period.value ?? 1));
+  } else if (period.option === "Next") {
+    adjustDate(startDate, period.unit, Number(period.value ?? 1));
+  } else if (period.unit === "Year") {
+    startDate.setMonth(0, 1);
+    endDate.setMonth(11, 31);
+  } else if (period.unit === "Month") {
+    startDate.setDate(1);
+    endDate.setMonth(now.getMonth() + 1);
+    endDate.setDate(0);
+  } else if (period.unit === "Week") {
+    const dayOfWeek = now.getDay();
+    startDate.setDate(now.getDate() - dayOfWeek + 1);
+    endDate.setDate(now.getDate() + (7 - dayOfWeek));
+  }
+
+  return [formatDateToInputValue(startDate), formatDateToInputValue(endDate)];
+};
+
 const filterTransactions = (
   transactions: Transaction[],
   filterOption: string,
@@ -740,26 +768,9 @@ const filterTransactions = (
         filterFunction = () => true;
         break;
       }
-      const now = new Date();
-      let startDate = new Date();
-      let endDate = new Date();
 
-      if (filterValue[0] === "past") {
-        adjustDate(startDate, filterValue[2], -filterValue[1]);
-      } else if (filterValue[0] === "next") {
-        adjustDate(endDate, filterValue[2], +filterValue[1]);
-      } else if (filterValue[2] === "week") {
-        const dayOfWeek = now.getDay();
-        startDate.setDate(now.getDate() - dayOfWeek + 1);
-        endDate.setDate(now.getDate() + (7 - dayOfWeek));
-      } else if (filterValue[2] === "month") {
-        startDate.setDate(1);
-        endDate.setMonth(now.getMonth() + 1);
-        endDate.setDate(0);
-      } else if (filterValue[2] === "year") {
-        startDate.setMonth(0, 1);
-        endDate.setMonth(11, 31);
-      }
+      let startDate = new Date(filterValue[0]);
+      let endDate = new Date(filterValue[1]);
 
       filterFunction = (transaction) => {
         return (

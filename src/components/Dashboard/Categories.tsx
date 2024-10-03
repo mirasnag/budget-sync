@@ -17,7 +17,7 @@ import CategoryForm from "./CategoryForm";
 import AddButton from "../Buttons/AddButton";
 import EditButton from "../Buttons/EditButton";
 import DeleteButton from "../Buttons/DeleteButton";
-import PeriodSelector from "../Buttons/PeriodSelector";
+import PeriodSelector, { Period } from "../Buttons/PeriodSelector";
 import CurrencySelector from "../Buttons/CurrencySelector";
 
 export interface Category {
@@ -38,13 +38,39 @@ const Categories: React.FC<CategoriesProps> = ({
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState("");
-  const [categoryPeriod, setCategoryPeriod] = useState(["this", "1", "month"]);
+  const [categoryPeriod, setCategoryPeriod] = useState<Period>({
+    type: "relative",
+    option: "This",
+    value: null,
+    unit: "Month",
+  });
   const [baseCurrency, setBaseCurrency] = useState<string | null>(null);
 
   const closeForm = () => {
     setShowCreateForm(false);
     setShowEditForm("");
   };
+
+  let periodMonths;
+
+  if (categoryPeriod.type === "absolute") {
+    const startDate = new Date(categoryPeriod.start);
+    const endDate = new Date(categoryPeriod.end);
+    periodMonths =
+      (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+      (endDate.getMonth() - startDate.getMonth());
+  } else {
+    switch (categoryPeriod.unit) {
+      case "Year":
+        periodMonths = 12 * Number(categoryPeriod.value);
+        break;
+      case "Month":
+        periodMonths = Number(categoryPeriod.value ?? 1);
+        break;
+      default:
+        periodMonths = 1;
+    }
+  }
 
   return (
     <div className="categories component">
@@ -64,27 +90,7 @@ const Categories: React.FC<CategoriesProps> = ({
       </div>
 
       {categories.map((category) => {
-        let periodBudgeted;
-        switch (categoryPeriod[2]) {
-          case "year":
-            periodBudgeted =
-              category.totalBudgeted * 12 * Number(categoryPeriod[1]);
-            break;
-          case "month":
-            periodBudgeted = category.totalBudgeted * Number(categoryPeriod[1]);
-            break;
-          case "week":
-            periodBudgeted =
-              category.totalBudgeted * (7 / 30) * Number(categoryPeriod[1]);
-            break;
-          case "day":
-            periodBudgeted =
-              category.totalBudgeted * (1 / 30) * Number(categoryPeriod[1]);
-            break;
-          default:
-            periodBudgeted = category.totalBudgeted;
-        }
-
+        const periodBudgeted = category.totalBudgeted * periodMonths;
         const total = baseCurrency
           ? convertCurrency(
               currencyRates,
@@ -93,7 +99,6 @@ const Categories: React.FC<CategoriesProps> = ({
               periodBudgeted
             )
           : periodBudgeted;
-
         const spent = baseCurrency
           ? convertCurrency(
               currencyRates,

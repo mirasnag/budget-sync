@@ -490,14 +490,95 @@ tbody tr {
   width: 100px;
 }
 
+/* Period Selector */
+
 .period-selector {
+  position: relative;
+  text-align: center;
+  padding: 0;
+}
+
+.period-selector:hover {
+  background-color: var(--bg-dark-button);
+}
+
+.period-selector .period-text {
+  padding: 12px 20px 8px 20px;
+}
+
+.period-selector .editor {
   display: flex;
+  flex-direction: column;
+  gap: 5px;
+  position: absolute;
+  top: 50px;
+  right: 0px;
+  width: 300px;
+  padding: 5px 20px;
+  background-color: var(--bg-light-button);
+  border: 0.5px solid var(--border);
+  border-radius: 5px;
+}
+
+.period-selector .editor:hover {
+  cursor: default;
+}
+
+.period-selector .editor .date-type-selector {
+  display: flex;
+  justify-content: center;
+  border: 0.5px solid var(--border);
+  border-radius: 5px;
+  width: 100%;
+}
+
+.period-selector .editor .date-type-selector div {
+  width: 100%;
+}
+
+.period-selector .editor .date-type-selector .active {
+  background-color: var(--blue);
+}
+
+.period-selector .editor .date-type-selector div span {
+  padding: 5px;
+}
+
+.period-selector .editor-absolute {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.period-selector .editor-relative {
+  display: flex;
+  justify-content: left;
   gap: 5px;
 }
 
-.period-selector input {
+.period-selector .editor-relative input {
+  width: 15px;
+  padding: 5px;
   border-radius: 5px;
-  text-align: center;
+  outline: none;
+}
+
+.period-selector .editor-relative select {
+  outline: none;
+  padding: 5px;
+}
+
+.date-picker {
+  border: 0.5px solid var(--border);
+  border-radius: 5px;
+  margin: 5px;
+  padding: 5px;
+}
+
+.date-picker input {
+  border: none;
+  text-decoration: none;
+  outline: none;
 }
 
 .table-btns {

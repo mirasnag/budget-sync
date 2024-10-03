@@ -23,7 +23,7 @@ import AssetBarChart from "../components/Charts/AssetBarChart";
 import AssetTable from "../components/Charts/AssetTable";
 import CategoryTable from "../components/Charts/CategoryTable";
 import CurrencyWidget from "../components/CurrencyWidget";
-import PeriodSelector from "../components/Buttons/PeriodSelector";
+import PeriodSelector, { Period } from "../components/Buttons/PeriodSelector";
 import CurrencySelector from "../components/Buttons/CurrencySelector";
 
 // loader
@@ -47,7 +47,12 @@ const SpendingAnalysisPage: React.FC = () => {
   };
 
   const [assetChartType, setAssetChartType] = useState("table");
-  const [assetPeriod, setAssetPeriod] = useState(["this", "1", "month"]);
+  const [assetPeriod, setAssetPeriod] = useState<Period>({
+    type: "relative",
+    option: "This",
+    value: null,
+    unit: "Month",
+  });
   const [assetBaseCurrency, setAssetBaseCurrency] = useState<string | null>(
     null
   );
@@ -55,7 +60,12 @@ const SpendingAnalysisPage: React.FC = () => {
     getAssetBalanceHistory(assetPeriod, assetBaseCurrency, currencyRates) ?? [];
 
   const [categoryChartType, setCategoryChartType] = useState("table");
-  const [categoryPeriod, setCategoryPeriod] = useState(["this", "1", "month"]);
+  const [categoryPeriod, setCategoryPeriod] = useState<Period>({
+    type: "relative",
+    option: "This",
+    value: null,
+    unit: "Month",
+  });
   const [categoryBaseCurrency, setCategoryBaseCurrency] = useState<
     string | null
   >(null);
