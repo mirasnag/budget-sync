@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 
 // rrd imports
-import { Form, Link } from "react-router-dom";
+import { Form } from "react-router-dom";
 
 // library imports
 import {
@@ -106,13 +106,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     "Type",
   ];
   const processedTransactions = isRecent
-    ? sortFilterTransactions(
-        transactions,
-        "Date",
-        ["past", "99", "year"],
-        "Date",
-        "Descending"
-      ).slice(0, 5)
+    ? transactions
     : sortFilterTransactions(
         transactions,
         filterOption,
@@ -299,12 +293,6 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
               setShowCreateForm(true);
             }}
           />
-
-          {isRecent && (
-            <Link to="/transactions" className="btn view-all-transactions">
-              <span>View All</span>
-            </Link>
-          )}
 
           {!isRecent && (
             <button

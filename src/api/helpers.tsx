@@ -57,7 +57,7 @@ export const editAsset = (asset_id: string, values: Asset) => {
 export const deleteAsset = (asset_id: string) => {
   const transactions = fetchData("transactions") as Transaction[];
   const filteredTransactions = transactions.filter(
-    (d) => d.asset_id !== asset_id
+    (d) => d.asset_id !== asset_id && d.asset_from_id !== asset_id
   );
 
   localStorage.setItem("transactions", JSON.stringify(filteredTransactions));
