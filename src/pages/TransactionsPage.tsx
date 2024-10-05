@@ -1,14 +1,8 @@
 // rrd imports
-import { ActionFunction, useLoaderData } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 
 // helper functions
-import {
-  DataItem,
-  createTransaction,
-  deleteItem,
-  fetchData,
-  getCurrencyRates,
-} from "../api/helpers";
+import { DataItem, fetchData, getCurrencyRates } from "../api/helpers";
 
 // interfaces
 import { Asset } from "../components/Dashboard/Assets";
@@ -32,66 +26,6 @@ export async function transactionsPageLoader(): Promise<{
 
   return { assets, transactions, categories, currencyRates };
 }
-
-// action
-export const transactionsPageAction: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const { _action, ...values } = Object.fromEntries(formData);
-  if (_action === "createTransaction") {
-    try {
-      createTransaction({
-        id: "",
-        name: values.name as string,
-        asset_id: values.asset_id as string,
-        category_id: values.category_id as string,
-        source: values.source as string,
-        asset_from_id: values.asset_from_id as string,
-        amount: values.amount as unknown as number,
-        currency: values.currency as string,
-        date: new Date(values.date as string) as Date,
-        createdAt: Date.now() as unknown as Date,
-        type: values.type as string,
-      });
-      return null;
-    } catch (e) {
-      console.log(e);
-      throw new Error("Transaction is not created!");
-    }
-  }
-
-  if (_action === "editTransaction") {
-    try {
-      deleteItem("transactions", "id", values.transaction_id as string);
-      createTransaction({
-        id: values.transaction_id as string,
-        name: values.name as string,
-        asset_id: values.asset_id as string,
-        category_id: values.category_id as string,
-        source: values.source as string,
-        asset_from_id: values.asset_from_id as string,
-        amount: values.amount as unknown as number,
-        currency: values.currency as string,
-        date: new Date(values.date as string) as Date,
-        createdAt: Date.now() as unknown as Date,
-        type: values.type as string,
-      });
-      return null;
-    } catch (e) {
-      console.log(e);
-      throw new Error("Transaction is not updated!");
-    }
-  }
-
-  if (_action === "deleteTransaction") {
-    try {
-      deleteItem("transactions", "id", values.transaction_id as string);
-      return null;
-    } catch (e) {
-      console.log(e);
-      throw new Error("Transaction is not deleted!");
-    }
-  }
-};
 
 const TransactionsPage = () => {
   const { assets, transactions, categories, currencyRates } =

@@ -33,7 +33,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   const [transactionType, setTransactionType] = useState<string>(
     isEditForm ? transaction.type : "expense"
   );
-  console.log(transaction);
+
   return (
     <div className="popup">
       <div className="popup-content">

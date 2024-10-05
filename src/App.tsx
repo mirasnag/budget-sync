@@ -5,9 +5,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./components/Layout";
 
 // pages
-import Dashboard, { dashboardAction, dashboardLoader } from "./pages/Dashboard";
+import Dashboard, { dashboardLoader } from "./pages/Dashboard";
 import TransactionsPage, {
-  transactionsPageAction,
   transactionsPageLoader,
 } from "./pages/TransactionsPage";
 import SpendingAnalysisPage, {
@@ -15,6 +14,9 @@ import SpendingAnalysisPage, {
 } from "./pages/SpendingAnalysisPage";
 import ErrorPage from "./pages/Error";
 import Contact, { contactAction } from "./pages/Contact";
+
+// helper functions
+import { actionHandler } from "./api/helpers";
 
 const router = createBrowserRouter([
   {
@@ -26,14 +28,14 @@ const router = createBrowserRouter([
         path: "/",
         element: <Dashboard />,
         loader: dashboardLoader,
-        action: dashboardAction,
+        action: actionHandler,
         errorElement: <ErrorPage />,
       },
       {
         path: "/transactions",
         element: <TransactionsPage />,
         loader: transactionsPageLoader,
-        action: transactionsPageAction,
+        action: actionHandler,
         errorElement: <ErrorPage />,
       },
       {

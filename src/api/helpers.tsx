@@ -1,4 +1,5 @@
 // Interfaces
+import { ActionFunction } from "react-router-dom";
 import { Period } from "../components/Buttons/PeriodSelector";
 import { Asset } from "../components/Dashboard/Assets";
 import { Category } from "../components/Dashboard/Categories";
@@ -9,10 +10,165 @@ export interface DataItem {
   [key: string]: any;
 }
 
-interface CachedRates {
-  rates: { [key: string]: any };
-  timestamp: number;
-}
+/* -------------- Data Management -------------- */
+
+export const actionHandler: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
+  const { _action, ...values } = Object.fromEntries(formData);
+
+  if (_action === "createAsset") {
+    try {
+      createAsset({
+        id: "",
+        name: values.name as string,
+        initBalance: values.initBalance as unknown as number,
+        currency: values.currency as string,
+      });
+      return null;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Asset is not created!");
+    }
+  }
+
+  if (_action === "editAsset") {
+    try {
+      editAsset(values.asset_id as string, values as unknown as Asset);
+      return null;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Transaction is not updated!");
+    }
+  }
+
+  if (_action === "deleteAsset") {
+    try {
+      deleteAsset(values.asset_id as string);
+      return null;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Transaction is not deleted!");
+    }
+  }
+
+  if (_action === "createTransaction") {
+    try {
+      createTransaction({
+        id: "",
+        name: values.name as string,
+        asset_id: values.asset_id as string,
+        category_id: values.category_id as string,
+        source: values.source as string,
+        asset_from_id: values.asset_from_id as string,
+        amount: values.amount as unknown as number,
+        currency: values.currency as string,
+        date: new Date(values.date as string) as Date,
+        createdAt: Date.now() as unknown as Date,
+        type: values.type as string,
+      });
+      return null;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Transaction is not created!");
+    }
+  }
+
+  if (_action === "editTransaction") {
+    try {
+      editTransaction(
+        values.transaction_id as string,
+        values as unknown as Transaction
+      );
+      return null;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Transaction is not updated!");
+    }
+  }
+
+  if (_action === "deleteTransaction") {
+    try {
+      deleteTransaction(values.transaction_id as string);
+      return null;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Transaction is not deleted!");
+    }
+  }
+
+  if (_action === "createCategory") {
+    try {
+      createCategory({
+        id: "",
+        name: values.name as string,
+        totalBudgeted: values.totalBudgeted as unknown as number,
+        currency: values.currency as string,
+      });
+      return null;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Category is not created!");
+    }
+  }
+
+  if (_action === "editCategory") {
+    try {
+      editCategory(values.category_id as string, values as unknown as Category);
+      return null;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Category is not updated!");
+    }
+  }
+
+  if (_action === "deleteCategory") {
+    try {
+      deleteCategory(values.category_id as string);
+      return null;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Category is not deleted!");
+    }
+  }
+
+  // if (_action === "createGoal") {
+  //   try {
+  //     createGoal({
+  //       id: "",
+  //       name: values.name as string,
+  //       amount: values.amount as unknown as number,
+  //       currency: values.currency as string,
+  //     });
+  //     return null;
+  //   } catch (e) {
+  //     console.log(e);
+  //     throw new Error("Goal is not created!");
+  //   }
+  // }
+
+  // if (_action === "editGoal") {
+  //   console.log(values);
+  //   try {
+  //     editGoal(values.goal_id as string, values as unknown as Goal);
+  //     return null;
+  //   } catch (e) {
+  //     console.log(e);
+  //     throw new Error("Goal is not updated!");
+  //   }
+  // }
+
+  // if (_action === "deleteGoal") {
+  //   try {
+  //     deleteGoal(values.goal_id as string);
+  //     return null;
+  //   } catch (e) {
+  //     console.log(e);
+  //     throw new Error("Goal is not deleted!");
+  //   }
+  // }
+
+  return null;
+};
 
 // Local storage
 export const fetchData = (key: string) => {
@@ -20,7 +176,25 @@ export const fetchData = (key: string) => {
   return data ? JSON.parse(data) : [];
 };
 
-// Create Asset
+// Delete Data Item
+export const deleteItem = (table: string, key: string, value: string) => {
+  const data = fetchData(table) as DataItem[];
+  const newData = data.filter((d) => d[key] !== value);
+  return localStorage.setItem(table, JSON.stringify(newData));
+};
+
+// Get matching items
+export const getAllMatchingItems = (
+  table: string,
+  key: string,
+  value: string
+) => {
+  const data = fetchData(table);
+  const filteredData = data.filter((d: DataItem) => d[key] === value);
+  return filteredData;
+};
+
+// Asset
 export const createAsset = (values: Asset) => {
   const newAsset = {
     id: values.id === "" ? crypto.randomUUID() : values.id,
@@ -32,7 +206,6 @@ export const createAsset = (values: Asset) => {
   return localStorage.setItem("assets", JSON.stringify([...assets, newAsset]));
 };
 
-// Edit Asset
 export const editAsset = (asset_id: string, values: Asset) => {
   const transactions = fetchData("transactions") as Transaction[];
 
@@ -53,7 +226,6 @@ export const editAsset = (asset_id: string, values: Asset) => {
   localStorage.setItem("transactions", JSON.stringify(newTransactions));
 };
 
-// Delete Asset
 export const deleteAsset = (asset_id: string) => {
   const transactions = fetchData("transactions") as Transaction[];
   const filteredTransactions = transactions.filter(
@@ -64,7 +236,7 @@ export const deleteAsset = (asset_id: string) => {
   return deleteItem("assets", "id", asset_id);
 };
 
-// Create Transaction
+// Transaction
 export const createTransaction = (values: Transaction) => {
   const newTransaction = {
     id: values.id === "" ? crypto.randomUUID() : values.id,
@@ -90,7 +262,31 @@ export const createTransaction = (values: Transaction) => {
   );
 };
 
-// Create Category
+export const editTransaction = (
+  transaction_id: string,
+  values: Transaction
+) => {
+  deleteItem("transactions", "id", transaction_id as string);
+  createTransaction({
+    id: transaction_id as string,
+    name: values.name as string,
+    asset_id: values.asset_id as string,
+    category_id: values.category_id as string,
+    source: values.source as string,
+    asset_from_id: values.asset_from_id as string,
+    amount: values.amount as unknown as number,
+    currency: values.currency as string,
+    date: new Date(values.date) as Date,
+    createdAt: Date.now() as unknown as Date,
+    type: values.type as string,
+  });
+};
+
+export const deleteTransaction = (transaction_id: string) => {
+  return deleteItem("transactions", "id", transaction_id as string);
+};
+
+// Category
 export const createCategory = (values: Category) => {
   const newCategory = {
     id: values.id === "" ? crypto.randomUUID() : values.id,
@@ -107,7 +303,6 @@ export const createCategory = (values: Category) => {
   );
 };
 
-// Edit Category
 export const editCategory = (category_id: string, values: Category) => {
   deleteItem("categories", "id", category_id as string);
   createCategory({
@@ -118,7 +313,6 @@ export const editCategory = (category_id: string, values: Category) => {
   });
 };
 
-// Delete Category
 export const deleteCategory = (category_id: string) => {
   const transactions = fetchData("transactions") as Transaction[];
   const filteredTransactions = transactions.filter(
@@ -129,7 +323,7 @@ export const deleteCategory = (category_id: string) => {
   return deleteItem("categories", "id", category_id);
 };
 
-// Create Goal
+// Goal
 export const createGoal = (values: Goal) => {
   const newGoal = {
     id: values.id === "" ? crypto.randomUUID() : values.id,
@@ -143,7 +337,6 @@ export const createGoal = (values: Goal) => {
   return localStorage.setItem("goals", JSON.stringify([...goals, newGoal]));
 };
 
-// Edit Goal
 export const editGoal = (goal_id: string, values: Goal) => {
   deleteItem("goals", "id", goal_id as string);
   createGoal({
@@ -154,7 +347,6 @@ export const editGoal = (goal_id: string, values: Goal) => {
   });
 };
 
-// Delete Goal
 export const deleteGoal = (goal_id: string) => {
   const goals = fetchData("goals") as Goal[];
   const filteredGoals = goals.filter((d) => d.id !== goal_id);
@@ -170,12 +362,7 @@ export const deleteUserData = () => {
   localStorage.removeItem("categories");
 };
 
-// Delete Data Item
-export const deleteItem = (table: string, key: string, value: string) => {
-  const data = fetchData(table) as DataItem[];
-  const newData = data.filter((d) => d[key] !== value);
-  return localStorage.setItem(table, JSON.stringify(newData));
-};
+/* -------------- Asset and Category -------------- */
 
 // Calculate Spent By Category
 export const spentByCategory = (
@@ -431,16 +618,195 @@ export const getAssetBalanceHistory = (
   return balanceHistory;
 };
 
-// Get matching item
-export const getAllMatchingItems = (
-  table: string,
-  key: string,
-  value: string
-) => {
-  const data = fetchData(table);
-  const filteredData = data.filter((d: DataItem) => d[key] === value);
-  return filteredData;
+const adjustDate = (date: Date, unit: string, adjustment: number) => {
+  if (unit === "day") {
+    date.setDate(date.getDate() + adjustment);
+  } else if (unit === "week") {
+    date.setDate(date.getDate() + adjustment * 7);
+  } else if (unit === "month") {
+    date.setMonth(date.getMonth() + adjustment);
+  } else if (unit === "year") {
+    date.setFullYear(date.getFullYear() + adjustment);
+  }
 };
+
+const convertPeriodToString = (period: Period): string[] => {
+  if (period.type === "absolute") return [period.start, period.end];
+
+  const now = new Date();
+  let startDate = new Date();
+  let endDate = new Date();
+  if (period.option === "Past") {
+    adjustDate(startDate, period.unit, -Number(period.value ?? 1));
+  } else if (period.option === "Next") {
+    adjustDate(startDate, period.unit, Number(period.value ?? 1));
+  } else if (period.unit === "Year") {
+    startDate.setMonth(0, 1);
+    endDate.setMonth(11, 31);
+  } else if (period.unit === "Month") {
+    startDate.setDate(1);
+    endDate.setMonth(now.getMonth() + 1);
+    endDate.setDate(0);
+  } else if (period.unit === "Week") {
+    const dayOfWeek = now.getDay();
+    startDate.setDate(now.getDate() - dayOfWeek + 1);
+    endDate.setDate(now.getDate() + (7 - dayOfWeek));
+  }
+
+  return [formatDateToInputValue(startDate), formatDateToInputValue(endDate)];
+};
+
+/* -------------- Transactions -------------- */
+
+// Sort-Filter Transactions
+
+const filterTransactions = (
+  transactions: Transaction[],
+  filterOption: string,
+  filterValue: string[]
+) => {
+  if (filterValue.length === 1 && filterValue[0] === "") return transactions;
+  if (filterOption === "None") return transactions;
+
+  let filterFunction: (transaction: Transaction) => boolean;
+
+  switch (filterOption) {
+    case "Name":
+      filterFunction = (transaction) =>
+        transaction.name.toLowerCase().includes(filterValue[0].toLowerCase());
+      break;
+
+    case "Asset":
+      filterFunction = (transaction) => {
+        return (
+          transaction.asset_id === filterValue[0] ||
+          transaction.asset_from_id === filterValue[0]
+        );
+      };
+      break;
+
+    case "Category":
+      filterFunction = (transaction) => {
+        return transaction.category_id === filterValue[0];
+      };
+      break;
+
+    case "Type":
+      filterFunction = (transaction) => {
+        return transaction.type === filterValue[0];
+      };
+      break;
+
+    case "Date":
+      if (filterValue[0] === "allTime") {
+        filterFunction = () => true;
+        break;
+      }
+
+      let startDate = new Date(filterValue[0]);
+      let endDate = new Date(filterValue[1]);
+
+      filterFunction = (transaction) => {
+        return (
+          new Date(transaction.date) >= startDate &&
+          new Date(transaction.date) <= endDate
+        );
+      };
+      break;
+
+    case "Amount":
+      filterFunction = (transaction) => {
+        const minAmount = filterValue[0] === "" ? 0 : Number(filterValue[0]);
+        const maxAmount =
+          filterValue[1] === "" ? Infinity : Number(filterValue[1]);
+        return (
+          transaction.amount >= minAmount && transaction.amount <= maxAmount
+        );
+      };
+      break;
+
+    default:
+      filterFunction = () => true;
+      break;
+  }
+
+  return transactions.filter(filterFunction);
+};
+
+const sortTransactions = (
+  transactions: Transaction[],
+  sortOption: string,
+  sortValue: string
+) => {
+  if (sortValue === "") return transactions;
+
+  let sortFunction: (a: Transaction, b: Transaction) => number;
+  switch (sortOption) {
+    case "Last Edited":
+      sortFunction = (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      break;
+    case "Name":
+      sortFunction = (a, b) => a.name.localeCompare(b.name);
+      break;
+    case "Asset":
+      sortFunction = (a, b) => {
+        const assetA =
+          getAllMatchingItems("assets", "id", a.asset_id)[0]?.name ?? "";
+        const assetB =
+          getAllMatchingItems("assets", "id", b.asset_id)[0]?.name ?? "";
+        return assetA.localeCompare(assetB);
+      };
+      break;
+    case "Category":
+      sortFunction = (a, b) => {
+        const categoryA =
+          getAllMatchingItems("categories", "id", a.category_id)[0]?.name ?? "";
+        const categoryB =
+          getAllMatchingItems("categories", "id", b.category_id)[0]?.name ?? "";
+        return categoryA.localeCompare(categoryB);
+      };
+      break;
+    case "Date":
+      sortFunction = (a, b) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime();
+      break;
+    case "Amount":
+      sortFunction = (a, b) => a.amount - b.amount;
+      break;
+    case "Type":
+      sortFunction = (a, b) => a.type.localeCompare(b.type);
+      break;
+    default:
+      sortFunction = () => 0;
+      break;
+  }
+
+  const directionMultiplier = sortValue === "Ascending" ? 1 : -1;
+
+  return transactions.sort((a, b) => directionMultiplier * sortFunction(a, b));
+};
+
+export const sortFilterTransactions = (
+  transactions: Transaction[],
+  filterOption: string,
+  filterValue: string[],
+  sortOption: string,
+  sortValue: string
+) => {
+  return sortTransactions(
+    filterTransactions(transactions, filterOption, filterValue),
+    sortOption,
+    sortValue
+  );
+};
+
+/* -------------- Currency -------------- */
+
+interface CachedRates {
+  rates: { [key: string]: any };
+  timestamp: number;
+}
 
 // Get Currency Rates
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
@@ -641,12 +1007,6 @@ export const getAllCurrencies = () => [
   "ZWL",
 ];
 
-// Format Currency
-export const formatCurrency = (amount: number, currency: string) => {
-  const amountStr = +(+amount).toFixed(2);
-  return amountStr + " " + currency;
-};
-
 // Convert Currency
 export const convertCurrency = (
   rates: DataItem,
@@ -658,6 +1018,8 @@ export const convertCurrency = (
     (Number(rates[currencyTo]) * Number(amount)) / Number(rates[currencyFrom])
   );
 };
+
+/* -------------- Formatting -------------- */
 
 // Format Date
 export const formatDate = (date: Date): string => {
@@ -687,182 +1049,8 @@ export const formatDateToInputValue = (date: Date): string => {
   return `${year}-${monthStr}-${dayStr}`;
 };
 
-// Sort-Filter Transactions
-const adjustDate = (date: Date, unit: string, adjustment: number) => {
-  if (unit === "day") {
-    date.setDate(date.getDate() + adjustment);
-  } else if (unit === "week") {
-    date.setDate(date.getDate() + adjustment * 7);
-  } else if (unit === "month") {
-    date.setMonth(date.getMonth() + adjustment);
-  } else if (unit === "year") {
-    date.setFullYear(date.getFullYear() + adjustment);
-  }
-};
-
-const convertPeriodToString = (period: Period): string[] => {
-  if (period.type === "absolute") return [period.start, period.end];
-
-  const now = new Date();
-  let startDate = new Date();
-  let endDate = new Date();
-  if (period.option === "Past") {
-    adjustDate(startDate, period.unit, -Number(period.value ?? 1));
-  } else if (period.option === "Next") {
-    adjustDate(startDate, period.unit, Number(period.value ?? 1));
-  } else if (period.unit === "Year") {
-    startDate.setMonth(0, 1);
-    endDate.setMonth(11, 31);
-  } else if (period.unit === "Month") {
-    startDate.setDate(1);
-    endDate.setMonth(now.getMonth() + 1);
-    endDate.setDate(0);
-  } else if (period.unit === "Week") {
-    const dayOfWeek = now.getDay();
-    startDate.setDate(now.getDate() - dayOfWeek + 1);
-    endDate.setDate(now.getDate() + (7 - dayOfWeek));
-  }
-
-  return [formatDateToInputValue(startDate), formatDateToInputValue(endDate)];
-};
-
-const filterTransactions = (
-  transactions: Transaction[],
-  filterOption: string,
-  filterValue: string[]
-) => {
-  if (filterValue.length === 1 && filterValue[0] === "") return transactions;
-  if (filterOption === "None") return transactions;
-
-  let filterFunction: (transaction: Transaction) => boolean;
-
-  switch (filterOption) {
-    case "Name":
-      filterFunction = (transaction) =>
-        transaction.name.toLowerCase().includes(filterValue[0].toLowerCase());
-      break;
-
-    case "Asset":
-      filterFunction = (transaction) => {
-        return (
-          transaction.asset_id === filterValue[0] ||
-          transaction.asset_from_id === filterValue[0]
-        );
-      };
-      break;
-
-    case "Category":
-      filterFunction = (transaction) => {
-        return transaction.category_id === filterValue[0];
-      };
-      break;
-
-    case "Type":
-      filterFunction = (transaction) => {
-        return transaction.type === filterValue[0];
-      };
-      break;
-
-    case "Date":
-      if (filterValue[0] === "allTime") {
-        filterFunction = () => true;
-        break;
-      }
-
-      let startDate = new Date(filterValue[0]);
-      let endDate = new Date(filterValue[1]);
-
-      filterFunction = (transaction) => {
-        return (
-          new Date(transaction.date) >= startDate &&
-          new Date(transaction.date) <= endDate
-        );
-      };
-      break;
-
-    case "Amount":
-      filterFunction = (transaction) => {
-        const minAmount = filterValue[0] === "" ? 0 : Number(filterValue[0]);
-        const maxAmount =
-          filterValue[1] === "" ? Infinity : Number(filterValue[1]);
-        return (
-          transaction.amount >= minAmount && transaction.amount <= maxAmount
-        );
-      };
-      break;
-
-    default:
-      filterFunction = () => true;
-      break;
-  }
-
-  return transactions.filter(filterFunction);
-};
-
-const sortTransactions = (
-  transactions: Transaction[],
-  sortOption: string,
-  sortValue: string
-) => {
-  if (sortValue === "") return transactions;
-
-  let sortFunction: (a: Transaction, b: Transaction) => number;
-  switch (sortOption) {
-    case "Last Edited":
-      sortFunction = (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      break;
-    case "Name":
-      sortFunction = (a, b) => a.name.localeCompare(b.name);
-      break;
-    case "Asset":
-      sortFunction = (a, b) => {
-        const assetA =
-          getAllMatchingItems("assets", "id", a.asset_id)[0]?.name ?? "";
-        const assetB =
-          getAllMatchingItems("assets", "id", b.asset_id)[0]?.name ?? "";
-        return assetA.localeCompare(assetB);
-      };
-      break;
-    case "Category":
-      sortFunction = (a, b) => {
-        const categoryA =
-          getAllMatchingItems("categories", "id", a.category_id)[0]?.name ?? "";
-        const categoryB =
-          getAllMatchingItems("categories", "id", b.category_id)[0]?.name ?? "";
-        return categoryA.localeCompare(categoryB);
-      };
-      break;
-    case "Date":
-      sortFunction = (a, b) =>
-        new Date(a.date).getTime() - new Date(b.date).getTime();
-      break;
-    case "Amount":
-      sortFunction = (a, b) => a.amount - b.amount;
-      break;
-    case "Type":
-      sortFunction = (a, b) => a.type.localeCompare(b.type);
-      break;
-    default:
-      sortFunction = () => 0;
-      break;
-  }
-
-  const directionMultiplier = sortValue === "Ascending" ? 1 : -1;
-
-  return transactions.sort((a, b) => directionMultiplier * sortFunction(a, b));
-};
-
-export const sortFilterTransactions = (
-  transactions: Transaction[],
-  filterOption: string,
-  filterValue: string[],
-  sortOption: string,
-  sortValue: string
-) => {
-  return sortTransactions(
-    filterTransactions(transactions, filterOption, filterValue),
-    sortOption,
-    sortValue
-  );
+// Format Currency
+export const formatCurrency = (amount: number, currency: string) => {
+  const amountStr = +(+amount).toFixed(2);
+  return amountStr + " " + currency;
 };
