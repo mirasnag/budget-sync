@@ -12,10 +12,10 @@ const ErrorPage: React.FC = () => {
     <div className="error-page">
       <h1>{error.message || error.statusText}</h1>
       <div>
-        <button className="btn" onClick={() => navigate(-1)}>
+        <button className="btn btn-medium" onClick={() => navigate(-1)}>
           <span>Go Back</span>
         </button>
-        <button className="btn" onClick={() => navigate("/")}>
+        <button className="btn btn-medium" onClick={() => navigate("/")}>
           <span>Go home</span>
         </button>
       </div>

@@ -175,10 +175,14 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               required
             />
           </div>
-          <button type="button" className="btn btn-red" onClick={onClose}>
+          <button
+            type="button"
+            className="btn btn-medium btn-red"
+            onClick={onClose}
+          >
             Cancel
           </button>
-          <button type="submit" className="btn">
+          <button type="submit" className="btn btn-medium">
             {isEditForm ? "Edit" : "Create"}
           </button>
         </Form>

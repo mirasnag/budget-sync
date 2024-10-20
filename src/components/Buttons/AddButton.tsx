@@ -6,7 +6,7 @@ interface AddButtonProps {
 
 const AddButton: React.FC<AddButtonProps> = ({ handleClick }) => {
   return (
-    <button className="btn" onClick={handleClick}>
+    <button className="btn btn-medium" onClick={handleClick}>
       <PlusIcon width={20} />
     </button>
   );

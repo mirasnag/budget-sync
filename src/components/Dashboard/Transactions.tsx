@@ -8,7 +8,10 @@ import { Form } from "react-router-dom";
 import {
   ArrowLongRightIcon,
   ArrowsUpDownIcon,
+  PlusIcon,
   FunnelIcon,
+  TrashIcon,
+  XMarkIcon,
 } from "@heroicons/react/20/solid";
 
 // interfaces
@@ -23,7 +26,8 @@ import {
   formatCurrency,
   formatDate,
   getAllMatchingItems,
-  sortFilterTransactions,
+  // sortFilterTransactions,
+  sortTransactions2,
 } from "../../api/helpers";
 import { FaTags, FaWallet } from "react-icons/fa";
 import { FaSackDollar } from "react-icons/fa6";
@@ -60,6 +64,10 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState("");
+  const closeForm = () => {
+    setShowCreateForm(false);
+    setShowEditForm("");
+  };
 
   const filterOptionRef = useRef<HTMLSelectElement>(null);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
@@ -80,19 +88,27 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     }
   };
 
-  const sortOptionRef = useRef<HTMLSelectElement>(null);
-  const sortValueRef = useRef<HTMLSelectElement>(null);
   const [showSortMenu, setShowSortMenu] = useState(false);
-  const [sortOption, setSortOption] = useState<string>("None");
-  const [sortValue, setSortValue] = useState<string>("Ascending");
-  const handleSort = () => {
-    setSortOption(sortOptionRef.current?.value as string);
-    setSortValue("Ascending");
+  const sortOptions = ["Name", "Asset", "Category", "Date", "Amount", "Type"];
+  const [activeSortOrder, setActiveSortOrder] = useState<
+    { value: string; isAscending: boolean }[]
+  >([]);
+
+  const addSort = (value: string) => {
+    setActiveSortOrder([
+      ...activeSortOrder,
+      { value: value === "" ? "Name" : "", isAscending: true },
+    ]);
   };
 
-  const closeForm = () => {
-    setShowCreateForm(false);
-    setShowEditForm("");
+  const deleteSort = (ind: number) => {
+    setActiveSortOrder(activeSortOrder.filter((x, i) => i !== ind));
+  };
+
+  const editSort = (ind: number, value: string, isAscending: boolean) => {
+    const newSortOrder = [...activeSortOrder];
+    newSortOrder[ind] = { value: value, isAscending: isAscending };
+    setActiveSortOrder([...newSortOrder]);
   };
 
   const tableHeader = ["Name", "Date", "Amount", "Details", ""];
@@ -105,15 +121,79 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     "Amount",
     "Type",
   ];
-  const processedTransactions = isRecent
-    ? transactions
-    : sortFilterTransactions(
-        transactions,
-        filterOption,
-        filterValue,
-        sortOption,
-        sortValue
-      );
+
+  const processedTransactions = sortTransactions2(
+    transactions,
+    activeSortOrder
+  );
+
+  const renderSortMenu = () => {
+    return (
+      <div className="sort-filter-container">
+        <div className="sort-filter-menu">
+          <span>Sort By</span>
+          <div className="sort-menu">
+            {activeSortOrder.map((d, ind) => {
+              return (
+                <div className="sort-menu-object" key={ind}>
+                  <select
+                    className="btn"
+                    defaultValue={d.value}
+                    onChange={(e) => {
+                      editSort(ind, e.target.value, d.isAscending);
+                    }}
+                  >
+                    {sortOptions.map((option, ind) => {
+                      return (
+                        <option key={ind} value={option}>
+                          {option}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <select
+                    className="btn"
+                    value={d.isAscending ? "Ascending" : "Descending"}
+                    onChange={(e) => {
+                      editSort(ind, d.value, e.target.value === "Ascending");
+                    }}
+                  >
+                    <option value="Ascending">Ascending</option>
+                    <option value="Descending">Descending</option>
+                  </select>
+                  <div
+                    className="btn btn-red flex-center"
+                    onClick={() => deleteSort(ind)}
+                  >
+                    <XMarkIcon width={16} />
+                  </div>
+                </div>
+              );
+            })}
+            <div>
+              <div className="sort-menu-button" onClick={() => addSort("")}>
+                <div className="flex-center">
+                  <PlusIcon width={20} />
+                  Add sort
+                </div>
+              </div>
+            </div>
+            <div>
+              <div
+                className="sort-menu-button"
+                onClick={() => setActiveSortOrder([])}
+              >
+                <div className="flex-center">
+                  <TrashIcon width={20} />
+                  Remove sort
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const renderFilterValueInput = () => {
     switch (filterOption) {
@@ -296,7 +376,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
           {!isRecent && (
             <button
-              className={showSortMenu ? "btn color-yellow" : "btn"}
+              className={
+                showSortMenu ? "btn btn-medium color-yellow" : "btn btn-medium"
+              }
               onClick={() => {
                 setShowSortMenu(!showSortMenu);
                 setShowFilterMenu(false);
@@ -308,7 +390,11 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
           {!isRecent && (
             <button
-              className={showFilterMenu ? "btn color-yellow" : "btn"}
+              className={
+                showFilterMenu
+                  ? "btn btn-medium color-yellow"
+                  : "btn btn-medium"
+              }
               onClick={() => {
                 setShowFilterMenu(!showFilterMenu);
                 setShowSortMenu(false);
@@ -318,37 +404,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
             </button>
           )}
 
-          {showSortMenu && (
-            <div className="sort-filter-container">
-              <div className="sort-filter-menu">
-                <span>Sort By</span>
-                <div className="sort-filter-options">
-                  <select
-                    size={sortFilterOptions.length}
-                    ref={sortOptionRef}
-                    defaultValue={sortOption}
-                    onChange={() => handleSort()}
-                  >
-                    {sortFilterOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <select
-                  ref={sortValueRef}
-                  defaultValue={sortValue}
-                  onChange={() =>
-                    setSortValue(sortValueRef.current?.value as string)
-                  }
-                >
-                  <option value="Ascending">Ascending</option>
-                  <option value="Descending">Descending</option>
-                </select>
-              </div>
-            </div>
-          )}
+          {showSortMenu && renderSortMenu()}
 
           {showFilterMenu && (
             <div className="sort-filter-container">
@@ -405,7 +461,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 <td>{formatDate(transaction.date)}</td>
                 <td>
                   {transaction.type === "income" && (
-                    <div className="frame color-green">
+                    <div className="flex-center frame color-green">
                       {"+ " +
                         formatCurrency(
                           transaction.amount,
@@ -414,7 +470,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                     </div>
                   )}
                   {transaction.type === "expense" && (
-                    <div className="frame color-red">
+                    <div className="flex-center frame color-red">
                       {"- " +
                         formatCurrency(
                           transaction.amount,
@@ -423,7 +479,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                     </div>
                   )}
                   {transaction.type === "transfer" && (
-                    <div className="frame color-yellow">
+                    <div className="flex-center frame color-yellow">
                       {formatCurrency(transaction.amount, transaction.currency)}
                     </div>
                   )}
@@ -431,12 +487,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 <td>
                   {transaction.type === "expense" && (
                     <div className="transaction-details">
-                      <div className="frame color-blue">
+                      <div className="flex-center frame color-blue">
                         <FaWallet width={15} />
                         {assetName}
                       </div>
                       <ArrowLongRightIcon width={20} />
-                      <div className="frame color-blue">
+                      <div className="flex-center frame color-blue">
                         <FaTags width={15} />
                         {categoryName}
                       </div>
@@ -444,12 +500,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   )}
                   {transaction.type === "income" && (
                     <div className="transaction-details">
-                      <div className="frame color-blue">
+                      <div className="flex-center frame color-blue">
                         <FaSackDollar width={20} />
                         {source}
                       </div>
                       <ArrowLongRightIcon width={20} />
-                      <div className="frame color-blue">
+                      <div className="flex-center frame color-blue">
                         <FaWallet width={15} />
                         {assetName}
                       </div>
@@ -457,12 +513,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   )}
                   {transaction.type === "transfer" && (
                     <div className="transaction-details">
-                      <div className="frame color-blue">
+                      <div className="flex-center frame color-blue">
                         <FaWallet width={15} />
                         {assetFromName}
                       </div>
                       <ArrowLongRightIcon width={20} />
-                      <div className="frame color-blue">
+                      <div className="flex-center frame color-blue">
                         <FaWallet width={15} />
                         {assetName}
                       </div>

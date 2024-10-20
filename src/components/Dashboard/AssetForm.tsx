@@ -62,10 +62,10 @@ const AssetForm: React.FC<AssetFormProps> = ({ asset_id, onClose }) => {
               ))}
             </select>
           </div>
-          <button type="button" className="btn" onClick={onClose}>
+          <button type="button" className="btn btn-medium" onClick={onClose}>
             Cancel
           </button>
-          <button type="submit" className="btn">
+          <button type="submit" className="btn btn-medium">
             {isEditForm ? "Edit" : "Create"}
           </button>
         </Form>

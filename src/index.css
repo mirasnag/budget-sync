@@ -53,6 +53,12 @@ body {
 }
 
 /* Utils */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .page {
   display: grid;
   gap: 30px;
@@ -63,12 +69,14 @@ select {
   background: var(--bg-light-button);
   color: var(--text-dark);
   border: 0.5px solid var(--border);
+  outline: 0px;
 }
 
 input {
   background: var(--bg-light-button);
   color: var(--text-dark);
   border: 0.5px solid var(--border);
+  outline: 0px;
 }
 
 table {
@@ -230,7 +238,7 @@ tbody tr {
 }
 
 .transactions .header .btn {
-  margin-left: 20px !important;
+  margin-left: 20px;
 }
 
 .transactions .header .view-all-transactions {
@@ -273,11 +281,39 @@ tbody tr {
   height: fit-content;
 }
 
-.sort-filter-menu select {
-  width: 100%;
-  border: none;
-  border-radius: 0;
-  outline: 0px;
+.sort-menu {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.sort-menu-object {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5px;
+}
+
+.sort-menu .btn {
+  padding: 10px 5px;
+  margin: 0px !important;
+  width: fit-content;
+}
+
+.sort-menu select {
+  width: fit-content;
+}
+
+.sort-menu-button {
+  display: flex;
+  cursor: pointer;
+  gap: 10px;
+  padding: 5px;
+}
+
+.sort-menu-button:hover {
+  opacity: 0.5;
 }
 
 .sort-filter-options {
@@ -329,12 +365,15 @@ tbody tr {
   background: var(--bg-light-button);
   color: var(--text-dark);
   border: 0.5px solid var(--border);
-  padding: 12px 20px 8px 20px;
-  margin: 0px 5px 0px 0px;
   border-radius: 5px;
-  font-size: 1em;
   cursor: pointer;
   transition: background-color 0.3s ease;
+}
+
+.btn-medium {
+  padding: 12px 20px 8px 20px;
+  margin: 0px 5px 0px 0px;
+  font-size: 1em;
 }
 
 .btn:hover {
@@ -428,9 +467,9 @@ tbody tr {
 .goal {
   display: flex;
   justify-content: space-evenly;
+  align-items: center;
   gap: 20px;
   width: 100%;
-  align-items: center;
   margin-bottom: 20px;
 }
 

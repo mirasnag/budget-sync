@@ -6,7 +6,7 @@ interface EditButtonProps {
 
 const EditButton: React.FC<EditButtonProps> = ({ handleClick }) => {
   return (
-    <button className="btn btn-yellow" onClick={handleClick}>
+    <button className="btn btn-medium btn-yellow" onClick={handleClick}>
       <PencilIcon width={20} />
     </button>
   );

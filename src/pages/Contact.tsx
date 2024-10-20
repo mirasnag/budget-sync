@@ -96,7 +96,7 @@ const Contact: React.FC = () => {
             rows={4}
             placeholder="I'd love to hear your thoughts!"
           />
-          <button type="submit" className="btn">
+          <button type="submit" className="btn btn-medium">
             Submit
           </button>
         </Form>

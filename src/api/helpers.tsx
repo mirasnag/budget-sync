@@ -733,15 +733,10 @@ const filterTransactions = (
   return transactions.filter(filterFunction);
 };
 
-const sortTransactions = (
-  transactions: Transaction[],
-  sortOption: string,
-  sortValue: string
-) => {
-  if (sortValue === "") return transactions;
-
+const getSortFunction = (option: string, isAscending: boolean = true) => {
   let sortFunction: (a: Transaction, b: Transaction) => number;
-  switch (sortOption) {
+  const directionMultiplier = isAscending ? 1 : -1;
+  switch (option) {
     case "Last Edited":
       sortFunction = (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -781,10 +776,30 @@ const sortTransactions = (
       sortFunction = () => 0;
       break;
   }
+  return (a: Transaction, b: Transaction) =>
+    sortFunction(a, b) * directionMultiplier;
+};
 
-  const directionMultiplier = sortValue === "Ascending" ? 1 : -1;
+export const sortTransactions2 = (
+  transaction: Transaction[],
+  order: { value: string; isAscending: boolean }[]
+) => {
+  return order.reduce((data, curSort) => {
+    const sortFunc = getSortFunction(curSort.value, curSort.isAscending);
+    return data.sort(sortFunc);
+  }, transaction);
+};
 
-  return transactions.sort((a, b) => directionMultiplier * sortFunction(a, b));
+const sortTransactions = (
+  transactions: Transaction[],
+  sortOption: string,
+  sortValue: string
+) => {
+  if (sortValue === "") return transactions;
+
+  const sortFunction = getSortFunction(sortOption, sortValue === "Ascending");
+
+  return transactions.sort((a, b) => sortFunction(a, b));
 };
 
 export const sortFilterTransactions = (
