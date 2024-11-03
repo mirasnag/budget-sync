@@ -4,7 +4,11 @@ import { Period } from "../components/Buttons/PeriodSelector";
 import { Asset } from "../components/Dashboard/Assets";
 import { Category } from "../components/Dashboard/Categories";
 import { Goal } from "../components/Dashboard/Goals";
-import { Transaction } from "../components/Dashboard/Transactions";
+import {
+  FilterInstanceType,
+  SortInstanceType,
+  Transaction,
+} from "../components/Dashboard/Transactions";
 
 export interface DataItem {
   [key: string]: any;
@@ -733,6 +737,90 @@ const filterTransactions = (
   return transactions.filter(filterFunction);
 };
 
+const getFilterFunction = (option: string[], value: string | null) => {
+  let filterFunction: (a: Transaction) => boolean;
+
+  if (!value) {
+    return () => true;
+  }
+
+  switch (option[0]) {
+    case "Name":
+      filterFunction = (a: Transaction) => {
+        if (option[1] === "Contains") return a.name.includes(value);
+        if (option[1] === "Is") return a.name === value;
+        if (option[1] === "Starts With") return a.name.startsWith(value);
+        return true;
+      };
+      break;
+
+    case "Asset":
+      filterFunction = (a: Transaction) => {
+        if (option[1] === "Is") return a.asset_id === value;
+        if (option[1] === "Is not") return a.asset_id !== value;
+        return true;
+      };
+      break;
+
+    case "Category":
+      filterFunction = (a: Transaction) => {
+        if (option[1] === "Is") return a.category_id === value;
+        if (option[1] === "Is not") return a.category_id !== value;
+        return true;
+      };
+      break;
+
+    case "Date":
+      filterFunction = (a: Transaction) => {
+        const filterDate = new Date(value);
+        const transactionDate = new Date(a.date);
+        if (option[1] === "Is")
+          return transactionDate.getTime() === filterDate.getTime();
+        if (option[1] === "Is before") return transactionDate < filterDate;
+        if (option[1] === "Is after") return transactionDate > filterDate;
+        return true;
+      };
+      break;
+
+    case "Amount":
+      filterFunction = (a: Transaction) => {
+        const filterAmount = parseFloat(value);
+        const transactionAmount = Number(a.amount);
+        if (isNaN(filterAmount)) return true;
+        if (option[1] === "Equal") return transactionAmount === filterAmount;
+        if (option[1] === "More") return transactionAmount > filterAmount;
+        if (option[1] === "Less") return transactionAmount < filterAmount;
+        if (option[1] === "At Least") return transactionAmount >= filterAmount;
+        if (option[1] === "At Most") return transactionAmount <= filterAmount;
+        return true;
+      };
+      break;
+
+    case "Type":
+      filterFunction = (a: Transaction) => {
+        if (option[1] === "Is") return a.type === value;
+        if (option[1] === "Is not") return a.type !== value;
+        return true;
+      };
+      break;
+
+    default:
+      filterFunction = () => true;
+  }
+
+  return filterFunction;
+};
+
+export const filterTransactions2 = (
+  transactions: Transaction[],
+  filterOrder: FilterInstanceType[]
+) => {
+  return filterOrder.reduce((data, curFilter) => {
+    const filterFunc = getFilterFunction(curFilter.option, curFilter.value);
+    return data.filter(filterFunc);
+  }, transactions);
+};
+
 const getSortFunction = (option: string, isAscending: boolean = true) => {
   let sortFunction: (a: Transaction, b: Transaction) => number;
   const directionMultiplier = isAscending ? 1 : -1;
@@ -781,13 +869,13 @@ const getSortFunction = (option: string, isAscending: boolean = true) => {
 };
 
 export const sortTransactions2 = (
-  transaction: Transaction[],
-  order: { value: string; isAscending: boolean }[]
+  transactions: Transaction[],
+  sortOrder: SortInstanceType[]
 ) => {
-  return order.reduce((data, curSort) => {
-    const sortFunc = getSortFunction(curSort.value, curSort.isAscending);
+  return sortOrder.reduce((data, curSort) => {
+    const sortFunc = getSortFunction(curSort.option, curSort.isAscending);
     return data.sort(sortFunc);
-  }, transaction);
+  }, transactions);
 };
 
 const sortTransactions = (
@@ -800,6 +888,17 @@ const sortTransactions = (
   const sortFunction = getSortFunction(sortOption, sortValue === "Ascending");
 
   return transactions.sort((a, b) => sortFunction(a, b));
+};
+
+export const sortFilterTransactions2 = (
+  transactions: Transaction[],
+  filterOrder: FilterInstanceType[],
+  sortOrder: SortInstanceType[]
+) => {
+  return sortTransactions2(
+    filterTransactions2(transactions, filterOrder),
+    sortOrder
+  );
 };
 
 export const sortFilterTransactions = (

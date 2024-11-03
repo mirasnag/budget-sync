@@ -258,13 +258,14 @@ tbody tr {
 
 .sort-filter-container {
   position: absolute;
+  right: 10px;
   display: flex;
   flex-direction: column;
   padding: 5px;
   background: var(--bg-dark-button);
   border: 1px solid var(--text-light);
   border-radius: 10px;
-  width: 250px;
+  width: fit-content;
 }
 
 .sort-filter-container span {
@@ -281,38 +282,40 @@ tbody tr {
   height: fit-content;
 }
 
-.sort-menu {
+.sort-menu,
+.filter-menu {
   display: flex;
   flex-direction: column;
   margin-top: 10px;
   gap: 10px;
 }
 
-.sort-menu-object {
+.sort-menu-object,
+.filter-menu-object {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 5px;
+  gap: 10px;
 }
 
-.sort-menu .btn {
+.sort-menu .btn,
+.filter-menu .btn {
   padding: 10px 5px;
   margin: 0px !important;
   width: fit-content;
 }
 
-.sort-menu select {
-  width: fit-content;
-}
-
-.sort-menu-button {
+.sort-menu-button,
+.filter-menu-button {
   display: flex;
   cursor: pointer;
   gap: 10px;
   padding: 5px;
 }
 
-.sort-menu-button:hover {
+.sort-menu-button:hover,
+.filter-menu-button:hover {
   opacity: 0.5;
 }
 
