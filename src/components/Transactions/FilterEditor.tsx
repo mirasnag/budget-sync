@@ -1,5 +1,8 @@
+// Library imports
 import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import { formatDateToInputValue } from "../../api/helpers";
+
+// helper functions
+import { formatDateToInputValue } from "../../utils/formatting";
 import {
   FilterInstanceType,
   FilterOptionKey,
@@ -7,7 +10,7 @@ import {
 } from "../Dashboard/Transactions";
 
 // interfaces
-import { Asset, Category } from "../../api/dataModels";
+import { Asset, Category } from "../../utils/types";
 
 interface FilterOptionInputProps {
   filterInstance: FilterInstanceType;

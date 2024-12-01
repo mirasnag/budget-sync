@@ -5,16 +5,23 @@ import { useEffect, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 
 // helper functions
-import { fetchData, getCurrencyRates } from "../api/helpers";
+import { fetchData } from "../utils/services";
+import { getCurrencyRates } from "../utils/currency.util";
 
 // interfaces
-import { Asset, Category, CurrencyRates, Transaction } from "../api/dataModels";
+import {
+  Asset,
+  Category,
+  CollectionType,
+  CurrencyRates,
+  Transaction,
+} from "../utils/types";
 
 // components
 import TransactionTable from "../components/Dashboard/Transactions";
+import Assets from "../components/Dashboard/Assets";
 import Categories from "../components/Dashboard/Categories";
 import CurrencyWidget from "../components/CurrencyWidget";
-import Assets from "../components/Dashboard/Assets";
 // import Goals, { Goal } from "../components/Dashboard/Goals";
 
 // loader
@@ -25,9 +32,9 @@ export async function dashboardLoader(): Promise<{
   // goals: Goal[];
   currencyRates: CurrencyRates;
 }> {
-  const assets = fetchData("assets") as Asset[];
-  const transactions = fetchData("transactions") as Transaction[];
-  const categories = fetchData("categories") as Category[];
+  const assets = fetchData(CollectionType.ASSETS) as Asset[];
+  const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
+  const categories = fetchData(CollectionType.CATEGORIES) as Category[];
   // const goals = fetchData("goals") as Goal[];
   const currencyRates = await getCurrencyRates();
 

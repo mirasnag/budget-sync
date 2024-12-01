@@ -5,14 +5,12 @@ import { useState } from "react";
 import { Form } from "react-router-dom";
 
 // helper functions
-import {
-  convertCurrency,
-  formatCurrency,
-  spentByCategory,
-} from "../../api/helpers";
+import { formatCurrency } from "../../utils/formatting";
+import { convertCurrency } from "../../utils/currency.util";
+import { spentByCategory } from "../../utils/entities.util";
 
 // interfaces
-import { Category, CurrencyRates } from "../../api/dataModels";
+import { Category, CurrencyRates } from "../../utils/types";
 
 // components
 import CategoryForm from "./CategoryForm";

@@ -4,15 +4,6 @@ import { useLoaderData } from "react-router-dom";
 // react imports
 import { useState } from "react";
 
-// helper functions
-import {
-  fetchData,
-  formatCurrency,
-  getAssetBalanceHistory,
-  getCategorySpentHistory,
-  getCurrencyRates,
-} from "../api/helpers";
-
 // UI components
 import CategoryPieChart from "../components/Charts/CategoryPieChart";
 import AssetLineChart from "../components/Charts/AssetLineChart";
@@ -26,7 +17,16 @@ import PeriodSelector, { Period } from "../components/Buttons/PeriodSelector";
 import CurrencySelector from "../components/Buttons/CurrencySelector";
 
 // interfaces
-import { Asset, Category, CurrencyRates } from "../api/dataModels";
+import { Asset, Category, CollectionType, CurrencyRates } from "../utils/types";
+
+// helper functions
+import { fetchData } from "../utils/services";
+import { getCurrencyRates } from "../utils/currency.util";
+import {
+  getAssetBalanceHistory,
+  getCategorySpentHistory,
+} from "../utils/entities.util";
+import { formatCurrency } from "../utils/formatting";
 
 // loader
 export async function spendingAnalysisLoader(): Promise<{
@@ -34,8 +34,8 @@ export async function spendingAnalysisLoader(): Promise<{
   categories: Category[];
   currencyRates: CurrencyRates;
 }> {
-  const assets = fetchData("assets") as Asset[];
-  const categories = fetchData("categories") as Category[];
+  const assets = fetchData(CollectionType.ASSETS) as Asset[];
+  const categories = fetchData(CollectionType.CATEGORIES) as Category[];
   const currencyRates = await getCurrencyRates();
 
   return { assets, categories, currencyRates };

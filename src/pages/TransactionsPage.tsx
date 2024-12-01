@@ -2,10 +2,17 @@
 import { useLoaderData } from "react-router-dom";
 
 // helper functions
-import { fetchData, getCurrencyRates } from "../api/helpers";
+import { fetchData } from "../utils/services";
+import { getCurrencyRates } from "../utils/currency.util";
 
 // interfaces
-import { Asset, Category, CurrencyRates, Transaction } from "../api/dataModels";
+import {
+  Asset,
+  Category,
+  CollectionType,
+  CurrencyRates,
+  Transaction,
+} from "../utils/types";
 
 // UI components
 import CurrencyWidget from "../components/CurrencyWidget";
@@ -18,9 +25,9 @@ export async function transactionsPageLoader(): Promise<{
   categories: Category[];
   currencyRates: CurrencyRates;
 }> {
-  const assets = fetchData("assets") as Asset[];
-  const transactions = fetchData("transactions") as Transaction[];
-  const categories = fetchData("categories") as Category[];
+  const assets = fetchData(CollectionType.ASSETS) as Asset[];
+  const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
+  const categories = fetchData(CollectionType.CATEGORIES) as Category[];
   const currencyRates = await getCurrencyRates();
 
   return { assets, transactions, categories, currencyRates };

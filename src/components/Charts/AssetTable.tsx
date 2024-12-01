@@ -2,10 +2,10 @@
 import randomColor from "randomcolor";
 
 // helper functions
-import { formatDateMonthStr } from "../../api/helpers";
+import { formatDateMonthStr } from "../../utils/formatting";
 
 // interfaces
-import { Asset } from "../../api/dataModels";
+import { Asset } from "../../utils/types";
 
 interface Props {
   assets: Asset[];

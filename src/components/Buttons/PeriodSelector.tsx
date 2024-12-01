@@ -1,6 +1,6 @@
 import { useState } from "react";
 import DatePicker from "./DatePicker";
-import { formatDate } from "../../api/helpers";
+import { formatDate } from "../../utils/formatting";
 
 export interface AbsolutePeriod {
   type: "absolute";

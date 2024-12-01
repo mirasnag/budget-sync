@@ -1,16 +1,20 @@
+// rrd imports
+import { Form } from "react-router-dom";
+
 // react imports
 import { useState } from "react";
 
-// library imports
+// UI components
 import GoalForm from "./GoalForm";
-import { formatCurrency } from "../../api/helpers";
-import { Form } from "react-router-dom";
 import AddButton from "../Buttons/AddButton";
 import EditButton from "../Buttons/EditButton";
 import DeleteButton from "../Buttons/DeleteButton";
 
 // interfaces
-import { Goal } from "../../api/dataModels";
+import { Goal } from "../../utils/types";
+
+// helper functions
+import { formatCurrency } from "../../utils/formatting";
 
 interface GoalsProps {
   goals: Goal[];

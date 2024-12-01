@@ -10,10 +10,10 @@ import {
 import randomColor from "randomcolor";
 
 // helper functions
-import { formatDateMonthStr } from "../../api/helpers";
+import { formatDateMonthStr } from "../../utils/formatting";
 
 // interfaces
-import { Category } from "../../api/dataModels";
+import { Category } from "../../utils/types";
 
 interface Props {
   categories: Category[];

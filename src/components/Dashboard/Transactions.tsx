@@ -19,7 +19,7 @@ import {
   Category,
   Transaction,
   TransactionType,
-} from "../../api/dataModels";
+} from "../../utils/types";
 
 // UI components
 import TransactionForm from "./TransactionForm";
@@ -31,11 +31,10 @@ import SortEditor from "../Transactions/SortEditor";
 
 // helper functions
 import {
-  formatCurrency,
-  formatDate,
   getTransactionNodes,
   sortFilterTransactions2,
-} from "../../api/helpers";
+} from "../../utils/transactions.util";
+import { formatCurrency, formatDate } from "../../utils/formatting";
 
 export interface TransactionTableProps {
   transactions: Transaction[];

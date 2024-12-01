@@ -1,4 +1,4 @@
-import { getAllCurrencies } from "../../api/helpers";
+import { getAllCurrencies } from "../../utils/currency.util";
 
 interface CurrencySelectorProps {
   baseCurrency: string | null;

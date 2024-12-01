@@ -2,10 +2,11 @@
 import { Form } from "react-router-dom";
 
 // helper functions
-import { getAllCurrencies, getItemById } from "../../api/helpers";
+import { getItemById } from "../../utils/services";
 
 // interfaces
-import { Asset, EntityType } from "../../api/dataModels";
+import { Asset, EntityType } from "../../utils/types";
+import { getAllCurrencies } from "../../utils/currency.util";
 
 interface AssetFormProps {
   asset_id: string;

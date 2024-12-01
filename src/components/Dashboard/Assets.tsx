@@ -4,16 +4,8 @@ import { useState } from "react";
 // rrd imports
 import { Form } from "react-router-dom";
 
-// helper functions
-import {
-  convertCurrency,
-  formatCurrency,
-  getAssetDetails,
-  getBalanceOfAsset,
-} from "../../api/helpers";
-
 // interfaces
-import { Asset, CurrencyRates } from "../../api/dataModels";
+import { Asset, CurrencyRates } from "../../utils/types";
 
 // components
 import AssetForm from "./AssetForm";
@@ -22,6 +14,11 @@ import EditButton from "../Buttons/EditButton";
 import DeleteButton from "../Buttons/DeleteButton";
 import PeriodSelector, { Period } from "../Buttons/PeriodSelector";
 import CurrencySelector from "../Buttons/CurrencySelector";
+
+// helper funtions
+import { getAssetDetails, getBalanceOfAsset } from "../../utils/entities.util";
+import { convertCurrency } from "../../utils/currency.util";
+import { formatCurrency } from "../../utils/formatting";
 
 export interface AssetsProps {
   assets: Asset[];

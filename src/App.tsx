@@ -16,7 +16,7 @@ import ErrorPage from "./pages/Error";
 import Contact, { contactAction } from "./pages/Contact";
 
 // helper functions
-import { actionHandler } from "./api/helpers";
+import { actionHandler } from "./utils/services";
 
 const router = createBrowserRouter([
   {
