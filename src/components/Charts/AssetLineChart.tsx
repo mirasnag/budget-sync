@@ -12,7 +12,7 @@ import {
 import randomColor from "randomcolor";
 
 // interfaces
-import { Asset } from "../Dashboard/Assets";
+import { Asset } from "../../api/dataModels";
 
 interface Props {
   assets: Asset[];

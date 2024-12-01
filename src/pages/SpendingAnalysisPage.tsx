@@ -1,9 +1,11 @@
 // rrd imports
 import { useLoaderData } from "react-router-dom";
 
+// react imports
+import { useState } from "react";
+
 // helper functions
 import {
-  DataItem,
   fetchData,
   formatCurrency,
   getAssetBalanceHistory,
@@ -11,12 +13,9 @@ import {
   getCurrencyRates,
 } from "../api/helpers";
 
-// interfaces
-import { Asset } from "../components/Dashboard/Assets";
-import { Category } from "../components/Dashboard/Categories";
+// UI components
 import CategoryPieChart from "../components/Charts/CategoryPieChart";
 import AssetLineChart from "../components/Charts/AssetLineChart";
-import { useState } from "react";
 import CategoryLineChart from "../components/Charts/CategoryLineChart";
 import CategoryBarChart from "../components/Charts/CategoryBarChart";
 import AssetBarChart from "../components/Charts/AssetBarChart";
@@ -26,11 +25,14 @@ import CurrencyWidget from "../components/CurrencyWidget";
 import PeriodSelector, { Period } from "../components/Buttons/PeriodSelector";
 import CurrencySelector from "../components/Buttons/CurrencySelector";
 
+// interfaces
+import { Asset, Category, CurrencyRates } from "../api/dataModels";
+
 // loader
 export async function spendingAnalysisLoader(): Promise<{
   assets: Asset[];
   categories: Category[];
-  currencyRates: DataItem;
+  currencyRates: CurrencyRates;
 }> {
   const assets = fetchData("assets") as Asset[];
   const categories = fetchData("categories") as Category[];
@@ -43,7 +45,7 @@ const SpendingAnalysisPage: React.FC = () => {
   const { assets, categories, currencyRates } = useLoaderData() as {
     assets: Asset[];
     categories: Category[];
-    currencyRates: DataItem;
+    currencyRates: CurrencyRates;
   };
 
   const [assetChartType, setAssetChartType] = useState("table");

@@ -1,18 +1,30 @@
-// Interfaces
+// rrd imports
 import { ActionFunction } from "react-router-dom";
+
+// Interfaces
 import { Period } from "../components/Buttons/PeriodSelector";
-import { Asset } from "../components/Dashboard/Assets";
-import { Category } from "../components/Dashboard/Categories";
-import { Goal } from "../components/Dashboard/Goals";
 import {
   FilterInstanceType,
   SortInstanceType,
-  Transaction,
 } from "../components/Dashboard/Transactions";
-
-export interface DataItem {
-  [key: string]: any;
-}
+import {
+  Asset,
+  Category,
+  CurrencyRates,
+  CollectionType,
+  DataItem,
+  DataItemType,
+  Entity,
+  EntityType,
+  FormInput,
+  Goal,
+  Transaction,
+  TransactionType,
+  typeToCollectionMap,
+  Expense,
+  Transfer,
+  Income,
+} from "./dataModels";
 
 /* -------------- Data Management -------------- */
 
@@ -22,12 +34,7 @@ export const actionHandler: ActionFunction = async ({ request }) => {
 
   if (_action === "createAsset") {
     try {
-      createAsset({
-        id: "",
-        name: values.name as string,
-        initBalance: values.initBalance as unknown as number,
-        currency: values.currency as string,
-      });
+      createAsset(values as FormInput);
       return null;
     } catch (e) {
       console.log(e);
@@ -37,7 +44,7 @@ export const actionHandler: ActionFunction = async ({ request }) => {
 
   if (_action === "editAsset") {
     try {
-      editAsset(values.asset_id as string, values as unknown as Asset);
+      editAsset(values.asset_id as string, values as FormInput);
       return null;
     } catch (e) {
       console.log(e);
@@ -57,19 +64,7 @@ export const actionHandler: ActionFunction = async ({ request }) => {
 
   if (_action === "createTransaction") {
     try {
-      createTransaction({
-        id: "",
-        name: values.name as string,
-        asset_id: values.asset_id as string,
-        category_id: values.category_id as string,
-        source: values.source as string,
-        asset_from_id: values.asset_from_id as string,
-        amount: values.amount as unknown as number,
-        currency: values.currency as string,
-        date: new Date(values.date as string) as Date,
-        createdAt: Date.now() as unknown as Date,
-        type: values.type as string,
-      });
+      createTransaction(values as FormInput);
       return null;
     } catch (e) {
       console.log(e);
@@ -79,10 +74,7 @@ export const actionHandler: ActionFunction = async ({ request }) => {
 
   if (_action === "editTransaction") {
     try {
-      editTransaction(
-        values.transaction_id as string,
-        values as unknown as Transaction
-      );
+      editTransaction(values.transaction_id as string, values as FormInput);
       return null;
     } catch (e) {
       console.log(e);
@@ -102,12 +94,7 @@ export const actionHandler: ActionFunction = async ({ request }) => {
 
   if (_action === "createCategory") {
     try {
-      createCategory({
-        id: "",
-        name: values.name as string,
-        totalBudgeted: values.totalBudgeted as unknown as number,
-        currency: values.currency as string,
-      });
+      createCategory(values as FormInput);
       return null;
     } catch (e) {
       console.log(e);
@@ -117,7 +104,7 @@ export const actionHandler: ActionFunction = async ({ request }) => {
 
   if (_action === "editCategory") {
     try {
-      editCategory(values.category_id as string, values as unknown as Category);
+      editCategory(values.category_id as string, values as FormInput);
       return null;
     } catch (e) {
       console.log(e);
@@ -137,12 +124,7 @@ export const actionHandler: ActionFunction = async ({ request }) => {
 
   // if (_action === "createGoal") {
   //   try {
-  //     createGoal({
-  //       id: "",
-  //       name: values.name as string,
-  //       amount: values.amount as unknown as number,
-  //       currency: values.currency as string,
-  //     });
+  //     createGoal(values as FormInput);
   //     return null;
   //   } catch (e) {
   //     console.log(e);
@@ -153,7 +135,7 @@ export const actionHandler: ActionFunction = async ({ request }) => {
   // if (_action === "editGoal") {
   //   console.log(values);
   //   try {
-  //     editGoal(values.goal_id as string, values as unknown as Goal);
+  //     editGoal(values.goal_id as string, values as FormInput);
   //     return null;
   //   } catch (e) {
   //     console.log(e);
@@ -174,196 +156,224 @@ export const actionHandler: ActionFunction = async ({ request }) => {
   return null;
 };
 
-// Local storage
-export const fetchData = (key: string) => {
-  const data = localStorage.getItem(key);
+export const fetchData = (
+  collection: CollectionType | "currencyRatesCache"
+) => {
+  const data = localStorage.getItem(collection);
   return data ? JSON.parse(data) : [];
 };
 
-// Delete Data Item
-export const deleteItem = (table: string, key: string, value: string) => {
-  const data = fetchData(table) as DataItem[];
-  const newData = data.filter((d) => d[key] !== value);
-  return localStorage.setItem(table, JSON.stringify(newData));
+export const deleteItem = (collectionType: CollectionType, id: string) => {
+  const collection = fetchData(collectionType) as DataItem[];
+  const newData = collection.filter((d) => d.id !== id);
+  return localStorage.setItem(collectionType, JSON.stringify(newData));
 };
 
-// Get matching items
-export const getAllMatchingItems = (
-  table: string,
-  key: string,
-  value: string
-) => {
-  const data = fetchData(table);
-  const filteredData = data.filter((d: DataItem) => d[key] === value);
-  return filteredData;
+export const getItemById = (type: DataItemType, id: string): DataItem => {
+  const collectionType = typeToCollectionMap[type];
+  const collection = fetchData(collectionType);
+  return collection.filter((d: DataItem) => d.id === id)[0];
 };
 
 // Asset
-export const createAsset = (values: Asset) => {
-  const newAsset = {
-    id: values.id === "" ? crypto.randomUUID() : values.id,
+export const createAsset = (values: FormInput) => {
+  const newAsset: Asset = {
+    id: values.id ?? crypto.randomUUID(),
+    type: EntityType.ASSET,
     name: values.name,
-    initBalance: values.initBalance,
+    initBalance: parseFloat(values.initBalance),
     currency: values.currency,
   };
-  const assets = fetchData("assets") ?? [];
-  return localStorage.setItem("assets", JSON.stringify([...assets, newAsset]));
+  const assets = fetchData(CollectionType.ASSETS) ?? [];
+  return localStorage.setItem(
+    CollectionType.ASSETS,
+    JSON.stringify([...assets, newAsset])
+  );
 };
 
-export const editAsset = (asset_id: string, values: Asset) => {
-  const transactions = fetchData("transactions") as Transaction[];
-
-  deleteItem("assets", "id", asset_id as string);
-  createAsset({
-    id: asset_id as string,
-    name: values.name as string,
-    initBalance: values.initBalance as unknown as number,
-    currency: values.currency as string,
-  });
-
-  const newTransactions = transactions.map((transaction) => {
-    if (transaction.asset_id === asset_id)
-      transaction.currency = values.currency;
-    return transaction;
-  });
-
-  localStorage.setItem("transactions", JSON.stringify(newTransactions));
+export const editAsset = (asset_id: string, values: FormInput) => {
+  deleteItem(CollectionType.ASSETS, asset_id);
+  values.id = asset_id;
+  createAsset(values);
 };
 
 export const deleteAsset = (asset_id: string) => {
-  const transactions = fetchData("transactions") as Transaction[];
-  const filteredTransactions = transactions.filter(
-    (d) => d.asset_id !== asset_id && d.asset_from_id !== asset_id
-  );
+  const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
+  const filteredTransactions = transactions.filter((d) => {
+    d.src.id !== asset_id && d.dst.id !== asset_id;
+  });
 
-  localStorage.setItem("transactions", JSON.stringify(filteredTransactions));
-  return deleteItem("assets", "id", asset_id);
+  localStorage.setItem(
+    CollectionType.TRANSACTIONS,
+    JSON.stringify(filteredTransactions)
+  );
+  return deleteItem(CollectionType.ASSETS, asset_id);
 };
 
 // Transaction
-export const createTransaction = (values: Transaction) => {
-  const newTransaction = {
-    id: values.id === "" ? crypto.randomUUID() : values.id,
-    name: values.name,
-    asset_id: values.asset_id,
-    category_id: values.category_id,
-    source: values.source,
-    asset_from_id: values.asset_from_id,
-    amount: values.amount,
-    currency:
-      values.currency ??
-      getAllMatchingItems("assets", "id", values.asset_id)[0].currency,
-    date: values.date,
-    createdAt: values.createdAt,
-    type: values.type,
-  };
+export const createTransaction = (values: FormInput) => {
+  const transactions = fetchData(CollectionType.TRANSACTIONS) ?? [];
 
-  const transactions = fetchData("transactions") ?? [];
+  if (values.type === TransactionType.EXPENSE) {
+    const newTransaction: Expense = {
+      id: values.id ?? crypto.randomUUID(),
+      type: TransactionType.EXPENSE,
+      src: {
+        type: EntityType.ASSET,
+        id: values.src,
+        amount: parseFloat(values.amount),
+      },
+      dst: {
+        type: EntityType.CATEGORY,
+        id: values.dst,
+        amount: parseFloat(values.amount),
+      },
+      name: values.name,
+      date: new Date(values.date),
+      createdAt: new Date(),
+    };
 
-  return localStorage.setItem(
-    "transactions",
-    JSON.stringify([...transactions, newTransaction])
-  );
+    return localStorage.setItem(
+      CollectionType.TRANSACTIONS,
+      JSON.stringify([...transactions, newTransaction])
+    );
+  }
+
+  if (values.type === TransactionType.TRANSFER) {
+    const newTransaction: Transfer = {
+      id: values.id ?? crypto.randomUUID(),
+      type: TransactionType.TRANSFER,
+      src: {
+        type: EntityType.ASSET,
+        id: values.src,
+        amount: parseFloat(values.amount),
+      },
+      dst: {
+        type: EntityType.ASSET,
+        id: values.dst,
+        amount: parseFloat(values.amount),
+      },
+      name: values.name,
+      date: new Date(values.date),
+      createdAt: new Date(),
+    };
+
+    return localStorage.setItem(
+      CollectionType.TRANSACTIONS,
+      JSON.stringify([...transactions, newTransaction])
+    );
+  }
+
+  if (values.type === TransactionType.INCOME) {
+    const newTransaction: Income = {
+      id: values.id ?? crypto.randomUUID(),
+      type: TransactionType.INCOME,
+      src: {
+        type: EntityType.SOURCE,
+        id: values.src,
+        amount: parseFloat(values.amount),
+      },
+      dst: {
+        type: EntityType.ASSET,
+        id: values.dst,
+        amount: parseFloat(values.amount),
+      },
+      name: values.name,
+      date: new Date(values.date),
+      createdAt: new Date(),
+    };
+
+    return localStorage.setItem(
+      CollectionType.TRANSACTIONS,
+      JSON.stringify([...transactions, newTransaction])
+    );
+  }
 };
 
-export const editTransaction = (
-  transaction_id: string,
-  values: Transaction
-) => {
-  deleteItem("transactions", "id", transaction_id as string);
-  createTransaction({
-    id: transaction_id as string,
-    name: values.name as string,
-    asset_id: values.asset_id as string,
-    category_id: values.category_id as string,
-    source: values.source as string,
-    asset_from_id: values.asset_from_id as string,
-    amount: values.amount as unknown as number,
-    currency: values.currency as string,
-    date: new Date(values.date) as Date,
-    createdAt: Date.now() as unknown as Date,
-    type: values.type as string,
-  });
+export const editTransaction = (transaction_id: string, values: FormInput) => {
+  deleteItem(CollectionType.TRANSACTIONS, transaction_id);
+  values.id = transaction_id;
+  createTransaction(values);
 };
 
 export const deleteTransaction = (transaction_id: string) => {
-  return deleteItem("transactions", "id", transaction_id as string);
+  return deleteItem(CollectionType.TRANSACTIONS, transaction_id);
 };
 
 // Category
-export const createCategory = (values: Category) => {
-  const newCategory = {
-    id: values.id === "" ? crypto.randomUUID() : values.id,
+export const createCategory = (values: FormInput) => {
+  const newCategory: Category = {
+    id: values.id ?? crypto.randomUUID(),
+    type: EntityType.CATEGORY,
     name: values.name,
-    totalBudgeted: values.totalBudgeted,
+    totalBudgeted: parseFloat(values.totalBudgeted),
     currency: values.currency,
   };
 
-  const categories = fetchData("categories") ?? [];
+  const categories = fetchData(CollectionType.CATEGORIES) ?? [];
 
   return localStorage.setItem(
-    "categories",
+    CollectionType.CATEGORIES,
     JSON.stringify([...categories, newCategory])
   );
 };
 
-export const editCategory = (category_id: string, values: Category) => {
-  deleteItem("categories", "id", category_id as string);
-  createCategory({
-    id: category_id as string,
-    name: values.name as string,
-    totalBudgeted: values.totalBudgeted as unknown as number,
-    currency: values.currency as string,
-  });
+export const editCategory = (category_id: string, values: FormInput) => {
+  deleteItem(CollectionType.CATEGORIES, category_id);
+  values.id = category_id;
+  createCategory(values);
 };
 
 export const deleteCategory = (category_id: string) => {
-  const transactions = fetchData("transactions") as Transaction[];
+  const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
   const filteredTransactions = transactions.filter(
-    (d) => d.category_id !== category_id
+    (d) => d.type === "expense" && d.dst.id !== category_id
   );
 
-  localStorage.setItem("transactions", JSON.stringify(filteredTransactions));
-  return deleteItem("categories", "id", category_id);
+  localStorage.setItem(
+    CollectionType.TRANSACTIONS,
+    JSON.stringify(filteredTransactions)
+  );
+  return deleteItem(CollectionType.CATEGORIES, category_id);
 };
 
 // Goal
-export const createGoal = (values: Goal) => {
-  const newGoal = {
-    id: values.id === "" ? crypto.randomUUID() : values.id,
+export const createGoal = (values: FormInput) => {
+  const newGoal: Goal = {
+    id: values.id ?? crypto.randomUUID(),
+    type: EntityType.GOAL,
     name: values.name,
-    amount: values.amount,
+    amount: parseFloat(values.amount),
     currency: values.currency,
   };
 
-  const goals = fetchData("goals") ?? [];
+  const goals = fetchData(CollectionType.GOALS) ?? [];
 
-  return localStorage.setItem("goals", JSON.stringify([...goals, newGoal]));
+  return localStorage.setItem(
+    CollectionType.GOALS,
+    JSON.stringify([...goals, newGoal])
+  );
 };
 
-export const editGoal = (goal_id: string, values: Goal) => {
-  deleteItem("goals", "id", goal_id as string);
-  createGoal({
-    id: goal_id as string,
-    name: values.name as string,
-    amount: values.amount as unknown as number,
-    currency: values.currency as string,
-  });
+export const editGoal = (goal_id: string, values: FormInput) => {
+  deleteItem(CollectionType.GOALS, goal_id);
+  values.id = goal_id;
+  createGoal(values);
 };
 
 export const deleteGoal = (goal_id: string) => {
-  const goals = fetchData("goals") as Goal[];
+  const goals = fetchData(CollectionType.GOALS) as Goal[];
   const filteredGoals = goals.filter((d) => d.id !== goal_id);
 
-  localStorage.setItem("goals", JSON.stringify(filteredGoals));
-  return deleteItem("goals", "id", goal_id);
+  localStorage.setItem(CollectionType.GOALS, JSON.stringify(filteredGoals));
+  return deleteItem(CollectionType.GOALS, goal_id);
 };
 
 // Delete User Data
 export const deleteUserData = () => {
-  localStorage.removeItem("transactions");
-  localStorage.removeItem("assets");
-  localStorage.removeItem("categories");
+  localStorage.removeItem(CollectionType.TRANSACTIONS);
+  localStorage.removeItem(CollectionType.ASSETS);
+  localStorage.removeItem(CollectionType.CATEGORIES);
 };
 
 /* -------------- Asset and Category -------------- */
@@ -371,10 +381,10 @@ export const deleteUserData = () => {
 // Calculate Spent By Category
 export const spentByCategory = (
   category: Category,
-  currencyRates: DataItem,
+  currencyRates: CurrencyRates,
   period: Period
 ) => {
-  const transactions = fetchData("transactions") as Transaction[];
+  const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
   const filteredTransactions = filterTransactions(
     transactions,
     "Date",
@@ -382,12 +392,17 @@ export const spentByCategory = (
   );
 
   const total = filteredTransactions.reduce((spent: number, transaction) => {
-    if (transaction.category_id === category.id) {
+    if (transaction.type === "expense" && transaction.dst.id === category.id) {
+      const { source, destination } = getTransactionNodes(transaction);
+
       return (
         spent +
-        (Number(currencyRates[category.currency]) *
-          Number(transaction.amount)) /
-          Number(currencyRates[transaction.currency])
+        convertCurrency(
+          currencyRates,
+          source.currency,
+          destination.currency,
+          transaction.dst.amount
+        )
       );
     }
     return spent;
@@ -398,10 +413,10 @@ export const spentByCategory = (
 export const getCategorySpentHistory = (
   period: Period,
   baseCurrency: string | null,
-  rates: DataItem
+  rates: CurrencyRates
 ) => {
   const transactions = sortFilterTransactions(
-    fetchData("transactions"),
+    fetchData(CollectionType.TRANSACTIONS),
     "Date",
     convertPeriodToString(period),
     "Date",
@@ -409,7 +424,7 @@ export const getCategorySpentHistory = (
   ) as Transaction[];
   if (!transactions || transactions.length === 0) return undefined;
 
-  const categories = fetchData("categories") as Category[];
+  const categories = fetchData(CollectionType.CATEGORIES) as Category[];
 
   const months: string[] = [];
   const startDate = new Date(transactions[0].date);
@@ -423,7 +438,7 @@ export const getCategorySpentHistory = (
     months.push(d.toISOString().slice(0, 7));
   }
 
-  const spentHistoryMap: DataItem = {};
+  const spentHistoryMap: { [key: string]: any } = {};
   for (let i = 0; i < months.length; i++) {
     spentHistoryMap[months[i]] = {};
     for (let j = 0; j < categories.length; j++) {
@@ -433,9 +448,9 @@ export const getCategorySpentHistory = (
 
   transactions.forEach((transaction) => {
     const month = new Date(transaction.date).toISOString().slice(0, 7);
-    const category = categories.find((a) => a.id === transaction.category_id);
+    const category = categories.find((a) => a.id === transaction.dst.id);
     if (category) {
-      spentHistoryMap[month][category.name] += +transaction.amount;
+      spentHistoryMap[month][category.name] += +transaction.dst.amount;
     }
   });
 
@@ -467,24 +482,21 @@ export const getCategorySpentHistory = (
 
 // Calculate Balance of Asset
 export const getBalanceOfAsset = (asset: Asset) => {
-  const transactions = fetchData("transactions") as Transaction[];
+  const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
   let balance = +asset.initBalance;
   const now = new Date();
 
   transactions.forEach((transaction) => {
     if (
       new Date(transaction.date) < new Date(now) &&
-      transaction.asset_id === asset.id
+      transaction.src.id === asset.id
     ) {
-      balance +=
-        transaction.type === "expense"
-          ? -Number(transaction.amount)
-          : +Number(transaction.amount);
+      balance -= transaction.src.amount;
     } else if (
       new Date(transaction.date) < new Date(now) &&
-      transaction.asset_from_id === asset.id
+      transaction.dst.id === asset.id
     ) {
-      balance -= Number(transaction.amount);
+      balance += Number(transaction.dst.amount);
     }
   });
 
@@ -493,38 +505,24 @@ export const getBalanceOfAsset = (asset: Asset) => {
 
 export const getAssetDetails = (asset: Asset, period: Period) => {
   const transactions = filterTransactions(
-    fetchData("transactions"),
+    fetchData(CollectionType.TRANSACTIONS),
     "Date",
     convertPeriodToString(period)
   );
-  let income = 0;
-  let expense = 0;
-  let transferTo = 0;
-  let transferFrom = 0;
+  const data = {
+    income: 0,
+    expense: 0,
+    transfer: 0,
+  };
 
   transactions.forEach((transaction) => {
-    if (asset.id === transaction.asset_id) {
-      switch (transaction.type) {
-        case "income":
-          income += Number(transaction.amount);
-          break;
-        case "expense":
-          expense += Number(transaction.amount);
-          break;
-        case "transfer":
-          transferTo += Number(transaction.amount);
-      }
-    } else if (asset.id === transaction.asset_from_id) {
-      transferFrom += Number(transaction.amount);
-    }
+    if (transaction.src.id === asset.id)
+      data[transaction.type] -= transaction.src.amount;
+    else if (transaction.dst.id === asset.id)
+      data[transaction.type] += transaction.dst.amount;
   });
 
-  return {
-    income: income,
-    expense: expense,
-    transferTo: transferTo,
-    transferFrom: transferFrom,
-  };
+  return data;
 };
 
 interface balanceHistoryItem {
@@ -535,17 +533,17 @@ interface balanceHistoryItem {
 export const getAssetBalanceHistory = (
   period: Period,
   baseCurrency: string | null,
-  rates: DataItem
+  rates: CurrencyRates
 ) => {
   const transactions = sortFilterTransactions(
-    fetchData("transactions"),
+    fetchData(CollectionType.TRANSACTIONS),
     "Date",
     convertPeriodToString(period),
     "Date",
     "Ascending"
   ) as Transaction[];
   if (!transactions || transactions.length === 0) return undefined;
-  const assets = fetchData("assets") as Asset[];
+  const assets = fetchData(CollectionType.ASSETS) as Asset[];
 
   const months: string[] = [];
   const startDate = new Date(transactions[0].date);
@@ -559,7 +557,7 @@ export const getAssetBalanceHistory = (
     months.push(d.toISOString().slice(0, 7));
   }
 
-  const balanceHistoryMap: DataItem = {};
+  const balanceHistoryMap: { [key: string]: any } = {};
   for (let i = 0; i < months.length; i++) {
     balanceHistoryMap[months[i]] = {};
     for (let j = 0; j < assets.length; j++) {
@@ -569,24 +567,18 @@ export const getAssetBalanceHistory = (
 
   transactions.forEach((transaction) => {
     const month = new Date(transaction.date).toISOString().slice(0, 7);
-    const asset = assets.find((a) => a.id === transaction.asset_id);
-    if (asset) {
-      switch (transaction.type) {
-        case "income":
-          balanceHistoryMap[month][asset.name] += +transaction.amount;
-          break;
-        case "expense":
-          balanceHistoryMap[month][asset.name] += -transaction.amount;
-          break;
-        case "transfer":
-          balanceHistoryMap[month][asset.name] += +transaction.amount;
-          const assetFrom = assets.find(
-            (a) => a.id === transaction.asset_from_id
-          );
-          if (assetFrom)
-            balanceHistoryMap[month][assetFrom.name] += -transaction.amount;
-          break;
-      }
+    const { source, destination } = getTransactionNodes(transaction);
+    switch (transaction.type) {
+      case "income":
+        balanceHistoryMap[month][destination.name] += transaction.dst.amount;
+        break;
+      case "expense":
+        balanceHistoryMap[month][source.name] -= transaction.src.amount;
+        break;
+      case "transfer":
+        balanceHistoryMap[month][source.name] -= transaction.src.amount;
+        balanceHistoryMap[month][destination.name] += transaction.dst.amount;
+        break;
     }
   });
 
@@ -662,6 +654,18 @@ const convertPeriodToString = (period: Period): string[] => {
 
 /* -------------- Transactions -------------- */
 
+export const getTransactionNodes = (
+  transaction: Transaction
+): { source: Entity; destination: Entity } => {
+  return {
+    source: getItemById(transaction.src.type, transaction.src.id) as Entity,
+    destination: getItemById(
+      transaction.dst.type,
+      transaction.dst.id
+    ) as Entity,
+  };
+};
+
 // Sort-Filter Transactions
 
 const filterTransactions = (
@@ -680,20 +684,20 @@ const filterTransactions = (
         transaction.name.toLowerCase().includes(filterValue[0].toLowerCase());
       break;
 
-    case "Asset":
-      filterFunction = (transaction) => {
-        return (
-          transaction.asset_id === filterValue[0] ||
-          transaction.asset_from_id === filterValue[0]
-        );
-      };
-      break;
+    // case "Asset":
+    //   filterFunction = (transaction) => {
+    //     return (
+    //       transaction.src.id === filterValue[0] ||
+    //       transaction.dst.id === filterValue[0]
+    //     );
+    //   };
+    //   break;
 
-    case "Category":
-      filterFunction = (transaction) => {
-        return transaction.category_id === filterValue[0];
-      };
-      break;
+    // case "Category":
+    //   filterFunction = (transaction) => {
+    //     return transaction.dst.id === filterValue[0];
+    //   };
+    //   break;
 
     case "Type":
       filterFunction = (transaction) => {
@@ -718,16 +722,16 @@ const filterTransactions = (
       };
       break;
 
-    case "Amount":
-      filterFunction = (transaction) => {
-        const minAmount = filterValue[0] === "" ? 0 : Number(filterValue[0]);
-        const maxAmount =
-          filterValue[1] === "" ? Infinity : Number(filterValue[1]);
-        return (
-          transaction.amount >= minAmount && transaction.amount <= maxAmount
-        );
-      };
-      break;
+    // case "Amount":
+    //   filterFunction = (transaction) => {
+    //     const minAmount = filterValue[0] === "" ? 0 : Number(filterValue[0]);
+    //     const maxAmount =
+    //       filterValue[1] === "" ? Infinity : Number(filterValue[1]);
+    //     return (
+    //       transaction.amount >= minAmount && transaction.amount <= maxAmount
+    //     );
+    //   };
+    //   break;
 
     default:
       filterFunction = () => true;
@@ -754,21 +758,21 @@ const getFilterFunction = (option: string[], value: string | null) => {
       };
       break;
 
-    case "Asset":
-      filterFunction = (a: Transaction) => {
-        if (option[1] === "Is") return a.asset_id === value;
-        if (option[1] === "Is not") return a.asset_id !== value;
-        return true;
-      };
-      break;
+    // case "Asset":
+    //   filterFunction = (a: Transaction) => {
+    //     if (option[1] === "Is") return a.asset_id === value;
+    //     if (option[1] === "Is not") return a.asset_id !== value;
+    //     return true;
+    //   };
+    //   break;
 
-    case "Category":
-      filterFunction = (a: Transaction) => {
-        if (option[1] === "Is") return a.category_id === value;
-        if (option[1] === "Is not") return a.category_id !== value;
-        return true;
-      };
-      break;
+    // case "Category":
+    //   filterFunction = (a: Transaction) => {
+    //     if (option[1] === "Is") return a.category_id === value;
+    //     if (option[1] === "Is not") return a.category_id !== value;
+    //     return true;
+    //   };
+    //   break;
 
     case "Date":
       filterFunction = (a: Transaction) => {
@@ -782,19 +786,19 @@ const getFilterFunction = (option: string[], value: string | null) => {
       };
       break;
 
-    case "Amount":
-      filterFunction = (a: Transaction) => {
-        const filterAmount = parseFloat(value);
-        const transactionAmount = Number(a.amount);
-        if (isNaN(filterAmount)) return true;
-        if (option[1] === "Equal") return transactionAmount === filterAmount;
-        if (option[1] === "More") return transactionAmount > filterAmount;
-        if (option[1] === "Less") return transactionAmount < filterAmount;
-        if (option[1] === "At Least") return transactionAmount >= filterAmount;
-        if (option[1] === "At Most") return transactionAmount <= filterAmount;
-        return true;
-      };
-      break;
+    // case "Amount":
+    //   filterFunction = (a: Transaction) => {
+    //     const filterAmount = parseFloat(value);
+    //     const transactionAmount = Number(a.amount);
+    //     if (isNaN(filterAmount)) return true;
+    //     if (option[1] === "Equal") return transactionAmount === filterAmount;
+    //     if (option[1] === "More") return transactionAmount > filterAmount;
+    //     if (option[1] === "Less") return transactionAmount < filterAmount;
+    //     if (option[1] === "At Least") return transactionAmount >= filterAmount;
+    //     if (option[1] === "At Most") return transactionAmount <= filterAmount;
+    //     return true;
+    //   };
+    //   break;
 
     case "Type":
       filterFunction = (a: Transaction) => {
@@ -832,31 +836,27 @@ const getSortFunction = (option: string, isAscending: boolean = true) => {
     case "Name":
       sortFunction = (a, b) => a.name.localeCompare(b.name);
       break;
-    case "Asset":
-      sortFunction = (a, b) => {
-        const assetA =
-          getAllMatchingItems("assets", "id", a.asset_id)[0]?.name ?? "";
-        const assetB =
-          getAllMatchingItems("assets", "id", b.asset_id)[0]?.name ?? "";
-        return assetA.localeCompare(assetB);
-      };
-      break;
-    case "Category":
-      sortFunction = (a, b) => {
-        const categoryA =
-          getAllMatchingItems("categories", "id", a.category_id)[0]?.name ?? "";
-        const categoryB =
-          getAllMatchingItems("categories", "id", b.category_id)[0]?.name ?? "";
-        return categoryA.localeCompare(categoryB);
-      };
-      break;
+    // case "Asset":
+    //   sortFunction = (a, b) => {
+    //     const assetA = getItemById(EntityType.ASSET, a.asset_id)?.name ?? "";
+    //     const assetB = getItemById(EntityType.ASSET, b.asset_id)?.name ?? "";
+    //     return assetA.localeCompare(assetB);
+    //   };
+    //   break;
+    // case "Category":
+    //   sortFunction = (a, b) => {
+    //     const categoryA = getItemById(EntityType.CATEGORY, a.category_id)?.name ?? "";
+    //     const categoryB = getItemById(EntityType.CATEGORY, b.category_id)?.name ?? "";
+    //     return categoryA.localeCompare(categoryB);
+    //   };
+    //   break;
     case "Date":
       sortFunction = (a, b) =>
         new Date(a.date).getTime() - new Date(b.date).getTime();
       break;
-    case "Amount":
-      sortFunction = (a, b) => a.amount - b.amount;
-      break;
+    // case "Amount":
+    //   sortFunction = (a, b) => a.amount - b.amount;
+    //   break;
     case "Type":
       sortFunction = (a, b) => a.type.localeCompare(b.type);
       break;
@@ -894,7 +894,7 @@ export const sortFilterTransactions2 = (
   transactions: Transaction[],
   filterOrder: FilterInstanceType[],
   sortOrder: SortInstanceType[]
-) => {
+): Transaction[] => {
   return sortTransactions2(
     filterTransactions2(transactions, filterOrder),
     sortOrder
@@ -918,7 +918,7 @@ export const sortFilterTransactions = (
 /* -------------- Currency -------------- */
 
 interface CachedRates {
-  rates: { [key: string]: any };
+  rates: CurrencyRates;
   timestamp: number;
 }
 
@@ -1123,7 +1123,7 @@ export const getAllCurrencies = () => [
 
 // Convert Currency
 export const convertCurrency = (
-  rates: DataItem,
+  rates: CurrencyRates,
   currencyFrom: string,
   currencyTo: string,
   amount: number

@@ -2,10 +2,10 @@
 import { Form } from "react-router-dom";
 
 // helper functions
-import { getAllCurrencies, getAllMatchingItems } from "../../api/helpers";
+import { getAllCurrencies, getItemById } from "../../api/helpers";
 
 // interfaces
-import { Category } from "./Categories";
+import { Category, EntityType } from "../../api/dataModels";
 
 interface CategoryFormProps {
   category_id: string;
@@ -17,11 +17,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
   onClose,
 }) => {
   const isEditForm = category_id !== "";
-  const category = getAllMatchingItems(
-    "categories",
-    "id",
-    category_id
-  )[0] as Category;
+  const category = getItemById(EntityType.CATEGORY, category_id) as Category;
   const currencies = getAllCurrencies();
 
   return (

@@ -2,8 +2,10 @@
 import { Form } from "react-router-dom";
 
 // helper functions
-import { getAllCurrencies, getAllMatchingItems } from "../../api/helpers";
-import { Asset } from "./Assets";
+import { getAllCurrencies, getItemById } from "../../api/helpers";
+
+// interfaces
+import { Asset, EntityType } from "../../api/dataModels";
 
 interface AssetFormProps {
   asset_id: string;
@@ -12,7 +14,7 @@ interface AssetFormProps {
 
 const AssetForm: React.FC<AssetFormProps> = ({ asset_id, onClose }) => {
   const isEditForm = asset_id !== "";
-  const asset = getAllMatchingItems("assets", "id", asset_id)[0] as Asset;
+  const asset = getItemById(EntityType.ASSET, asset_id) as Asset;
   const currencies = getAllCurrencies();
 
   return (

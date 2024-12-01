@@ -7,7 +7,14 @@ interface SortEditorProps {
 }
 
 const SortEditor: React.FC<SortEditorProps> = ({ sortOrder, setSortOrder }) => {
-  const sortOptions = ["Name", "Asset", "Category", "Date", "Amount", "Type"];
+  const sortOptions = [
+    "Name",
+    // "Asset",
+    // "Category",
+    "Date",
+    "Amount",
+    "Type",
+  ];
 
   const addSort = (option: string) => {
     setSortOrder([

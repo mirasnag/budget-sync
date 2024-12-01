@@ -12,7 +12,7 @@ import {
 import randomColor from "randomcolor";
 
 // interfaces
-import { Category } from "../Dashboard/Categories";
+import { Category } from "../../api/dataModels";
 
 interface Props {
   categories: Category[];

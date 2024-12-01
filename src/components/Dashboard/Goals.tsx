@@ -9,12 +9,8 @@ import AddButton from "../Buttons/AddButton";
 import EditButton from "../Buttons/EditButton";
 import DeleteButton from "../Buttons/DeleteButton";
 
-export interface Goal {
-  id: string;
-  name: string;
-  amount: number;
-  currency: string;
-}
+// interfaces
+import { Goal } from "../../api/dataModels";
 
 interface GoalsProps {
   goals: Goal[];

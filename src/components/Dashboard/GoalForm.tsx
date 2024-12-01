@@ -1,6 +1,11 @@
+// rrd imports
 import { Form } from "react-router-dom";
-import { getAllCurrencies, getAllMatchingItems } from "../../api/helpers";
-import { Goal } from "./Goals";
+
+// helper functions
+import { getAllCurrencies, getItemById } from "../../api/helpers";
+
+// interfaces
+import { EntityType, Goal } from "../../api/dataModels";
 
 interface GoalFormProps {
   goal_id: string;
@@ -9,7 +14,7 @@ interface GoalFormProps {
 
 const GoalForm: React.FC<GoalFormProps> = ({ onClose, goal_id }) => {
   const isEditForm = goal_id !== "";
-  const goal = getAllMatchingItems("goals", "id", goal_id)[0] as Goal;
+  const goal = getItemById(EntityType.GOAL, goal_id) as Goal;
   const currencies = getAllCurrencies();
 
   return (

@@ -9,9 +9,11 @@ import {
 } from "recharts";
 import randomColor from "randomcolor";
 
-// interfaces
-import { Category } from "../Dashboard/Categories";
+// helper functions
 import { formatDateMonthStr } from "../../api/helpers";
+
+// interfaces
+import { Category } from "../../api/dataModels";
 
 interface Props {
   categories: Category[];

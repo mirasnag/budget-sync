@@ -1,11 +1,8 @@
 // rrd imports
 import { useNavigate, useRouteError } from "react-router-dom";
 
-// helper funtions
-import { DataItem } from "../api/helpers";
-
 const ErrorPage: React.FC = () => {
-  const error = useRouteError() as DataItem;
+  const error = useRouteError() as any;
   const navigate = useNavigate();
 
   return (

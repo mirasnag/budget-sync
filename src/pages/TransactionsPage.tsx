@@ -2,22 +2,21 @@
 import { useLoaderData } from "react-router-dom";
 
 // helper functions
-import { DataItem, fetchData, getCurrencyRates } from "../api/helpers";
+import { fetchData, getCurrencyRates } from "../api/helpers";
 
 // interfaces
-import { Asset } from "../components/Dashboard/Assets";
-import { Category } from "../components/Dashboard/Categories";
-import TransactionTable, {
-  Transaction,
-} from "../components/Dashboard/Transactions";
+import { Asset, Category, CurrencyRates, Transaction } from "../api/dataModels";
+
+// UI components
 import CurrencyWidget from "../components/CurrencyWidget";
+import TransactionTable from "../components/Dashboard/Transactions";
 
 // loader
 export async function transactionsPageLoader(): Promise<{
   assets: Asset[];
   transactions: Transaction[];
   categories: Category[];
-  currencyRates: DataItem;
+  currencyRates: CurrencyRates;
 }> {
   const assets = fetchData("assets") as Asset[];
   const transactions = fetchData("transactions") as Transaction[];
@@ -33,7 +32,7 @@ const TransactionsPage = () => {
       assets: Asset[];
       transactions: Transaction[];
       categories: Category[];
-      currencyRates: DataItem[];
+      currencyRates: CurrencyRates;
     };
 
   return (
@@ -45,7 +44,6 @@ const TransactionsPage = () => {
           a.createdAt < b.createdAt ? 1 : -1
         )}
         categories={categories}
-        isRecent={false}
       />
     </div>
   );

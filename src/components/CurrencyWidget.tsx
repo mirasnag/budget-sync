@@ -2,10 +2,13 @@
 import { useState, useEffect } from "react";
 
 // helper functions
-import { DataItem, getAllCurrencies } from "../api/helpers";
+import { getAllCurrencies } from "../api/helpers";
+
+// interfaces
+import { CurrencyRates } from "../api/dataModels";
 
 interface Props {
-  rates: DataItem;
+  rates: CurrencyRates;
 }
 
 const CurrencyWidget: React.FC<Props> = ({ rates }) => {

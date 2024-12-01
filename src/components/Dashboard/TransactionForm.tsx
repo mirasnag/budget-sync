@@ -1,14 +1,19 @@
 // rrd imports
 import { Form } from "react-router-dom";
 
+// library imports
+import { useState } from "react";
+
 // helper functions
-import { formatDateToInputValue, getAllMatchingItems } from "../../api/helpers";
+import { formatDateToInputValue, getItemById } from "../../api/helpers";
 
 // interfaces
-import { Transaction } from "./Transactions";
-import { Asset } from "./Assets";
-import { Category } from "./Categories";
-import { useState } from "react";
+import {
+  Asset,
+  Category,
+  Transaction,
+  TransactionType,
+} from "../../api/dataModels";
 
 interface TransactionFormProps {
   assets: Asset[];
@@ -24,14 +29,10 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   onClose,
 }) => {
   const isEditForm = transaction_id !== "";
-  const transaction = getAllMatchingItems(
-    "transactions",
-    "id",
-    transaction_id
-  )[0] as Transaction;
+  const transaction = getItemById("transaction", transaction_id) as Transaction;
 
-  const [transactionType, setTransactionType] = useState<string>(
-    isEditForm ? transaction.type : "expense"
+  const [transactionType, setTransactionType] = useState<TransactionType>(
+    isEditForm ? transaction.type : TransactionType.EXPENSE
   );
 
   return (
@@ -44,9 +45,12 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             name="_action"
             value={isEditForm ? "editTransaction" : "createTransaction"}
           />
-          {isEditForm && (
-            <input type="hidden" name="transaction_id" value={transaction.id} />
-          )}
+          <input
+            type="hidden"
+            name="transaction_id"
+            value={isEditForm ? transaction.id : ""}
+          />
+
           <div className="form-group">
             <label htmlFor="transactionName">Transaction Name</label>
             <input
@@ -67,92 +71,133 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             />
             <div
               className={`btn-rect ${
-                transactionType === "expense" ? "btn-rect-red" : ""
+                transactionType === TransactionType.EXPENSE
+                  ? "btn-rect-red"
+                  : ""
               }`}
-              onClick={() => setTransactionType("expense")}
+              onClick={() => setTransactionType(TransactionType.EXPENSE)}
             >
               Expense
             </div>
             <div
               className={`btn-rect ${
-                transactionType === "transfer" ? "btn-rect-yellow" : ""
+                transactionType === TransactionType.TRANSFER
+                  ? "btn-rect-yellow"
+                  : ""
               }`}
-              onClick={() => setTransactionType("transfer")}
+              onClick={() => setTransactionType(TransactionType.TRANSFER)}
             >
               Transfer
             </div>
             <div
               className={`btn-rect ${
-                transactionType === "income" ? "btn-rect-green" : ""
+                transactionType === TransactionType.INCOME
+                  ? "btn-rect-green"
+                  : ""
               }`}
-              onClick={() => setTransactionType("income")}
+              onClick={() => setTransactionType(TransactionType.INCOME)}
             >
               Income
             </div>
           </div>
-          {transactionType === "expense" && (
-            <div className="form-group">
-              <label htmlFor="category_id">Category of Expense</label>
-              <select
-                name="category_id"
-                id="category_id"
-                defaultValue={isEditForm ? transaction.category_id : ""}
-                required
-              >
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {transactionType === TransactionType.EXPENSE && (
+            <>
+              <div className="form-group">
+                <label htmlFor="src">Asset</label>
+                <select
+                  name="src"
+                  id="src"
+                  defaultValue={isEditForm ? transaction.src.id : ""}
+                  required
+                >
+                  {assets.map((asset) => (
+                    <option key={asset.id} value={asset.id}>
+                      {asset.name} ({asset.currency})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="dst">Category of Expense</label>
+                <select
+                  name="dst"
+                  id="dst"
+                  defaultValue={isEditForm ? transaction.dst.id : ""}
+                  required
+                >
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
           )}
-          {transactionType === "income" && (
-            <div className="form-group">
-              <label htmlFor="source">Source of Income</label>
-              <input
-                type="text"
-                name="source"
-                id="source"
-                defaultValue={isEditForm ? transaction.source : ""}
-                required
-              />
-            </div>
+          {transactionType === TransactionType.INCOME && (
+            <>
+              <div className="form-group">
+                <label htmlFor="src">Source of Income</label>
+                <input
+                  type="text"
+                  name="src"
+                  id="src"
+                  defaultValue={""}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="dst">Asset</label>
+                <select
+                  name="dst"
+                  id="dst"
+                  defaultValue={isEditForm ? transaction.dst.id : ""}
+                  required
+                >
+                  {assets.map((asset) => (
+                    <option key={asset.id} value={asset.id}>
+                      {asset.name} ({asset.currency})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
           )}
-          {transactionType === "transfer" && (
-            <div className="form-group">
-              <label htmlFor="asset_from_id">Transfer From</label>
-              <select
-                name="asset_from_id"
-                id="asset_from_id"
-                defaultValue={isEditForm ? transaction.asset_from_id : ""}
-                required
-              >
-                {assets.map((asset) => (
-                  <option key={asset.id} value={asset.id}>
-                    {asset.name} ({asset.currency})
-                  </option>
-                ))}
-              </select>
-            </div>
+          {transactionType === TransactionType.TRANSFER && (
+            <>
+              <div className="form-group">
+                <label htmlFor="src">Transfer From</label>
+                <select
+                  name="src"
+                  id="src"
+                  defaultValue={isEditForm ? transaction.src.id : ""}
+                  required
+                >
+                  {assets.map((asset) => (
+                    <option key={asset.id} value={asset.id}>
+                      {asset.name} ({asset.currency})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="dst">Asset</label>
+                <select
+                  name="dst"
+                  id="dst"
+                  defaultValue={isEditForm ? transaction.dst.id : ""}
+                  required
+                >
+                  {assets.map((asset) => (
+                    <option key={asset.id} value={asset.id}>
+                      {asset.name} ({asset.currency})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
           )}
-          <div className="form-group">
-            <label htmlFor="asset_id">
-              {transactionType === "transfer" ? "Transfer To" : "Asset"}
-            </label>
-            <select
-              name="asset_id"
-              id="asset_id"
-              defaultValue={isEditForm ? transaction.asset_id : ""}
-              required
-            >
-              {assets.map((asset) => (
-                <option key={asset.id} value={asset.id}>
-                  {asset.name} ({asset.currency})
-                </option>
-              ))}
-            </select>
-          </div>
           <div className="form-group">
             <label htmlFor="date">Date</label>
             <input
@@ -171,7 +216,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               type="number"
               name="amount"
               id="amount"
-              defaultValue={isEditForm ? transaction.amount : ""}
+              defaultValue={isEditForm ? transaction.src.amount : ""}
               required
             />
           </div>

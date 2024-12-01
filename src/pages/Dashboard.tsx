@@ -5,14 +5,14 @@ import { useEffect, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 
 // helper functions
-import { DataItem, fetchData, getCurrencyRates } from "../api/helpers";
+import { fetchData, getCurrencyRates } from "../api/helpers";
+
+// interfaces
+import { Asset, Category, CurrencyRates, Transaction } from "../api/dataModels";
 
 // components
-import { Asset } from "../components/Dashboard/Assets";
-import TransactionTable, {
-  Transaction,
-} from "../components/Dashboard/Transactions";
-import Categories, { Category } from "../components/Dashboard/Categories";
+import TransactionTable from "../components/Dashboard/Transactions";
+import Categories from "../components/Dashboard/Categories";
 import CurrencyWidget from "../components/CurrencyWidget";
 import Assets from "../components/Dashboard/Assets";
 // import Goals, { Goal } from "../components/Dashboard/Goals";
@@ -23,7 +23,7 @@ export async function dashboardLoader(): Promise<{
   transactions: Transaction[];
   categories: Category[];
   // goals: Goal[];
-  currencyRates: DataItem;
+  currencyRates: CurrencyRates;
 }> {
   const assets = fetchData("assets") as Asset[];
   const transactions = fetchData("transactions") as Transaction[];
@@ -41,7 +41,7 @@ const Dashboard: React.FC = () => {
       transactions: Transaction[];
       categories: Category[];
       // goals: Goal[];
-      currencyRates: DataItem;
+      currencyRates: CurrencyRates;
     };
 
   const [data, setData] = useState({

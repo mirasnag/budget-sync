@@ -9,10 +9,10 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import randomColor from "randomcolor";
 
 // Interfaces
-import randomColor from "randomcolor";
-import { Asset } from "../Dashboard/Assets";
+import { Asset } from "../../api/dataModels";
 
 interface Props {
   assets: Asset[];

@@ -1,12 +1,13 @@
 import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { formatDateToInputValue } from "../../api/helpers";
-import { Asset } from "../Dashboard/Assets";
-import { Category } from "../Dashboard/Categories";
 import {
   FilterInstanceType,
   FilterOptionKey,
   filterOptions,
 } from "../Dashboard/Transactions";
+
+// interfaces
+import { Asset, Category } from "../../api/dataModels";
 
 interface FilterOptionInputProps {
   filterInstance: FilterInstanceType;

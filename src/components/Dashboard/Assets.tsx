@@ -6,12 +6,14 @@ import { Form } from "react-router-dom";
 
 // helper functions
 import {
-  DataItem,
   convertCurrency,
   formatCurrency,
   getAssetDetails,
   getBalanceOfAsset,
 } from "../../api/helpers";
+
+// interfaces
+import { Asset, CurrencyRates } from "../../api/dataModels";
 
 // components
 import AssetForm from "./AssetForm";
@@ -21,16 +23,9 @@ import DeleteButton from "../Buttons/DeleteButton";
 import PeriodSelector, { Period } from "../Buttons/PeriodSelector";
 import CurrencySelector from "../Buttons/CurrencySelector";
 
-export interface Asset {
-  id: string;
-  name: string;
-  initBalance: number;
-  currency: string;
-}
-
 export interface AssetsProps {
   assets: Asset[];
-  currencyRates: DataItem;
+  currencyRates: CurrencyRates;
   showHeader?: boolean;
   period?: string[];
 }

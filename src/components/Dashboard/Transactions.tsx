@@ -10,48 +10,37 @@ import {
   ArrowsUpDownIcon,
   FunnelIcon,
 } from "@heroicons/react/20/solid";
-
-// interfaces
-import { Asset } from "./Assets";
-import { Category } from "./Categories";
-
-// components
-import TransactionForm from "./TransactionForm";
-
-// helper functions
-import {
-  formatCurrency,
-  formatDate,
-  getAllMatchingItems,
-  sortFilterTransactions2,
-} from "../../api/helpers";
 import { FaTags, FaWallet } from "react-icons/fa";
 import { FaSackDollar } from "react-icons/fa6";
+
+// interfaces
+import {
+  Asset,
+  Category,
+  Transaction,
+  TransactionType,
+} from "../../api/dataModels";
+
+// UI components
+import TransactionForm from "./TransactionForm";
 import AddButton from "../Buttons/AddButton";
 import EditButton from "../Buttons/EditButton";
 import DeleteButton from "../Buttons/DeleteButton";
 import FilterEditor from "../Transactions/FilterEditor";
 import SortEditor from "../Transactions/SortEditor";
 
-export interface Transaction {
-  id: string;
-  name: string;
-  asset_id: string;
-  category_id: string;
-  source: string;
-  asset_from_id: string;
-  amount: number;
-  currency: string;
-  date: Date;
-  createdAt: Date;
-  type: string;
-}
+// helper functions
+import {
+  formatCurrency,
+  formatDate,
+  getTransactionNodes,
+  sortFilterTransactions2,
+} from "../../api/helpers";
 
 export interface TransactionTableProps {
   transactions: Transaction[];
   assets: Asset[];
   categories: Category[];
-  isRecent?: boolean;
 }
 
 export interface SortInstanceType {
@@ -68,8 +57,8 @@ export interface FilterInstanceType {
 
 export const filterOptions = {
   Name: ["Contains", "Is", "Starts With"],
-  Asset: ["Is", "Is not"],
-  Category: ["Is", "Is not"],
+  // Asset: ["Is", "Is not"],
+  // Category: ["Is", "Is not"],
   Date: ["Is", "Is before", "Is after"],
   Amount: ["Equal", "More", "Less", "At Least", "At Most"],
   Type: ["Is", "Is not"],
@@ -81,7 +70,6 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
   transactions,
   assets,
   categories,
-  isRecent = true,
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState("");
@@ -111,7 +99,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
   return (
     <div className="transactions">
       <div className="header">
-        <h2>{isRecent && "Recent"} Transactions</h2>
+        <h2>Transactions</h2>
         <div className="btns">
           <AddButton
             handleClick={() => {
@@ -185,86 +173,73 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         </thead>
         <tbody>
           {processedTransactions.map((transaction, index) => {
-            const assetName =
-              getAllMatchingItems("assets", "id", transaction.asset_id)[0]
-                ?.name ?? "";
-            const categoryName =
-              getAllMatchingItems(
-                "categories",
-                "id",
-                transaction.category_id
-              )[0]?.name ?? "";
-            const assetFromName =
-              getAllMatchingItems("assets", "id", transaction.asset_from_id)[0]
-                ?.name ?? "";
-            const source = transaction.source;
+            const { source, destination } = getTransactionNodes(transaction);
+            const srcName = source ? source.name : transaction.src.id;
+            const dstName = destination ? destination.name : transaction.dst.id;
+
+            const formattedAmount = formatCurrency(
+              transaction?.src.amount ?? transaction?.dst.amount ?? "0",
+              source?.currency ?? destination?.currency ?? "USD"
+            );
 
             return (
               <tr key={index}>
                 <td>{transaction.name}</td>
                 <td>{formatDate(transaction.date)}</td>
                 <td>
-                  {transaction.type === "income" && (
+                  {transaction.type === TransactionType.INCOME && (
                     <div className="flex-center frame color-green">
-                      {"+ " +
-                        formatCurrency(
-                          transaction.amount,
-                          transaction.currency
-                        )}
+                      {formattedAmount}
                     </div>
                   )}
-                  {transaction.type === "expense" && (
+                  {transaction.type === TransactionType.EXPENSE && (
                     <div className="flex-center frame color-red">
-                      {"- " +
-                        formatCurrency(
-                          transaction.amount,
-                          transaction.currency
-                        )}
+                      {formattedAmount}
                     </div>
                   )}
-                  {transaction.type === "transfer" && (
+                  {transaction.type === TransactionType.TRANSFER && (
                     <div className="flex-center frame color-yellow">
-                      {formatCurrency(transaction.amount, transaction.currency)}
+                      {formattedAmount}
                     </div>
                   )}
                 </td>
                 <td>
-                  {transaction.type === "expense" && (
+                  {transaction.type === TransactionType.EXPENSE && (
                     <div className="transaction-details">
                       <div className="flex-center frame color-blue">
                         <FaWallet width={15} />
-                        {assetName}
+                        {srcName}
                       </div>
                       <ArrowLongRightIcon width={20} />
                       <div className="flex-center frame color-blue">
                         <FaTags width={15} />
-                        {categoryName}
+                        {dstName}
                       </div>
                     </div>
                   )}
-                  {transaction.type === "income" && (
+                  {transaction.type === TransactionType.INCOME && (
                     <div className="transaction-details">
                       <div className="flex-center frame color-blue">
                         <FaSackDollar width={20} />
-                        {source}
+                        {srcName}
                       </div>
                       <ArrowLongRightIcon width={20} />
                       <div className="flex-center frame color-blue">
                         <FaWallet width={15} />
-                        {assetName}
+                        {dstName}
                       </div>
                     </div>
                   )}
-                  {transaction.type === "transfer" && (
+                  {transaction.type === TransactionType.TRANSFER && (
                     <div className="transaction-details">
                       <div className="flex-center frame color-blue">
                         <FaWallet width={15} />
-                        {assetFromName}
+                        {srcName}
                       </div>
                       <ArrowLongRightIcon width={20} />
                       <div className="flex-center frame color-blue">
                         <FaWallet width={15} />
-                        {assetName}
+                        {dstName}
                       </div>
                     </div>
                   )}

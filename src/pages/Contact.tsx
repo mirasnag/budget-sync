@@ -4,7 +4,6 @@ import { ActionFunction, Form, useActionData } from "react-router-dom";
 // library imports
 import { FaGithub, FaLinkedin, FaTelegram } from "react-icons/fa";
 import emailjs from "emailjs-com";
-import { DataItem } from "../api/helpers";
 
 // action
 export const contactAction: ActionFunction = async ({ request }) => {
@@ -33,7 +32,7 @@ export const contactAction: ActionFunction = async ({ request }) => {
 };
 
 const Contact: React.FC = () => {
-  const actionData = useActionData() as DataItem;
+  const actionData = useActionData() as any;
 
   return (
     <div className="contact component">

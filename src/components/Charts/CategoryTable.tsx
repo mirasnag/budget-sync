@@ -1,6 +1,11 @@
+// library imports
 import randomColor from "randomcolor";
+
+// helper functions
 import { formatDateMonthStr } from "../../api/helpers";
-import { Category } from "../Dashboard/Categories";
+
+// interfaces
+import { Category } from "../../api/dataModels";
 
 interface Props {
   categories: Category[];

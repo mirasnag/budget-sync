@@ -9,10 +9,10 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import randomColor from "randomcolor";
 
 // Interfaces
-import { Category } from "../Dashboard/Categories";
-import randomColor from "randomcolor";
+import { Category } from "../../api/dataModels";
 
 interface Props {
   categories: Category[];

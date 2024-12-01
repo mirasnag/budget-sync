@@ -1,6 +1,11 @@
+// library imports
 import randomColor from "randomcolor";
+
+// helper functions
 import { formatDateMonthStr } from "../../api/helpers";
-import { Asset } from "../Dashboard/Assets";
+
+// interfaces
+import { Asset } from "../../api/dataModels";
 
 interface Props {
   assets: Asset[];

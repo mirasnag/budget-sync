@@ -6,11 +6,13 @@ import { Form } from "react-router-dom";
 
 // helper functions
 import {
-  DataItem,
   convertCurrency,
   formatCurrency,
   spentByCategory,
 } from "../../api/helpers";
+
+// interfaces
+import { Category, CurrencyRates } from "../../api/dataModels";
 
 // components
 import CategoryForm from "./CategoryForm";
@@ -20,16 +22,9 @@ import DeleteButton from "../Buttons/DeleteButton";
 import PeriodSelector, { Period } from "../Buttons/PeriodSelector";
 import CurrencySelector from "../Buttons/CurrencySelector";
 
-export interface Category {
-  id: string;
-  name: string;
-  totalBudgeted: number;
-  currency: string;
-}
-
 interface CategoriesProps {
   categories: Category[];
-  currencyRates: DataItem;
+  currencyRates: CurrencyRates;
 }
 
 const Categories: React.FC<CategoriesProps> = ({
