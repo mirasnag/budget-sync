@@ -1,0 +1,39 @@
+.category,
+.goal {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.category-name {
+  margin-right: 10px;
+}
+
+.category-bar-wrapper,
+.goal-bar-wrapper {
+  flex: 1;
+
+  .labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+  }
+}
+
+.category-bar-back,
+.goal-bar-back {
+  flex: 1;
+  background: var(--bg-dark-button);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.category-bar,
+.goal-bar {
+  height: 20px;
+  background: var(--yellow);
+  transition: width 0.3s ease;
+}

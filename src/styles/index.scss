@@ -1,0 +1,145 @@
+@use "transaction";
+@use "layout";
+@use "buttons";
+@use "form";
+@use "category";
+@use "chart";
+@use "period-selector";
+@use "currency-widget";
+
+:root {
+  /* Background Colors */
+  --bg-component: #f0f0f0;
+  --bg-primary: #f0f0f0;
+  --bg-dark-button: #ccc;
+  --bg-light-button: #ccc;
+  --bg-effect: #fff;
+
+  /* Text Colors */
+  --text-dark: #000000;
+  --text-light: #333333;
+
+  /* Accent Colors */
+  --blue: #4ca2ff;
+  --green: #27ae60;
+  --yellow: #f39c12;
+  --red: #e74c3c;
+
+  /* Other */
+  --border: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark Mode Background Colors */
+    --bg-component: #1c1c1c;
+    --bg-primary: #1c1c1c;
+    --bg-dark-button: #333;
+    --bg-light-button: #ccc;
+    --bg-effect: #2b2b2b;
+
+    /* Dark Mode Text Colors */
+    --text-dark: #000;
+    --text-light: #ccc;
+
+    /* Accent Colors */
+    --blue: #038ffa;
+    --green: #acf3aecf;
+    --yellow: #f9fb92bb;
+    --red: #fa6b83e2;
+
+    /* Other */
+    --border: #ccc;
+  }
+}
+
+body {
+  background: var(--bg-primary);
+}
+
+.content {
+  overflow-y: auto;
+}
+
+/* Utils */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page {
+  display: grid;
+  gap: 30px;
+  width: 100%;
+}
+
+select,
+input {
+  background: var(--bg-light-button);
+  color: var(--text-dark);
+  border: 0.5px solid var(--border);
+  outline: 0px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    font-size: large;
+  }
+
+  th,
+  td {
+    padding: 10px;
+    text-align: left;
+  }
+
+  tbody tr {
+    border-bottom: none;
+  }
+}
+
+.component {
+  background: var(--bg-component);
+  color: var(--text-light);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.color-green {
+  background: var(--green) !important;
+  color: var(--text-dark) !important;
+}
+
+.color-red {
+  background: var(--red) !important;
+  color: var(--text-dark) !important;
+}
+
+.color-blue {
+  background: var(--blue) !important;
+  color: var(--text-dark) !important;
+}
+
+.color-yellow {
+  background: var(--yellow) !important;
+  color: var(--text-dark) !important;
+}
+
+.color-white {
+  background: white !important;
+  color: var(--text-dark) !important;
+}
+
+.frame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  width: fit-content;
+  min-width: 100px;
+  padding: 5px;
+  border-radius: 15px;
+}

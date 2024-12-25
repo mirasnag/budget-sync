@@ -1,0 +1,61 @@
+.btn {
+  background: var(--bg-light-button);
+  color: var(--text-dark);
+  border: 0.5px solid var(--border);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background: var(--blue) !important;
+  }
+
+  &-red:hover {
+    background: var(--red) !important;
+  }
+
+  &-yellow:hover {
+    background: var(--yellow) !important;
+  }
+
+  &-medium {
+    padding: 12px 20px 8px 20px;
+    margin: 0px 5px 0px 0px;
+    font-size: 1em;
+  }
+}
+
+.btn-rect {
+  background: var(--bg-light-button);
+  color: var(--text-dark);
+  width: 33%;
+  padding: 8px 0px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &-green {
+    background: var(--green);
+    font-weight: bold;
+  }
+
+  &-rect-red {
+    background: var(--red);
+    font-weight: bold;
+  }
+
+  &-rect-yellow {
+    background: var(--yellow);
+    font-weight: bold;
+  }
+}
+
+.table-btns {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+}

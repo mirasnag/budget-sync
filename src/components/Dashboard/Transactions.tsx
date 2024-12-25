@@ -5,11 +5,7 @@ import { useState } from "react";
 import { Form } from "react-router-dom";
 
 // library imports
-import {
-  ArrowLongRightIcon,
-  ArrowsUpDownIcon,
-  FunnelIcon,
-} from "@heroicons/react/20/solid";
+import { ArrowsUpDownIcon, FunnelIcon } from "@heroicons/react/20/solid";
 import { FaTags, FaWallet } from "react-icons/fa";
 import { FaSackDollar } from "react-icons/fa6";
 
@@ -26,8 +22,8 @@ import TransactionForm from "./TransactionForm";
 import AddButton from "../Buttons/AddButton";
 import EditButton from "../Buttons/EditButton";
 import DeleteButton from "../Buttons/DeleteButton";
-import FilterEditor from "../Transactions/FilterEditor";
-import SortEditor from "../Transactions/SortEditor";
+import FilterEditor, { FilterInstanceType } from "../Transactions/FilterEditor";
+import SortEditor, { SortInstanceType } from "../Transactions/SortEditor";
 
 // helper functions
 import {
@@ -41,29 +37,6 @@ export interface TransactionTableProps {
   assets: Asset[];
   categories: Category[];
 }
-
-export interface SortInstanceType {
-  id: string;
-  option: string;
-  isAscending: boolean;
-}
-
-export interface FilterInstanceType {
-  id: string;
-  option: string[]; // length = 2
-  value: string | null;
-}
-
-export const filterOptions = {
-  Name: ["Contains", "Is", "Starts With"],
-  // Asset: ["Is", "Is not"],
-  // Category: ["Is", "Is not"],
-  Date: ["Is", "Is before", "Is after"],
-  Amount: ["Equal", "More", "Less", "At Least", "At Most"],
-  Type: ["Is", "Is not"],
-};
-
-export type FilterOptionKey = keyof typeof filterOptions;
 
 const TransactionTable: React.FC<TransactionTableProps> = ({
   transactions,
@@ -87,7 +60,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     FilterInstanceType[]
   >([]);
 
-  const tableHeader = ["Name", "Date", "Amount", "Details", ""];
+  const tableHeader = ["Name", "Date", "Amount", "Source", "Destination", ""];
 
   const processedTransactions = sortFilterTransactions2(
     transactions,
@@ -182,7 +155,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
             );
 
             return (
-              <tr key={index}>
+              <tr key={index} className={`${transaction.type}-row`}>
                 <td>{transaction.name}</td>
                 <td>{formatDate(transaction.date)}</td>
                 <td>
@@ -203,45 +176,48 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   )}
                 </td>
                 <td>
-                  {transaction.type === TransactionType.EXPENSE && (
-                    <div className="transaction-details">
+                  <div className="transaction-details">
+                    {transaction.type === TransactionType.EXPENSE && (
                       <div className="flex-center frame color-blue">
                         <FaWallet width={15} />
                         {srcName}
                       </div>
-                      <ArrowLongRightIcon width={20} />
-                      <div className="flex-center frame color-blue">
-                        <FaTags width={15} />
-                        {dstName}
-                      </div>
-                    </div>
-                  )}
-                  {transaction.type === TransactionType.INCOME && (
-                    <div className="transaction-details">
+                    )}
+                    {transaction.type === TransactionType.INCOME && (
                       <div className="flex-center frame color-blue">
                         <FaSackDollar width={20} />
                         {srcName}
                       </div>
-                      <ArrowLongRightIcon width={20} />
-                      <div className="flex-center frame color-blue">
-                        <FaWallet width={15} />
-                        {dstName}
-                      </div>
-                    </div>
-                  )}
-                  {transaction.type === TransactionType.TRANSFER && (
-                    <div className="transaction-details">
+                    )}
+                    {transaction.type === TransactionType.TRANSFER && (
                       <div className="flex-center frame color-blue">
                         <FaWallet width={15} />
                         {srcName}
                       </div>
-                      <ArrowLongRightIcon width={20} />
+                    )}
+                  </div>
+                </td>
+                <td>
+                  <div className="transaction-details">
+                    {transaction.type === TransactionType.EXPENSE && (
+                      <div className="flex-center frame color-blue">
+                        <FaTags width={15} />
+                        {dstName}
+                      </div>
+                    )}
+                    {transaction.type === TransactionType.INCOME && (
                       <div className="flex-center frame color-blue">
                         <FaWallet width={15} />
                         {dstName}
                       </div>
-                    </div>
-                  )}
+                    )}
+                    {transaction.type === TransactionType.TRANSFER && (
+                      <div className="flex-center frame color-blue">
+                        <FaWallet width={15} />
+                        {dstName}
+                      </div>
+                    )}
+                  </div>
                 </td>
                 <td>
                   <div className="table-btns">

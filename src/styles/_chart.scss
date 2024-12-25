@@ -1,0 +1,22 @@
+.pie-chart-wrapper {
+  display: flex;
+  overflow-x: scroll;
+}
+
+.pie-chart {
+  flex: 1;
+}
+
+.category-chart,
+.asset-chart {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-component);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.charts .legend-container {
+  height: 100px;
+  width: 100px;
+}

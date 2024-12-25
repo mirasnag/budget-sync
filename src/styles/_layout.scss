@@ -1,0 +1,153 @@
+.layout {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  min-width: 200px;
+  background: var(--bg-primary);
+  color: var(--text-light);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+
+  .menu {
+    display: grid;
+
+    .menu-item {
+      display: flex;
+      margin: 10px 0;
+      text-decoration: none;
+      color: var(--text-light);
+      border-radius: 15px;
+      padding: 20px 10px;
+      border: 2.5px solid rgba(0, 0, 0, 0);
+
+      &.active {
+        color: var(--blue);
+        border-color: var(--blue);
+      }
+
+      &:hover {
+        background: var(--bg-effect);
+        border-color: var(--yellow);
+      }
+
+      .icon {
+        margin-right: 10px;
+        font-size: 20px;
+      }
+    }
+  }
+}
+
+.content {
+  flex-grow: 1;
+  background: var(--bg-effect);
+  padding: 20px;
+  color: var(--text-light);
+}
+
+.menu-link span {
+  margin-left: 10px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  .header-menu {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  h2 {
+    margin: 5px;
+  }
+
+  select {
+    text-align: center;
+    border-radius: 5px;
+    width: 90px;
+
+    &:hover {
+      background-color: var(--blue);
+    }
+  }
+
+  input {
+    min-width: 40px;
+  }
+}
+
+.contact-section {
+  margin-bottom: 20px;
+
+  h3 {
+    color: var(--blue);
+  }
+
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+
+    li {
+      margin-bottom: 5px;
+    }
+  }
+
+  span {
+    color: var(--blue);
+    text-decoration: underline;
+  }
+}
+
+.social-links a {
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 40px;
+  margin: 0px 5px;
+
+  &:hover {
+    color: var(--blue);
+  }
+}
+
+.contact-form {
+  margin-top: 10px;
+
+  textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0px;
+    border: 1px solid var(--blue);
+    background: var(--bg-dark-button);
+    color: var(--text-light);
+    border-radius: 4px;
+  }
+}
+
+.error-page {
+  width: 100vw;
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+
+  h1 {
+    color: var(--red);
+    margin-bottom: 20px;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  span {
+    font-size: large;
+  }
+}

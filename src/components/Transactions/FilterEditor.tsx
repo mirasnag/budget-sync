@@ -3,14 +3,26 @@ import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/20/solid";
 
 // helper functions
 import { formatDateToInputValue } from "../../utils/formatting";
-import {
-  FilterInstanceType,
-  FilterOptionKey,
-  filterOptions,
-} from "../Dashboard/Transactions";
 
 // interfaces
 import { Asset, Category } from "../../utils/types";
+
+export interface FilterInstanceType {
+  id: string;
+  option: string[]; // length = 2
+  value: string | null;
+}
+
+export const filterOptions = {
+  Name: ["Contains", "Is", "Starts With"],
+  // Asset: ["Is", "Is not"],
+  // Category: ["Is", "Is not"],
+  Date: ["Is", "Is before", "Is after"],
+  Amount: ["Equal", "More", "Less", "At Least", "At Most"],
+  Type: ["Is", "Is not"],
+};
+
+export type FilterOptionKey = keyof typeof filterOptions;
 
 interface FilterOptionInputProps {
   filterInstance: FilterInstanceType;

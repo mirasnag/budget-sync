@@ -1,8 +1,6 @@
+import { FilterInstanceType } from "../components/Transactions/FilterEditor";
+import { SortInstanceType } from "../components/Transactions/SortEditor";
 import { getItemById } from "./services";
-import {
-  FilterInstanceType,
-  SortInstanceType,
-} from "../components/Dashboard/Transactions";
 import { Entity, Transaction } from "./types";
 
 export const getTransactionNodes = (

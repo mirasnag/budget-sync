@@ -291,6 +291,10 @@ export const deleteTransaction = (transaction_id: string) => {
   return deleteItem(CollectionType.TRANSACTIONS, transaction_id);
 };
 
+export const getTransaction = (transaction_id: string): Transaction => {
+  return getItemById("transaction", transaction_id) as Transaction;
+};
+
 // Category
 export const createCategory = (values: FormInput) => {
   const newCategory: Category = {

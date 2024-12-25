@@ -1,0 +1,88 @@
+.period-selector {
+  position: relative;
+  text-align: center;
+  padding: 0;
+
+  &:hover {
+    background-color: var(--bg-dark-button);
+  }
+
+  .period-text {
+    padding: 12px 20px 8px 20px;
+  }
+
+  .editor {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: absolute;
+    top: 50px;
+    right: 0px;
+    width: 300px;
+    padding: 5px 20px;
+    background-color: var(--bg-light-button);
+    border: 0.5px solid var(--border);
+    border-radius: 5px;
+
+    :hover {
+      cursor: default;
+    }
+
+    .date-type-selector {
+      display: flex;
+      justify-content: center;
+      border: 0.5px solid var(--border);
+      border-radius: 5px;
+      width: 100%;
+
+      div {
+        width: 100%;
+
+        span {
+          padding: 5px;
+        }
+      }
+
+      .active {
+        background-color: var(--blue);
+      }
+    }
+  }
+
+  .editor-absolute {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .editor-relative {
+    display: flex;
+    justify-content: left;
+    gap: 5px;
+
+    input {
+      width: 15px;
+      padding: 5px;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    select {
+      outline: none;
+      padding: 5px;
+    }
+  }
+}
+
+.date-picker {
+  border: 0.5px solid var(--border);
+  border-radius: 5px;
+  margin: 5px;
+  padding: 5px;
+
+  input {
+    border: none;
+    text-decoration: none;
+    outline: none;
+  }
+}

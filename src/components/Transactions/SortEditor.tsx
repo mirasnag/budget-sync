@@ -1,27 +1,34 @@
 import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import { SortInstanceType } from "../Dashboard/Transactions";
+
+export interface SortInstanceType {
+  id: string;
+  option: string;
+  isAscending: boolean;
+}
 
 interface SortEditorProps {
   sortOrder: SortInstanceType[];
   setSortOrder: (newSortOrder: SortInstanceType[]) => void;
 }
 
-const SortEditor: React.FC<SortEditorProps> = ({ sortOrder, setSortOrder }) => {
-  const sortOptions = [
-    "Name",
-    // "Asset",
-    // "Category",
-    "Date",
-    "Amount",
-    "Type",
-  ];
+const sortOptions = {
+  name: "Name",
+  // asset: "Asset",
+  // category: "Category",
+  date: "Date",
+  amount: "Amount",
+  type: "Type",
+};
 
-  const addSort = (option: string) => {
+// type sortOptionKey = keyof typeof sortOptions;
+
+const SortEditor: React.FC<SortEditorProps> = ({ sortOrder, setSortOrder }) => {
+  const addSort = () => {
     setSortOrder([
       ...sortOrder,
       {
         id: crypto.randomUUID(),
-        option: option === "" ? "Name" : "",
+        option: sortOptions.name,
         isAscending: true,
       },
     ]);
@@ -56,7 +63,7 @@ const SortEditor: React.FC<SortEditorProps> = ({ sortOrder, setSortOrder }) => {
                     editSort(d.id, e.target.value, d.isAscending);
                   }}
                 >
-                  {sortOptions.map((option, ind) => {
+                  {Object.values(sortOptions).map((option, ind) => {
                     return (
                       <option key={ind} value={option}>
                         {option}
@@ -84,7 +91,7 @@ const SortEditor: React.FC<SortEditorProps> = ({ sortOrder, setSortOrder }) => {
             );
           })}
           <div>
-            <div className="sort-menu-button" onClick={() => addSort("")}>
+            <div className="sort-menu-button" onClick={() => addSort()}>
               <div className="flex-center">
                 <PlusIcon width={20} />
                 Add sort

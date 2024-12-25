@@ -5,16 +5,11 @@ import { Form } from "react-router-dom";
 import { useState } from "react";
 
 // helper functions
-import { getItemById } from "../../utils/services";
+import { getTransaction } from "../../utils/services";
 import { formatDateToInputValue } from "../../utils/formatting";
 
 // interfaces
-import {
-  Asset,
-  Category,
-  Transaction,
-  TransactionType,
-} from "../../utils/types";
+import { Asset, Category, TransactionType } from "../../utils/types";
 
 interface TransactionFormProps {
   assets: Asset[];
@@ -30,7 +25,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   onClose,
 }) => {
   const isEditForm = transaction_id !== "";
-  const transaction = getItemById("transaction", transaction_id) as Transaction;
+  const transaction = getTransaction(transaction_id);
 
   const [transactionType, setTransactionType] = useState<TransactionType>(
     isEditForm ? transaction.type : TransactionType.EXPENSE

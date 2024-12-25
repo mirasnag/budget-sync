@@ -1,0 +1,46 @@
+.contact-section {
+  margin-bottom: 20px;
+
+  h3 {
+    color: var(--blue);
+  }
+
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+
+    li {
+      margin-bottom: 5px;
+    }
+  }
+
+  span {
+    color: var(--blue);
+    text-decoration: underline;
+  }
+}
+
+.social-links a {
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 40px;
+  margin: 0px 5px;
+
+  &:hover {
+    color: var(--blue);
+  }
+}
+
+.contact-form {
+  margin-top: 10px;
+
+  textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0px;
+    border: 1px solid var(--blue);
+    background: var(--bg-dark-button);
+    color: var(--text-light);
+    border-radius: 4px;
+  }
+}
