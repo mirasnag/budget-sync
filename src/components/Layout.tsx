@@ -3,14 +3,14 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 
 // library imports
 import { FaChartPie, FaPhone } from "react-icons/fa";
-import { FaArrowsRotate, FaHouse } from "react-icons/fa6";
+import { FaHouse, FaMoneyBillTransfer } from "react-icons/fa6";
 
 const Layout: React.FC = () => {
   const location = useLocation();
 
   return (
     <div className="layout">
-      <aside className="sidebar">
+      <div className="navbar">
         <nav>
           <div className="menu">
             <Link
@@ -19,7 +19,8 @@ const Layout: React.FC = () => {
                 location.pathname === "/" ? "active" : ""
               }`}
             >
-              <FaHouse className="icon" /> Home
+              <FaHouse className="icon" />
+              <span>Home</span>
             </Link>
             <Link
               to="/transactions"
@@ -27,7 +28,8 @@ const Layout: React.FC = () => {
                 location.pathname === "/transactions" ? "active" : ""
               }`}
             >
-              <FaArrowsRotate className="icon" /> Transactions
+              <FaMoneyBillTransfer className="icon" />
+              <span>Transactions</span>
             </Link>
             <Link
               to="/spending-analysis"
@@ -35,19 +37,21 @@ const Layout: React.FC = () => {
                 location.pathname === "/spending-analysis" ? "active" : ""
               }`}
             >
-              <FaChartPie className="icon" /> Spending Analysis
+              <FaChartPie className="icon" />
+              <span>Charts</span>
             </Link>
-            <Link
+            {/* <Link
               to="/contact"
               className={`menu-item ${
                 location.pathname === "/contact" ? "active" : ""
               }`}
             >
-              <FaPhone className="icon" /> Contact
-            </Link>
+              <FaPhone className="icon" />
+              <span>Contact</span>
+            </Link> */}
           </div>
         </nav>
-      </aside>
+      </div>
       <main className="content">
         <Outlet />
       </main>
