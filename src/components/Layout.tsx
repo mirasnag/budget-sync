@@ -40,7 +40,7 @@ const Layout: React.FC = () => {
               <FaChartPie className="icon" />
               <span>Charts</span>
             </Link>
-            {/* <Link
+            <Link
               to="/contact"
               className={`menu-item ${
                 location.pathname === "/contact" ? "active" : ""
@@ -48,7 +48,7 @@ const Layout: React.FC = () => {
             >
               <FaPhone className="icon" />
               <span>Contact</span>
-            </Link> */}
+            </Link>
           </div>
         </nav>
       </div>
