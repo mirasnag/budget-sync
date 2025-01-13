@@ -38,7 +38,7 @@ export const spentByCategory = (
           currencyRates,
           source.currency,
           destination.currency,
-          transaction.dst.amount
+          transaction.dstAmount
         )
       );
     }
@@ -87,7 +87,7 @@ export const getCategorySpentHistory = (
     const month = new Date(transaction.date).toISOString().slice(0, 7);
     const category = categories.find((a) => a.id === transaction.dst.id);
     if (category) {
-      spentHistoryMap[month][category.name] += +transaction.dst.amount;
+      spentHistoryMap[month][category.name] += +transaction.dstAmount;
     }
   });
 
@@ -128,12 +128,12 @@ export const getBalanceOfAsset = (asset: Asset) => {
       new Date(transaction.date) < new Date(now) &&
       transaction.src.id === asset.id
     ) {
-      balance -= transaction.src.amount;
+      balance -= transaction.srcAmount;
     } else if (
       new Date(transaction.date) < new Date(now) &&
       transaction.dst.id === asset.id
     ) {
-      balance += Number(transaction.dst.amount);
+      balance += Number(transaction.dstAmount);
     }
   });
 
@@ -154,9 +154,9 @@ export const getAssetDetails = (asset: Asset, period: Period) => {
 
   transactions.forEach((transaction) => {
     if (transaction.src.id === asset.id)
-      data[transaction.type] -= transaction.src.amount;
+      data[transaction.type] -= transaction.srcAmount;
     else if (transaction.dst.id === asset.id)
-      data[transaction.type] += transaction.dst.amount;
+      data[transaction.type] += transaction.dstAmount;
   });
 
   return data;
@@ -207,14 +207,14 @@ export const getAssetBalanceHistory = (
     const { source, destination } = getTransactionNodes(transaction);
     switch (transaction.type) {
       case "income":
-        balanceHistoryMap[month][destination.name] += transaction.dst.amount;
+        balanceHistoryMap[month][destination.name] += transaction.dstAmount;
         break;
       case "expense":
-        balanceHistoryMap[month][source.name] -= transaction.src.amount;
+        balanceHistoryMap[month][source.name] -= transaction.srcAmount;
         break;
       case "transfer":
-        balanceHistoryMap[month][source.name] -= transaction.src.amount;
-        balanceHistoryMap[month][destination.name] += transaction.dst.amount;
+        balanceHistoryMap[month][source.name] -= transaction.srcAmount;
+        balanceHistoryMap[month][destination.name] += transaction.dstAmount;
         break;
     }
   });
