@@ -75,14 +75,20 @@
 }
 
 .date-picker {
-  border: 0.5px solid var(--border);
-  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  gap: 2px;
   margin: 5px;
-  padding: 5px;
 
   input {
     border: none;
     text-decoration: none;
     outline: none;
+    min-width: 0;
+    width: 0px !important;
+  }
+
+  .date-icon {
+    cursor: pointer;
   }
 }

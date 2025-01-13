@@ -30,7 +30,7 @@ const CategoryTable: React.FC<Props> = ({ categories, data, formatter }) => {
   return (
     <table>
       <thead>
-        <tr style={{ borderBottom: "1px solid #888" }}>
+        <tr>
           {tableHeader.map((d, index) => (
             <th key={index}>{d}</th>
           ))}

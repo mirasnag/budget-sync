@@ -1,18 +1,31 @@
 import { FilterInstanceType } from "../components/Transactions/FilterEditor";
 import { SortInstanceType } from "../components/Transactions/SortEditor";
 import { getItemById } from "./services";
-import { Entity, Transaction } from "./types";
+import { Entity, EntityType, Transaction, TransactionType } from "./types";
 
 export const getTransactionNodes = (
   transaction: Transaction
 ): { source: Entity; destination: Entity } => {
+  const { srcType, dstType } = getTransactionNodeTypes(transaction.type);
   return {
-    source: getItemById(transaction.src.type, transaction.src.id) as Entity,
-    destination: getItemById(
-      transaction.dst.type,
-      transaction.dst.id
-    ) as Entity,
+    source: getItemById(srcType, transaction.src?.id ?? "") as Entity,
+    destination: getItemById(dstType, transaction.dst?.id ?? "") as Entity,
   };
+};
+
+export const getTransactionNodeTypes = (
+  type: TransactionType
+): { srcType: EntityType; dstType: EntityType } => {
+  switch (type) {
+    case TransactionType.EXPENSE:
+      return { srcType: EntityType.ASSET, dstType: EntityType.CATEGORY };
+    case TransactionType.TRANSFER:
+      return { srcType: EntityType.ASSET, dstType: EntityType.ASSET };
+    case TransactionType.INCOME:
+      return { srcType: EntityType.SOURCE, dstType: EntityType.ASSET };
+    default:
+      return { srcType: EntityType.ASSET, dstType: EntityType.CATEGORY };
+  }
 };
 
 // Sort-Filter Transactions

@@ -6,9 +6,9 @@ import { useState } from "react";
 
 // UI components
 import GoalForm from "./GoalForm";
-import AddButton from "../Buttons/AddButton";
-import EditButton from "../Buttons/EditButton";
-import DeleteButton from "../Buttons/DeleteButton";
+import AddButton from "../Editors/AddButton";
+import EditButton from "../Editors/EditButton";
+import DeleteButton from "../Editors/DeleteButton";
 
 // interfaces
 import { Goal } from "../../utils/types";

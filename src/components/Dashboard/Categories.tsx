@@ -14,11 +14,11 @@ import { Category, CurrencyRates } from "../../utils/types";
 
 // components
 import CategoryForm from "./CategoryForm";
-import AddButton from "../Buttons/AddButton";
-import EditButton from "../Buttons/EditButton";
-import DeleteButton from "../Buttons/DeleteButton";
-import PeriodSelector, { Period } from "../Buttons/PeriodSelector";
-import CurrencySelector from "../Buttons/CurrencySelector";
+import AddButton from "../Editors/AddButton";
+import EditButton from "../Editors/EditButton";
+import DeleteButton from "../Editors/DeleteButton";
+import PeriodSelector, { Period } from "../Editors/PeriodSelector";
+import CurrencySelector from "../Editors/CurrencySelector";
 
 interface CategoriesProps {
   categories: Category[];
@@ -106,7 +106,7 @@ const Categories: React.FC<CategoriesProps> = ({
 
         return (
           <div key={category.id} className="category">
-            <span className="category-name frame color-blue">
+            <span className="category-name frame frame-large color-blue">
               {category.name}
             </span>
             <div className="category-bar-wrapper">

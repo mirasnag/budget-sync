@@ -5,9 +5,13 @@ import { useState } from "react";
 import { Form } from "react-router-dom";
 
 // library imports
-import { ArrowsUpDownIcon, FunnelIcon } from "@heroicons/react/20/solid";
-import { FaTags, FaWallet } from "react-icons/fa";
-import { FaSackDollar } from "react-icons/fa6";
+import {
+  ArrowsUpDownIcon,
+  FunnelIcon,
+  PlusIcon,
+} from "@heroicons/react/20/solid";
+import { FaCoins, FaShoppingCart } from "react-icons/fa";
+import { FaRightLeft } from "react-icons/fa6";
 
 // interfaces
 import {
@@ -18,38 +22,43 @@ import {
 } from "../../utils/types";
 
 // UI components
-import TransactionForm from "./TransactionForm";
-import AddButton from "../Buttons/AddButton";
-import EditButton from "../Buttons/EditButton";
-import DeleteButton from "../Buttons/DeleteButton";
+import DeleteButton from "../Editors/DeleteButton";
 import FilterEditor, { FilterInstanceType } from "../Transactions/FilterEditor";
 import SortEditor, { SortInstanceType } from "../Transactions/SortEditor";
+import DatePicker from "../Editors/DatePicker";
+import TransactionNodeSelector from "../Editors/TransactionNodeSelector";
 
 // helper functions
 import {
-  getTransactionNodes,
+  // getTransactionNodes,
   sortFilterTransactions2,
 } from "../../utils/transactions.util";
-import { formatCurrency, formatDate } from "../../utils/formatting";
+import {
+  createEmptyTransaction,
+  editTransactionProp,
+} from "../../utils/services";
 
-export interface TransactionTableProps {
+interface TransactionTableProps {
   transactions: Transaction[];
   assets: Asset[];
   categories: Category[];
 }
+
+const tableTabs = [
+  {
+    type: TransactionType.EXPENSE,
+    label: "Expense",
+    icon: <FaShoppingCart />,
+  },
+  { type: TransactionType.TRANSFER, label: "Transfer", icon: <FaRightLeft /> },
+  { type: TransactionType.INCOME, label: "Income", icon: <FaCoins /> },
+];
 
 const TransactionTable: React.FC<TransactionTableProps> = ({
   transactions,
   assets,
   categories,
 }) => {
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [showEditForm, setShowEditForm] = useState("");
-  const closeForm = () => {
-    setShowCreateForm(false);
-    setShowEditForm("");
-  };
-
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [activeSortOrder, setActiveSortOrder] = useState<SortInstanceType[]>(
     []
@@ -68,31 +77,22 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     activeSortOrder
   );
 
+  const [activeTab, setActiveTab] = useState<TransactionType>(
+    TransactionType.EXPENSE
+  );
+  const filteredTransactions = processedTransactions.filter(
+    (transaction) => transaction.type === activeTab
+  );
+
+  const addRow = () => {
+    createEmptyTransaction(activeTab);
+  };
+
   return (
     <div className="transactions">
       <div className="header">
         <h2>Transactions</h2>
         <div className="btns">
-          <AddButton
-            handleClick={() => {
-              if (assets.length === 0 && categories.length === 0) {
-                alert(
-                  "No assets and categories available. Please add them first."
-                );
-                return;
-              }
-              if (assets.length === 0) {
-                alert("No assets available. Please add an asset first.");
-                return;
-              }
-              if (categories.length === 0) {
-                alert("No categories available. Please add a category first.");
-                return;
-              }
-              setShowCreateForm(true);
-            }}
-          />
-
           <button
             className={
               showSortMenu ? "btn btn-medium color-yellow" : "btn btn-medium"
@@ -135,133 +135,129 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         </div>
       </div>
 
+      <div className="tab-buttons">
+        {tableTabs.map((tab) => (
+          <div
+            key={tab.type}
+            className={`btn ${activeTab === tab.type ? "active" : ""}`}
+            onClick={() => setActiveTab(tab.type)}
+          >
+            {tab.icon}
+            {tab.label}
+          </div>
+        ))}
+      </div>
+
       <table>
         <thead>
-          <tr style={{ borderBottom: "1px solid #888" }}>
+          <tr>
             {tableHeader.map((t, index) => (
               <th key={index}>{t}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {processedTransactions.map((transaction, index) => {
-            const { source, destination } = getTransactionNodes(transaction);
-            const srcName = source ? source.name : transaction.src.id;
-            const dstName = destination ? destination.name : transaction.dst.id;
+          {filteredTransactions.map((transaction) => {
+            // const { source, destination } = getTransactionNodes(transaction);
 
-            const formattedAmount = formatCurrency(
-              transaction?.src.amount ?? transaction?.dst.amount ?? "0",
-              source?.currency ?? destination?.currency ?? "USD"
-            );
+            const amount = transaction.srcAmount ?? transaction.dstAmount ?? "";
+            // const currency = source?.currency ?? destination?.currency ?? "USD";
 
             return (
-              <tr key={index} className={`${transaction.type}-row`}>
-                <td>{transaction.name}</td>
-                <td>{formatDate(transaction.date)}</td>
+              <tr key={transaction.id}>
                 <td>
-                  {transaction.type === TransactionType.INCOME && (
-                    <div className="flex-center frame color-green">
-                      {formattedAmount}
-                    </div>
-                  )}
-                  {transaction.type === TransactionType.EXPENSE && (
-                    <div className="flex-center frame color-red">
-                      {formattedAmount}
-                    </div>
-                  )}
-                  {transaction.type === TransactionType.TRANSFER && (
-                    <div className="flex-center frame color-yellow">
-                      {formattedAmount}
-                    </div>
-                  )}
-                </td>
-                <td>
-                  <div className="transaction-details">
-                    {transaction.type === TransactionType.EXPENSE && (
-                      <div className="flex-center frame color-blue">
-                        <FaWallet width={15} />
-                        {srcName}
-                      </div>
-                    )}
-                    {transaction.type === TransactionType.INCOME && (
-                      <div className="flex-center frame color-blue">
-                        <FaSackDollar width={20} />
-                        {srcName}
-                      </div>
-                    )}
-                    {transaction.type === TransactionType.TRANSFER && (
-                      <div className="flex-center frame color-blue">
-                        <FaWallet width={15} />
-                        {srcName}
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td>
-                  <div className="transaction-details">
-                    {transaction.type === TransactionType.EXPENSE && (
-                      <div className="flex-center frame color-blue">
-                        <FaTags width={15} />
-                        {dstName}
-                      </div>
-                    )}
-                    {transaction.type === TransactionType.INCOME && (
-                      <div className="flex-center frame color-blue">
-                        <FaWallet width={15} />
-                        {dstName}
-                      </div>
-                    )}
-                    {transaction.type === TransactionType.TRANSFER && (
-                      <div className="flex-center frame color-blue">
-                        <FaWallet width={15} />
-                        {dstName}
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td>
-                  <div className="table-btns">
-                    <EditButton
-                      handleClick={() => setShowEditForm(transaction.id)}
+                  <div>
+                    <input
+                      type="text"
+                      defaultValue={transaction.name}
+                      onInput={(e) => {
+                        const newValue = e.currentTarget.value;
+                        editTransactionProp(transaction.id, "name", newValue);
+                        transaction.name = newValue;
+                      }}
                     />
-                    <Form method="post">
-                      <input
-                        type="hidden"
-                        name="_action"
-                        value="deleteTransaction"
-                      />
-                      <input
-                        type="hidden"
-                        name="transaction_id"
-                        value={transaction.id}
-                      />
-                      <DeleteButton />
-                    </Form>
+                  </div>
+                </td>
+                <td>
+                  <div>
+                    <DatePicker
+                      initialValue={transaction.date}
+                      onDateChange={(newDate: Date) => {
+                        editTransactionProp(transaction.id, "date", newDate);
+                        transaction.date = newDate;
+                      }}
+                    />
+                  </div>
+                </td>
+                <td>
+                  <div>
+                    <input
+                      type="number"
+                      defaultValue={amount}
+                      onInput={(e) => {
+                        const newValue = parseInt(e.currentTarget.value);
+                        editTransactionProp(
+                          transaction.id,
+                          "srcAmount",
+                          newValue
+                        );
+                        editTransactionProp(
+                          transaction.id,
+                          "dstAmount",
+                          newValue
+                        );
+                        transaction.srcAmount = newValue;
+                        transaction.dstAmount = newValue;
+                      }}
+                    />
+                    {/* <span>{currency}</span> */}
+                  </div>
+                </td>
+                <td>
+                  <TransactionNodeSelector
+                    transaction={transaction}
+                    nodeLabel="src"
+                  />
+                </td>
+                <td>
+                  <TransactionNodeSelector
+                    transaction={transaction}
+                    nodeLabel="dst"
+                  />
+                </td>
+                <td>
+                  <div>
+                    <div className="table-btns">
+                      <Form method="post">
+                        <input
+                          type="hidden"
+                          name="_action"
+                          value="deleteTransaction"
+                        />
+                        <input
+                          type="hidden"
+                          name="transaction_id"
+                          value={transaction.id}
+                        />
+                        <DeleteButton />
+                      </Form>
+                    </div>
                   </div>
                 </td>
               </tr>
             );
           })}
         </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan={tableHeader.length}>
+              <div className="flex-center" onClick={() => addRow()}>
+                <PlusIcon width={24} />
+              </div>
+            </td>
+          </tr>
+        </tfoot>
       </table>
-
-      {showCreateForm && (
-        <TransactionForm
-          assets={assets}
-          categories={categories}
-          transaction_id={""}
-          onClose={closeForm}
-        />
-      )}
-
-      {showEditForm !== "" && (
-        <TransactionForm
-          assets={assets}
-          categories={categories}
-          transaction_id={showEditForm}
-          onClose={closeForm}
-        />
-      )}
     </div>
   );
 };

@@ -68,42 +68,42 @@ export interface Goal extends EntityBase {
 }
 
 // Transaction Interfaces
-interface TransactionNode {
-  type: EntityType;
+export interface TransactionNode {
   id: string;
-  amount: number;
 }
 
 export interface TransactionBase extends DataItemBase {
   type: TransactionType;
   src: TransactionNode;
+  srcAmount: number;
   dst: TransactionNode;
+  dstAmount: number;
   date: Date;
   createdAt: Date;
 }
 
 export interface Expense extends TransactionBase {
   type: TransactionType.EXPENSE;
-  src: TransactionNode & { type: EntityType.ASSET };
-  dst: TransactionNode & { type: EntityType.CATEGORY };
+  src: TransactionNode;
+  dst: TransactionNode;
 }
 
 export interface Transfer extends TransactionBase {
   type: TransactionType.TRANSFER;
-  src: TransactionNode & { type: EntityType.ASSET };
-  dst: TransactionNode & { type: EntityType.ASSET };
+  src: TransactionNode;
+  dst: TransactionNode;
 }
 
 export interface Income extends TransactionBase {
   type: TransactionType.INCOME;
-  src: TransactionNode & { type: EntityType.SOURCE };
-  dst: TransactionNode & { type: EntityType.ASSET };
+  src: TransactionNode;
+  dst: TransactionNode;
 }
 
 // Unified Entity and Data Item Types
 export type Transaction = Expense | Transfer | Income;
-export type Entity = Category | Asset | Source | Goal;
-export type DataItem = Transaction | Entity;
+export type Entity = Category | Asset | Source;
+export type DataItem = Transaction | Entity | Goal;
 
 // Other
 export interface FormInput {

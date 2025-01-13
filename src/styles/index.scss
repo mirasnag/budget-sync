@@ -9,18 +9,19 @@
 
 :root {
   /* Background Colors */
-  --bg-component: #f0f0f0;
-  --bg-primary: #f0f0f0;
+  --bg-component: #ddd;
+  --bg-content: #eee;
+  --bg-primary: #ddd;
   --bg-dark-button: #ccc;
   --bg-light-button: #ccc;
-  --bg-effect: #fff;
+  --bg-effect: #eee;
 
   /* Text Colors */
   --text-dark: #000000;
   --text-light: #333333;
 
   /* Accent Colors */
-  --blue: #4ca2ff;
+  --blue: #74b7fd;
   --green: #27ae60;
   --yellow: #f39c12;
   --red: #e74c3c;
@@ -33,10 +34,11 @@
   :root {
     /* Dark Mode Background Colors */
     --bg-component: #1c1c1c;
+    --bg-content: #2b2b2b;
     --bg-primary: #1c1c1c;
     --bg-dark-button: #333;
     --bg-light-button: #ccc;
-    --bg-effect: #2b2b2b;
+    --bg-effect: #444;
 
     /* Dark Mode Text Colors */
     --text-dark: #000;
@@ -50,6 +52,7 @@
 
     /* Other */
     --border: #ccc;
+    --border-dark: #666;
   }
 }
 
@@ -84,7 +87,12 @@ input {
 
 table {
   width: 100%;
+  height: 1px;
   border-collapse: collapse;
+
+  tr {
+    border-bottom: 1px solid var(--border-dark);
+  }
 
   th {
     font-size: large;
@@ -92,12 +100,26 @@ table {
 
   th,
   td {
-    padding: 10px;
+    // height: 100%;
+    padding: 5px;
+    padding: 0px 10px;
     text-align: left;
   }
 
-  tbody tr {
-    border-bottom: none;
+  tbody {
+    tr {
+      td {
+        border: 0.5px solid var(--border-dark);
+      }
+
+      :first-child {
+        border-left-width: 0px;
+      }
+
+      :last-child {
+        border-right-width: 0px;
+      }
+    }
   }
 }
 
@@ -137,9 +159,14 @@ table {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 30px;
+  height: 20px;
   width: fit-content;
-  min-width: 100px;
   padding: 5px;
-  border-radius: 15px;
+  border-radius: 5px;
+
+  &-large {
+    min-width: 100px;
+    padding: 10px;
+    border-radius: 10px;
+  }
 }

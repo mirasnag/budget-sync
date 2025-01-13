@@ -1,6 +1,6 @@
 import { useState } from "react";
 import DatePicker from "./DatePicker";
-import { formatDate } from "../../utils/formatting";
+import { formatDate, formatDateToInputValue } from "../../utils/formatting";
 
 export interface AbsolutePeriod {
   type: "absolute";
@@ -56,11 +56,10 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
     }
   };
 
-  const handleAbsoluteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleAbsoluteChange = (name: string, newValue: Date) => {
     setPeriod({
       ...period,
-      [name]: value,
+      [name]: formatDateToInputValue(newValue),
     } as AbsolutePeriod);
   };
 
@@ -101,15 +100,17 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
           {period.type === "absolute" && (
             <div className="editor-absolute">
               <DatePicker
-                label={"start"}
-                value={period.start}
-                setValue={handleAbsoluteChange}
+                initialValue={new Date(period.start)}
+                onDateChange={(newDate: Date) =>
+                  handleAbsoluteChange("start", newDate)
+                }
               />
               <span> - </span>
               <DatePicker
-                label={"end"}
-                value={period.end}
-                setValue={handleAbsoluteChange}
+                initialValue={new Date(period.end)}
+                onDateChange={(newDate: Date) =>
+                  handleAbsoluteChange("end", newDate)
+                }
               />
             </div>
           )}

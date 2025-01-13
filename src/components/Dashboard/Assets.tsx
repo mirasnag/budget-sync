@@ -9,11 +9,11 @@ import { Asset, CurrencyRates } from "../../utils/types";
 
 // components
 import AssetForm from "./AssetForm";
-import AddButton from "../Buttons/AddButton";
-import EditButton from "../Buttons/EditButton";
-import DeleteButton from "../Buttons/DeleteButton";
-import PeriodSelector, { Period } from "../Buttons/PeriodSelector";
-import CurrencySelector from "../Buttons/CurrencySelector";
+import AddButton from "../Editors/AddButton";
+import EditButton from "../Editors/EditButton";
+import DeleteButton from "../Editors/DeleteButton";
+import PeriodSelector, { Period } from "../Editors/PeriodSelector";
+import CurrencySelector from "../Editors/CurrencySelector";
 
 // helper funtions
 import { getAssetDetails, getBalanceOfAsset } from "../../utils/entities.util";
@@ -64,7 +64,7 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
 
       <table>
         <thead>
-          <tr style={{ borderBottom: "1px solid #888" }}>
+          <tr>
             {tableHeader.map((t, index) => (
               <th key={index}>{t}</th>
             ))}
@@ -103,7 +103,9 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
             return (
               <tr key={index}>
                 <td>
-                  <div className="frame color-blue">{asset.name}</div>
+                  <div className="frame frame-large color-blue">
+                    {asset.name}
+                  </div>
                 </td>
                 <td>
                   {formatCurrency(balance, baseCurrency ?? asset.currency)}
@@ -128,9 +130,9 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
             );
           })}
 
-          <tr key="summary" style={{ borderTop: "1px solid #888" }}>
+          <tr key="summary">
             <td>
-              <div className="frame color-blue">Total</div>
+              <div className="frame frame-large color-blue">Total</div>
             </td>
             <td>
               {baseCurrency ? formatCurrency(totalBalance, baseCurrency) : ""}
@@ -141,6 +143,7 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
             <td>
               {baseCurrency ? formatCurrency(totalExpense, baseCurrency) : ""}
             </td>
+            <td></td>
           </tr>
         </tbody>
       </table>

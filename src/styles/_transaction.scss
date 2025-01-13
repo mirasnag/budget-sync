@@ -16,14 +16,79 @@
     }
   }
 
+  .tab-buttons {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 5px;
+
+    .btn {
+      display: flex;
+      gap: 2px;
+      padding: 5px;
+      background-color: var(--bg-component);
+      color: var(--text-light);
+      font-size: large;
+      font-weight: bold;
+      border: none;
+
+      &.active {
+        border-bottom: 2px solid var(--text-light);
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+  }
+
   .transaction-details {
     display: flex;
-    flex: row;
+    width: 100%;
+    height: 100%;
     color: var(--blue);
   }
 
   .transaction-details div {
     gap: 5px;
+  }
+
+  table {
+    input {
+      width: 100%;
+      background: unset;
+      border: unset;
+      color: unset;
+    }
+
+    .date-picker {
+      width: 100%;
+    }
+
+    tbody {
+      td {
+        & > div {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+      }
+    }
+
+    tfoot {
+      td {
+        cursor: pointer;
+        text-align: center;
+        padding: 5px;
+        color: var(--text-light);
+
+        &:hover {
+          background-color: var(--bg-effect);
+        }
+
+        div {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
   }
 }
 
@@ -127,6 +192,48 @@
     span {
       font-size: medium;
       margin: 0;
+    }
+  }
+}
+
+.node-selector-container {
+  cursor: pointer;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+
+  .node-selector {
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    margin-top: 5px;
+    padding: 5px;
+    background-color: var(--bg-dark-button);
+    border-radius: 5px;
+    border: 0.5px solid var(--text-light);
+    min-width: 100px;
+
+    .node-option {
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 5px;
+
+      &:hover {
+        background: var(--bg-effect);
+      }
+    }
+
+    input {
+      border-bottom: 1px solid var(--text-light);
+      height: 2em;
+    }
+
+    .node-selector-create {
+      width: fit-content;
     }
   }
 }

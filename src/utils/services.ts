@@ -160,7 +160,22 @@ export const deleteItem = (collectionType: CollectionType, id: string) => {
   return localStorage.setItem(collectionType, JSON.stringify(newData));
 };
 
-export const getItemById = (type: DataItemType, id: string): DataItem => {
+export const createItem = (newItem: DataItem) => {
+  const collectionType = typeToCollectionMap[newItem.type];
+  const collection = fetchData(collectionType) as DataItem[];
+  return localStorage.setItem(
+    collectionType,
+    JSON.stringify([...collection, newItem])
+  );
+};
+
+export const getItemById = (
+  type: DataItemType,
+  id: string
+): Partial<DataItem> => {
+  if (!id) {
+    return {};
+  }
   const collectionType = typeToCollectionMap[type];
   const collection = fetchData(collectionType);
   return collection.filter((d: DataItem) => d.id === id)[0];
@@ -202,6 +217,21 @@ export const deleteAsset = (asset_id: string) => {
 };
 
 // Transaction
+export const createEmptyTransaction = (type: TransactionType) => {
+  const transactions = fetchData(CollectionType.TRANSACTIONS) ?? [];
+
+  const newTransaction: Partial<Transaction> = {
+    id: crypto.randomUUID(),
+    type: type,
+    createdAt: new Date(),
+  };
+  localStorage.setItem(
+    CollectionType.TRANSACTIONS,
+    JSON.stringify([...transactions, newTransaction])
+  );
+  return;
+};
+
 export const createTransaction = (values: FormInput) => {
   const transactions = fetchData(CollectionType.TRANSACTIONS) ?? [];
 
@@ -210,15 +240,13 @@ export const createTransaction = (values: FormInput) => {
       id: values.id ?? crypto.randomUUID(),
       type: TransactionType.EXPENSE,
       src: {
-        type: EntityType.ASSET,
         id: values.src,
-        amount: parseFloat(values.amount),
       },
+      srcAmount: parseFloat(values.amount),
       dst: {
-        type: EntityType.CATEGORY,
         id: values.dst,
-        amount: parseFloat(values.amount),
       },
+      dstAmount: parseFloat(values.amount),
       name: values.name,
       date: new Date(values.date),
       createdAt: new Date(),
@@ -235,15 +263,13 @@ export const createTransaction = (values: FormInput) => {
       id: values.id ?? crypto.randomUUID(),
       type: TransactionType.TRANSFER,
       src: {
-        type: EntityType.ASSET,
         id: values.src,
-        amount: parseFloat(values.amount),
       },
+      srcAmount: parseFloat(values.amount),
       dst: {
-        type: EntityType.ASSET,
         id: values.dst,
-        amount: parseFloat(values.amount),
       },
+      dstAmount: parseFloat(values.amount),
       name: values.name,
       date: new Date(values.date),
       createdAt: new Date(),
@@ -260,15 +286,13 @@ export const createTransaction = (values: FormInput) => {
       id: values.id ?? crypto.randomUUID(),
       type: TransactionType.INCOME,
       src: {
-        type: EntityType.SOURCE,
         id: values.src,
-        amount: parseFloat(values.amount),
       },
+      srcAmount: parseFloat(values.amount),
       dst: {
-        type: EntityType.ASSET,
         id: values.dst,
-        amount: parseFloat(values.amount),
       },
+      dstAmount: parseFloat(values.amount),
       name: values.name,
       date: new Date(values.date),
       createdAt: new Date(),
@@ -285,6 +309,30 @@ export const editTransaction = (transaction_id: string, values: FormInput) => {
   deleteItem(CollectionType.TRANSACTIONS, transaction_id);
   values.id = transaction_id;
   createTransaction(values);
+};
+
+export const editTransactionProp = <K extends keyof Transaction>(
+  transaction_id: string,
+  prop: K,
+  value: Transaction[K]
+) => {
+  const transactions = (fetchData(CollectionType.TRANSACTIONS) ??
+    []) as Transaction[];
+
+  const newTransactions: Transaction[] = transactions.map(
+    (transaction: Transaction) => {
+      if (transaction.id !== transaction_id) return transaction;
+      return {
+        ...transaction,
+        [prop]: value,
+      };
+    }
+  );
+
+  localStorage.setItem(
+    CollectionType.TRANSACTIONS,
+    JSON.stringify([...newTransactions])
+  );
 };
 
 export const deleteTransaction = (transaction_id: string) => {

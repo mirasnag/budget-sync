@@ -1,4 +1,4 @@
-import { Period } from "../components/Buttons/PeriodSelector";
+import { Period } from "../components/Editors/PeriodSelector";
 import { convertCurrency } from "./currency.util";
 import { formatDateToInputValue } from "./formatting";
 import { fetchData } from "./services";

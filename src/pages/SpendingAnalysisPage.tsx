@@ -13,8 +13,8 @@ import AssetBarChart from "../components/Charts/AssetBarChart";
 import AssetTable from "../components/Charts/AssetTable";
 import CategoryTable from "../components/Charts/CategoryTable";
 import CurrencyWidget from "../components/CurrencyWidget";
-import PeriodSelector, { Period } from "../components/Buttons/PeriodSelector";
-import CurrencySelector from "../components/Buttons/CurrencySelector";
+import PeriodSelector, { Period } from "../components/Editors/PeriodSelector";
+import CurrencySelector from "../components/Editors/CurrencySelector";
 
 // interfaces
 import { Asset, Category, CollectionType, CurrencyRates } from "../utils/types";

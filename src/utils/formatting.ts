@@ -1,5 +1,7 @@
 // Format Date
 export const formatDate = (date: Date): string => {
+  if (!date) return "";
+
   const day = new Date(date).getDate();
   const month = new Date(date).toLocaleString("default", { month: "long" });
   const year = new Date(date).getFullYear();
@@ -16,13 +18,14 @@ export const formatDateMonthStr = (monthYear: string): string => {
 };
 
 export const formatDateToInputValue = (date: Date): string => {
+  if (!date) return "";
+
   const day = new Date(date).getDate();
   const month = new Date(date).getMonth() + 1;
   const year = new Date(date).getFullYear();
 
   const dayStr = day < 10 ? `0${day}` : `${day}`;
   const monthStr = month < 10 ? `0${month}` : `${month}`;
-
   return `${year}-${monthStr}-${dayStr}`;
 };
 

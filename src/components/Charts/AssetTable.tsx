@@ -30,7 +30,7 @@ const AssetTable: React.FC<Props> = ({ assets, data, formatter }) => {
   return (
     <table>
       <thead>
-        <tr style={{ borderBottom: "1px solid #888" }}>
+        <tr>
           {tableHeader.map((d, index) => (
             <th key={index}>{d}</th>
           ))}

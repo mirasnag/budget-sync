@@ -19,7 +19,7 @@ export const filterOptions = {
   // Category: ["Is", "Is not"],
   Date: ["Is", "Is before", "Is after"],
   Amount: ["Equal", "More", "Less", "At Least", "At Most"],
-  Type: ["Is", "Is not"],
+  // Type: ["Is", "Is not"],
 };
 
 export type FilterOptionKey = keyof typeof filterOptions;
