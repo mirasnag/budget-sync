@@ -5,11 +5,7 @@ import { useState } from "react";
 import { Form } from "react-router-dom";
 
 // library imports
-import {
-  ArrowsUpDownIcon,
-  FunnelIcon,
-  PlusIcon,
-} from "@heroicons/react/20/solid";
+import { ArrowsUpDownIcon, FunnelIcon } from "@heroicons/react/20/solid";
 import { FaCoins, FaShoppingCart } from "react-icons/fa";
 import { FaRightLeft } from "react-icons/fa6";
 
@@ -37,6 +33,8 @@ import {
   createEmptyTransaction,
   editTransactionProp,
 } from "../../utils/services";
+import AddButton from "../Editors/AddButton";
+import { useClickHandler } from "../../utils/hooks";
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -63,11 +61,29 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
   const [activeSortOrder, setActiveSortOrder] = useState<SortInstanceType[]>(
     []
   );
+  const sortClickRef = useClickHandler<HTMLButtonElement>({
+    onInsideClick: () => {
+      setShowSortMenu((prev) => !prev);
+      setShowFilterMenu(false);
+    },
+    onOutsideClick: () => {
+      setShowSortMenu(false);
+    },
+  });
 
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [activeFilterOrder, setActiveFilterOrder] = useState<
     FilterInstanceType[]
   >([]);
+  const filterClickRef = useClickHandler<HTMLButtonElement>({
+    onInsideClick: () => {
+      setShowFilterMenu((prev) => !prev);
+      setShowSortMenu(false);
+    },
+    onOutsideClick: () => {
+      setShowFilterMenu(false);
+    },
+  });
 
   const tableHeader = ["Name", "Date", "Amount", "Source", "Destination", ""];
 
@@ -97,10 +113,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
             className={
               showSortMenu ? "btn btn-medium color-yellow" : "btn btn-medium"
             }
-            onClick={() => {
-              setShowSortMenu(!showSortMenu);
-              setShowFilterMenu(false);
-            }}
+            ref={sortClickRef}
           >
             <ArrowsUpDownIcon width={20} />
           </button>
@@ -109,10 +122,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
             className={
               showFilterMenu ? "btn btn-medium color-yellow" : "btn btn-medium"
             }
-            onClick={() => {
-              setShowFilterMenu(!showFilterMenu);
-              setShowSortMenu(false);
-            }}
+            ref={filterClickRef}
           >
             <FunnelIcon width={20} />
           </button>
@@ -251,9 +261,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         <tfoot>
           <tr>
             <td colSpan={tableHeader.length}>
-              <div className="flex-center" onClick={() => addRow()}>
-                <PlusIcon width={24} />
-              </div>
+              <Form method="post" className="flex-center">
+                <AddButton handleClick={() => addRow()} />
+              </Form>
             </td>
           </tr>
         </tfoot>

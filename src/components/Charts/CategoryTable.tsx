@@ -42,7 +42,7 @@ const CategoryTable: React.FC<Props> = ({ categories, data, formatter }) => {
             <tr key={category.id}>
               <td key="-1">
                 <div
-                  className="frame"
+                  className="frame frame-large"
                   style={
                     colorMode === "dark"
                       ? { background: colors[categoryIndex], color: "#000" }

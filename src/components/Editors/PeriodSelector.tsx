@@ -1,6 +1,7 @@
 import { useState } from "react";
 import DatePicker from "./DatePicker";
 import { formatDate, formatDateToInputValue } from "../../utils/formatting";
+import { useClickHandler } from "../../utils/hooks";
 
 export interface AbsolutePeriod {
   type: "absolute";
@@ -27,6 +28,11 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
   setPeriod,
 }) => {
   const [showEditor, setShowEditor] = useState<boolean>(false);
+  const clickRef = useClickHandler<HTMLDivElement>({
+    onInsideClick: () => setShowEditor(true),
+    onOutsideClick: () => setShowEditor(false),
+  });
+
   const formattedDate =
     period.type === "absolute"
       ? `${formatDate(new Date(period.start))} - ${formatDate(
@@ -77,21 +83,25 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
 
   return (
     <div className="period-selector btn">
-      <div className="period-text" onClick={() => setShowEditor(!showEditor)}>
+      <div className="period-text" ref={clickRef}>
         {formattedDate}
       </div>
       {showEditor && (
-        <div className="editor">
+        <div className="editor" onClick={(e) => e.stopPropagation()}>
           <div className="date-type-selector">
             <div
               className={period.type === "absolute" ? "active" : ""}
-              onClick={() => handlePeriodTypeChange("absolute")}
+              onClick={() => {
+                handlePeriodTypeChange("absolute");
+              }}
             >
               <span>Absolute</span>
             </div>
             <div
               className={period.type === "relative" ? "active" : ""}
-              onClick={() => handlePeriodTypeChange("relative")}
+              onClick={() => {
+                handlePeriodTypeChange("relative");
+              }}
             >
               <span>Relative</span>
             </div>

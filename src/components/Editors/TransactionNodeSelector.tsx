@@ -6,10 +6,15 @@ import {
   getTransactionNodeTypes,
   getTransactionNodes,
 } from "../../utils/transactions.util";
-import { editTransactionProp, fetchData } from "../../utils/services";
+import {
+  createItem,
+  editTransactionProp,
+  fetchData,
+} from "../../utils/services";
 
 // Types
 import { Entity, Transaction, typeToCollectionMap } from "../../utils/types";
+import { useClickHandler } from "../../utils/hooks";
 
 interface TransactionNodeSelectorProps {
   transaction: Transaction;
@@ -26,6 +31,14 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [filterStr, setFilterStr] = useState<string>("");
+
+  const clickRef = useClickHandler<HTMLDivElement>({
+    onInsideClick: () => setOpen(true),
+    onOutsideClick: () => {
+      setOpen(false);
+      setFilterStr("");
+    },
+  });
 
   const { source, destination } = getTransactionNodes(transaction);
   const { srcType, dstType } = getTransactionNodeTypes(transaction.type);
@@ -53,11 +66,18 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
   };
 
   const createNode = (newNodeName: string) => {
-    console.log(newNodeName);
+    const id = crypto.randomUUID();
+    createItem({
+      id: id,
+      type: nodeType,
+      name: newNodeName,
+    });
+    changeNode(id);
+    setOpen(false);
   };
 
   return (
-    <div className="node-selector-container" onClick={() => setOpen(!open)}>
+    <div ref={clickRef} className="node-selector-container">
       {name && <div className="flex-center frame color-blue">{name}</div>}
       {!name && <div>{name}</div>}
       {open && (

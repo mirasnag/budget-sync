@@ -83,7 +83,7 @@ const Categories: React.FC<CategoriesProps> = ({
       </div>
 
       {categories.map((category) => {
-        const periodBudgeted = category.totalBudgeted * periodMonths;
+        const periodBudgeted = category.amount * periodMonths;
         const total = baseCurrency
           ? convertCurrency(
               currencyRates,

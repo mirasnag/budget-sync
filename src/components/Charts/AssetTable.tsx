@@ -42,7 +42,7 @@ const AssetTable: React.FC<Props> = ({ assets, data, formatter }) => {
             <tr key={assetIndex}>
               <td>
                 <div
-                  className="frame"
+                  className="frame frame-large"
                   style={
                     colorMode === "dark"
                       ? { background: colors[assetIndex], color: "#000" }

@@ -45,12 +45,12 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
             />
           </div>
           <div className="form-group">
-            <label htmlFor="totalBudgeted">Monthly Budgeted Amount</label>
+            <label htmlFor="amount">Monthly Budgeted Amount</label>
             <input
               type="number"
-              name="totalBudgeted"
-              id="totalBudgeted"
-              defaultValue={isEditForm ? category.totalBudgeted : ""}
+              name="amount"
+              id="amount"
+              defaultValue={isEditForm ? category.amount : ""}
               required
             />
           </div>

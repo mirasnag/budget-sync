@@ -42,12 +42,12 @@ const AssetForm: React.FC<AssetFormProps> = ({ asset_id, onClose }) => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="initBalance">Initial Balance</label>
+            <label htmlFor="amount">Initial Balance</label>
             <input
               type="number"
-              name="initBalance"
-              id="initBalance"
-              defaultValue={isEditForm ? asset.initBalance : ""}
+              name="amount"
+              id="amount"
+              defaultValue={isEditForm ? asset.amount : ""}
               required
             />
           </div>

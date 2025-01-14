@@ -120,7 +120,7 @@ export const getCategorySpentHistory = (
 // Calculate Balance of Asset
 export const getBalanceOfAsset = (asset: Asset) => {
   const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
-  let balance = +asset.initBalance;
+  let balance = +asset.amount;
   const now = new Date();
 
   transactions.forEach((transaction) => {
@@ -221,7 +221,7 @@ export const getAssetBalanceHistory = (
 
   const curBalances = [];
   for (let i = 0; i < assets.length; i++) {
-    curBalances.push(assets[i].initBalance);
+    curBalances.push(assets[i].amount);
   }
 
   for (let i = 0; i < months.length; i++) {

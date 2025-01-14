@@ -160,7 +160,9 @@ export const deleteItem = (collectionType: CollectionType, id: string) => {
   return localStorage.setItem(collectionType, JSON.stringify(newData));
 };
 
-export const createItem = (newItem: DataItem) => {
+export const createItem = (newItem: Partial<DataItem>) => {
+  if (!newItem.type) return;
+
   const collectionType = typeToCollectionMap[newItem.type];
   const collection = fetchData(collectionType) as DataItem[];
   return localStorage.setItem(
@@ -187,7 +189,7 @@ export const createAsset = (values: FormInput) => {
     id: values.id ?? crypto.randomUUID(),
     type: EntityType.ASSET,
     name: values.name,
-    initBalance: parseFloat(values.initBalance),
+    amount: parseFloat(values.amount),
     currency: values.currency,
   };
   const assets = fetchData(CollectionType.ASSETS) ?? [];
@@ -349,7 +351,7 @@ export const createCategory = (values: FormInput) => {
     id: values.id ?? crypto.randomUUID(),
     type: EntityType.CATEGORY,
     name: values.name,
-    totalBudgeted: parseFloat(values.totalBudgeted),
+    amount: parseFloat(values.amount),
     currency: values.currency,
   };
 

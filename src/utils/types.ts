@@ -45,26 +45,28 @@ export interface DataItemBase {
 export interface EntityBase extends DataItemBase {
   type: EntityType;
   currency: string;
+  amount: number;
 }
 
 // Specific Entities
 export interface Category extends EntityBase {
   type: EntityType.CATEGORY;
-  totalBudgeted: number;
+  // amount - budget amount for month
 }
 
 export interface Asset extends EntityBase {
   type: EntityType.ASSET;
-  initBalance: number;
+  // amount - initial balance
 }
 
 export interface Source extends EntityBase {
   type: EntityType.SOURCE;
+  // amount - not applicable
 }
 
 export interface Goal extends EntityBase {
   type: EntityType.GOAL;
-  amount: number;
+  // amount - goal amount
 }
 
 // Transaction Interfaces
@@ -84,20 +86,14 @@ export interface TransactionBase extends DataItemBase {
 
 export interface Expense extends TransactionBase {
   type: TransactionType.EXPENSE;
-  src: TransactionNode;
-  dst: TransactionNode;
 }
 
 export interface Transfer extends TransactionBase {
   type: TransactionType.TRANSFER;
-  src: TransactionNode;
-  dst: TransactionNode;
 }
 
 export interface Income extends TransactionBase {
   type: TransactionType.INCOME;
-  src: TransactionNode;
-  dst: TransactionNode;
 }
 
 // Unified Entity and Data Item Types
