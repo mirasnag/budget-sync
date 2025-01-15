@@ -211,6 +211,7 @@ export const convertCurrency = (
   currencyTo: string,
   amount: number
 ) => {
+  if (!currencyFrom || !currencyTo) return amount;
   return (
     (Number(rates[currencyTo]) * Number(amount)) / Number(rates[currencyFrom])
   );

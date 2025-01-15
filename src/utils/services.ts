@@ -49,7 +49,7 @@ export const actionHandler: ActionFunction = async ({ request }) => {
       return null;
     } catch (e) {
       console.log(e);
-      throw new Error("Transaction is not deleted!");
+      throw new Error("Asset is not deleted!");
     }
   }
 
@@ -189,7 +189,6 @@ export const createAsset = (values: FormInput) => {
     id: values.id ?? crypto.randomUUID(),
     type: EntityType.ASSET,
     name: values.name,
-    amount: parseFloat(values.amount),
     currency: values.currency,
   };
   const assets = fetchData(CollectionType.ASSETS) ?? [];
@@ -200,15 +199,20 @@ export const createAsset = (values: FormInput) => {
 };
 
 export const editAsset = (asset_id: string, values: FormInput) => {
-  deleteItem(CollectionType.ASSETS, asset_id);
-  values.id = asset_id;
-  createAsset(values);
+  const assets: Asset[] = fetchData(CollectionType.ASSETS) ?? [];
+  assets.forEach((asset) => {
+    if (asset.id === asset_id) {
+      asset.name = values.name;
+      asset.currency = values.currency;
+    }
+  });
+  return localStorage.setItem(CollectionType.ASSETS, JSON.stringify(assets));
 };
 
 export const deleteAsset = (asset_id: string) => {
   const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
   const filteredTransactions = transactions.filter((d) => {
-    d.src.id !== asset_id && d.dst.id !== asset_id;
+    return d.src?.id !== asset_id && d.dst?.id !== asset_id;
   });
 
   localStorage.setItem(
@@ -364,9 +368,18 @@ export const createCategory = (values: FormInput) => {
 };
 
 export const editCategory = (category_id: string, values: FormInput) => {
-  deleteItem(CollectionType.CATEGORIES, category_id);
-  values.id = category_id;
-  createCategory(values);
+  const categories: Category[] = fetchData(CollectionType.CATEGORIES) ?? [];
+  categories.forEach((category) => {
+    if (category.id === category_id) {
+      category.name = values.name;
+      category.currency = values.currency;
+      category.amount = parseFloat(values.amount);
+    }
+  });
+  return localStorage.setItem(
+    CollectionType.CATEGORIES,
+    JSON.stringify(categories)
+  );
 };
 
 export const deleteCategory = (category_id: string) => {
@@ -414,9 +427,127 @@ export const deleteGoal = (goal_id: string) => {
   return deleteItem(CollectionType.GOALS, goal_id);
 };
 
-// Delete User Data
-export const deleteUserData = () => {
+// Populate / Delete
+export const deleteAllData = () => {
   localStorage.removeItem(CollectionType.TRANSACTIONS);
   localStorage.removeItem(CollectionType.ASSETS);
   localStorage.removeItem(CollectionType.CATEGORIES);
+  localStorage.removeItem(CollectionType.SOURCES);
+  localStorage.removeItem(CollectionType.GOALS);
+};
+
+// Dummy data generator
+const generateId = () => crypto.randomUUID();
+const randomAmount = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
+
+export const generateDummyData = () => {
+  const expenses = Array.from({ length: 20 }, () => ({
+    id: generateId(),
+    type: "expense",
+    name: "Groceries",
+    src: { id: `asset-${randomAmount(1, 5)}` },
+    srcAmount: randomAmount(10, 500),
+    dst: { id: `category-${randomAmount(1, 5)}` },
+    dstAmount: randomAmount(10, 500),
+    date: new Date(Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000),
+    createdAt: new Date(),
+  }));
+
+  const transfers = Array.from({ length: 10 }, () => {
+    const srcId = `asset-${randomAmount(1, 5)}`;
+    let dstId;
+    do {
+      dstId = `asset-${randomAmount(1, 5)}`;
+    } while (dstId === srcId);
+
+    return {
+      id: generateId(),
+      type: "transfer",
+      name: "Transfer",
+      src: { id: srcId },
+      srcAmount: randomAmount(10, 500),
+      dst: { id: dstId },
+      dstAmount: randomAmount(10, 500),
+      date: new Date(Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000),
+      createdAt: new Date(),
+    };
+  });
+
+  const incomes = Array.from({ length: 5 }, () => ({
+    id: generateId(),
+    type: "income",
+    name: "Salary",
+    src: { id: `source-${randomAmount(1, 5)}` },
+    srcAmount: randomAmount(10, 500),
+    dst: { id: `asset-${randomAmount(1, 5)}` },
+    dstAmount: randomAmount(10, 500),
+    date: new Date(Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000),
+    createdAt: new Date(),
+  }));
+
+  const transactions = [...expenses, ...transfers, ...incomes];
+
+  const categories = Array.from({ length: 5 }, (_, i) => ({
+    id: `category-${i + 1}`,
+    type: "category",
+    name: [
+      "Food & Drinks",
+      "Housing",
+      "Transportation",
+      "Entertainment",
+      "Savings",
+    ][i],
+    currency: "USD",
+    amount: randomAmount(100, 1000),
+  }));
+
+  const assets = Array.from({ length: 5 }, (_, i) => ({
+    id: `asset-${i + 1}`,
+    type: "asset",
+    name: [
+      "Bank Account",
+      "Cash",
+      "Credit Card",
+      "Investment Account",
+      "Savings Account",
+    ][i],
+    currency: "USD",
+  }));
+
+  const sources = Array.from({ length: 5 }, (_, i) => ({
+    id: `source-${i + 1}`,
+    type: "source",
+    name: ["Company", "Freelance", "Rental Income", "Gift", "Other"][i],
+    currency: "USD",
+  }));
+
+  const goals = Array.from({ length: 5 }, (_, i) => ({
+    id: `goal-${i + 1}`,
+    type: "goal",
+    name: [
+      "Vacation Fund",
+      "New Car",
+      "Emergency Fund",
+      "Education",
+      "Wedding",
+    ][i],
+    currency: "USD",
+    amount: randomAmount(500, 5000),
+  }));
+
+  // Store data in localStorage by collection type
+  const dataMap = {
+    transactions,
+    categories,
+    assets,
+    sources,
+    goals,
+  };
+
+  Object.entries(dataMap).forEach(([collectionType, data]) => {
+    localStorage.setItem(collectionType, JSON.stringify(data));
+  });
+
+  console.log("Dummy data has been stored in localStorage.");
 };

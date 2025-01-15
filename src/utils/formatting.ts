@@ -32,5 +32,6 @@ export const formatDateToInputValue = (date: Date): string => {
 // Format Currency
 export const formatCurrency = (amount: number, currency: string) => {
   const amountStr = +(+amount).toFixed(2);
-  return amountStr + " " + currency;
+  const currencyStr = currency ? ` ${currency}` : "";
+  return amountStr + currencyStr;
 };

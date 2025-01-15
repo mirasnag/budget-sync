@@ -43,7 +43,15 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
     setShowEditForm("");
   };
 
-  const tableHeader: string[] = ["Name", "Balance", "Income", "Expenses", ""];
+  const tableHeader: string[] = [
+    "Name",
+    "Balance",
+    "Income",
+    "Expenses",
+    "Currency",
+    "",
+  ];
+
   let totalBalance = 0;
   let totalIncome = 0;
   let totalExpense = 0;
@@ -99,7 +107,6 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
               totalExpense += +expense;
               totalIncome += +income;
             }
-
             return (
               <tr key={index}>
                 <td>
@@ -116,6 +123,7 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
                 <td>
                   {formatCurrency(expense, baseCurrency ?? asset.currency)}
                 </td>
+                <td>{asset.currency}</td>
                 <td>
                   <div className="table-btns">
                     <EditButton handleClick={() => setShowEditForm(asset.id)} />
@@ -143,6 +151,7 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
             <td>
               {baseCurrency ? formatCurrency(totalExpense, baseCurrency) : ""}
             </td>
+            <td></td>
             <td></td>
           </tr>
         </tbody>

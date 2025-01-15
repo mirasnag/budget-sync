@@ -1,5 +1,6 @@
 // React imports
 import { useState } from "react";
+import { Form } from "react-router-dom";
 
 // Helper functions
 import {
@@ -11,10 +12,10 @@ import {
   editTransactionProp,
   fetchData,
 } from "../../utils/services";
+import { useClickHandler } from "../../utils/hooks";
 
 // Types
 import { Entity, Transaction, typeToCollectionMap } from "../../utils/types";
-import { useClickHandler } from "../../utils/hooks";
 
 interface TransactionNodeSelectorProps {
   transaction: Transaction;
@@ -88,32 +89,40 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
           />
           {filteredOptions.map((nodeOption) => {
             return (
-              <div
+              <Form
+                method="post"
                 className="node-option"
-                onClick={() => changeNode(nodeOption.id)}
-                key={nodeOption.id}
+                onSubmit={() => changeNode(nodeOption.id)}
               >
-                <div
-                  key={nodeOption.id}
-                  className="flex-center frame color-blue"
-                >
-                  {nodeOption.name}
-                </div>
-              </div>
+                <button key={nodeOption.id}>
+                  <div
+                    key={nodeOption.id}
+                    className="flex-center frame color-blue"
+                  >
+                    {nodeOption.name}
+                  </div>
+                </button>
+              </Form>
             );
           })}
           {!exactMatch && !isBlank(filterStr) && (
-            <div className="node-option" onClick={() => createNode(filterStr)}>
-              <div className="flex-center node-selector-create">
-                <span>Create: </span>
-                <div
-                  key={"createOption"}
-                  className="flex-center frame color-blue"
-                >
-                  {filterStr}
+            <Form
+              method="post"
+              className="node-option"
+              onSubmit={() => createNode(filterStr)}
+            >
+              <button type="submit">
+                <div className="flex-center node-selector-create">
+                  <span>Create: </span>
+                  <div
+                    key={"createOption"}
+                    className="flex-center frame color-blue"
+                  >
+                    {filterStr}
+                  </div>
                 </div>
-              </div>
-            </div>
+              </button>
+            </Form>
           )}
         </div>
       )}

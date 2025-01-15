@@ -13,6 +13,7 @@ import {
   CollectionType,
   CurrencyRates,
   Transaction,
+  TransactionType,
 } from "./types";
 
 // Calculate Spent By Category
@@ -29,7 +30,10 @@ export const spentByCategory = (
   );
 
   const total = filteredTransactions.reduce((spent: number, transaction) => {
-    if (transaction.type === "expense" && transaction.dst.id === category.id) {
+    if (
+      transaction.type === TransactionType.EXPENSE &&
+      transaction.dst.id === category.id
+    ) {
       const { source, destination } = getTransactionNodes(transaction);
 
       return (
@@ -38,7 +42,7 @@ export const spentByCategory = (
           currencyRates,
           source.currency,
           destination.currency,
-          transaction.dstAmount
+          transaction.dstAmount ?? 0
         )
       );
     }
@@ -120,7 +124,7 @@ export const getCategorySpentHistory = (
 // Calculate Balance of Asset
 export const getBalanceOfAsset = (asset: Asset) => {
   const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
-  let balance = +asset.amount;
+  let balance: number = 0;
   const now = new Date();
 
   transactions.forEach((transaction) => {
@@ -154,9 +158,9 @@ export const getAssetDetails = (asset: Asset, period: Period) => {
 
   transactions.forEach((transaction) => {
     if (transaction.src.id === asset.id)
-      data[transaction.type] -= transaction.srcAmount;
+      data[transaction.type] -= transaction.srcAmount ?? 0;
     else if (transaction.dst.id === asset.id)
-      data[transaction.type] += transaction.dstAmount;
+      data[transaction.type] += transaction.dstAmount ?? 0;
   });
 
   return data;
@@ -219,10 +223,7 @@ export const getAssetBalanceHistory = (
     }
   });
 
-  const curBalances = [];
-  for (let i = 0; i < assets.length; i++) {
-    curBalances.push(assets[i].amount);
-  }
+  const curBalances = assets.map((_) => 0);
 
   for (let i = 0; i < months.length; i++) {
     for (let j = 0; j < assets.length; j++) {

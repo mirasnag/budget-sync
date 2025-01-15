@@ -1,12 +1,14 @@
 // rrd imports
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Form, Link, Outlet, useLocation } from "react-router-dom";
 
 // library imports
 import { FaChartPie, FaPhone } from "react-icons/fa";
 import { FaHouse, FaMoneyBillTransfer } from "react-icons/fa6";
+import { deleteAllData, generateDummyData } from "../utils/services";
 
 const Layout: React.FC = () => {
   const location = useLocation();
+  const addDevButtons = false;
 
   return (
     <div className="layout">
@@ -50,6 +52,16 @@ const Layout: React.FC = () => {
               <span>Contact</span>
             </Link>
           </div>
+          {addDevButtons && (
+            <div>
+              <Form method="post" onSubmit={() => generateDummyData()}>
+                <button className="btn btn-rect">Set Dummy Data</button>
+              </Form>
+              <Form method="post" onSubmit={() => deleteAllData()}>
+                <button className="btn btn-rect">Delete All Data</button>
+              </Form>
+            </div>
+          )}
         </nav>
       </div>
       <main className="content">

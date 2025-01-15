@@ -83,7 +83,7 @@ const Categories: React.FC<CategoriesProps> = ({
       </div>
 
       {categories.map((category) => {
-        const periodBudgeted = category.amount * periodMonths;
+        const periodBudgeted = (category.amount ?? 0) * periodMonths;
         const total = baseCurrency
           ? convertCurrency(
               currencyRates,
@@ -103,6 +103,7 @@ const Categories: React.FC<CategoriesProps> = ({
 
         const remaining = total - spent;
         const currency = baseCurrency ?? category.currency;
+        const spentPercentage = total > 0 ? (spent / total) * 100 : 0;
 
         return (
           <div key={category.id} className="category">
@@ -114,7 +115,7 @@ const Categories: React.FC<CategoriesProps> = ({
                 <div
                   className="category-bar"
                   style={{
-                    width: `${(spent / total) * 100}%`,
+                    width: `${spentPercentage}%`,
                   }}
                 ></div>
               </div>
