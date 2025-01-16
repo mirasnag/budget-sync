@@ -1,4 +1,5 @@
 import { Period } from "../components/Editors/PeriodSelector";
+import { useTransactionContext } from "../store/transaction-context";
 import { convertCurrency } from "./currency.util";
 import { formatDateToInputValue } from "./formatting";
 import { fetchData } from "./services";
@@ -22,7 +23,7 @@ export const spentByCategory = (
   currencyRates: CurrencyRates,
   period: Period
 ) => {
-  const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
+  const { data: transactions } = useTransactionContext();
   const filteredTransactions = filterTransactions(
     transactions,
     "Date",
@@ -32,7 +33,7 @@ export const spentByCategory = (
   const total = filteredTransactions.reduce((spent: number, transaction) => {
     if (
       transaction.type === TransactionType.EXPENSE &&
-      transaction.dst.id === category.id
+      transaction.dst?.id === category.id
     ) {
       const { source, destination } = getTransactionNodes(transaction);
 
@@ -40,8 +41,8 @@ export const spentByCategory = (
         spent +
         convertCurrency(
           currencyRates,
-          source.currency,
-          destination.currency,
+          source?.currency,
+          destination?.currency,
           transaction.dstAmount ?? 0
         )
       );
@@ -56,20 +57,25 @@ export const getCategorySpentHistory = (
   baseCurrency: string | null,
   rates: CurrencyRates
 ) => {
-  const transactions = sortFilterTransactions(
-    fetchData(CollectionType.TRANSACTIONS),
+  const { data: transactions } = useTransactionContext();
+  const filteredTransactions = sortFilterTransactions(
+    transactions,
     "Date",
     convertPeriodToString(period),
     "Date",
     "Ascending"
   ) as Transaction[];
-  if (!transactions || transactions.length === 0) return undefined;
+  if (!filteredTransactions || filteredTransactions.length === 0)
+    return undefined;
 
   const categories = fetchData(CollectionType.CATEGORIES) as Category[];
 
   const months: string[] = [];
-  const startDate = new Date(transactions[0].date);
-  const endDate = new Date(transactions[transactions.length - 1].date);
+  const startDate = new Date(filteredTransactions[0].date ?? "");
+  const endDate = new Date(
+    filteredTransactions[filteredTransactions.length - 1].date ?? ""
+  );
+
   for (
     let d = new Date(startDate);
     d.getFullYear() <= endDate.getFullYear() &&
@@ -87,11 +93,11 @@ export const getCategorySpentHistory = (
     }
   }
 
-  transactions.forEach((transaction) => {
-    const month = new Date(transaction.date).toISOString().slice(0, 7);
-    const category = categories.find((a) => a.id === transaction.dst.id);
+  filteredTransactions.forEach((transaction) => {
+    const month = new Date(transaction.date ?? "").toISOString().slice(0, 7);
+    const category = categories.find((a) => a.id === transaction.dst?.id);
     if (category) {
-      spentHistoryMap[month][category.name] += +transaction.dstAmount;
+      spentHistoryMap[month][category.name] += transaction.dstAmount ?? 0;
     }
   });
 
@@ -123,21 +129,21 @@ export const getCategorySpentHistory = (
 
 // Calculate Balance of Asset
 export const getBalanceOfAsset = (asset: Asset) => {
-  const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
+  const { data: transactions } = useTransactionContext();
   let balance: number = 0;
   const now = new Date();
 
   transactions.forEach((transaction) => {
     if (
-      new Date(transaction.date) < new Date(now) &&
+      new Date(transaction.date ?? "") < new Date(now) &&
       transaction.src.id === asset.id
     ) {
-      balance -= transaction.srcAmount;
+      balance -= transaction.srcAmount ?? 0;
     } else if (
-      new Date(transaction.date) < new Date(now) &&
+      new Date(transaction.date ?? "") < new Date(now) &&
       transaction.dst.id === asset.id
     ) {
-      balance += Number(transaction.dstAmount);
+      balance += transaction.dstAmount ?? 0;
     }
   });
 
@@ -145,8 +151,9 @@ export const getBalanceOfAsset = (asset: Asset) => {
 };
 
 export const getAssetDetails = (asset: Asset, period: Period) => {
-  const transactions = filterTransactions(
-    fetchData(CollectionType.TRANSACTIONS),
+  const { data: transactions } = useTransactionContext();
+  const filteredTransactions = filterTransactions(
+    transactions,
     "Date",
     convertPeriodToString(period)
   );
@@ -156,7 +163,7 @@ export const getAssetDetails = (asset: Asset, period: Period) => {
     transfer: 0,
   };
 
-  transactions.forEach((transaction) => {
+  filteredTransactions.forEach((transaction) => {
     if (transaction.src.id === asset.id)
       data[transaction.type] -= transaction.srcAmount ?? 0;
     else if (transaction.dst.id === asset.id)
@@ -187,8 +194,8 @@ export const getAssetBalanceHistory = (
   const assets = fetchData(CollectionType.ASSETS) as Asset[];
 
   const months: string[] = [];
-  const startDate = new Date(transactions[0].date);
-  const endDate = new Date(transactions[transactions.length - 1].date);
+  const startDate = new Date(transactions[0].date ?? "");
+  const endDate = new Date(transactions[transactions.length - 1].date ?? "");
   for (
     let d = new Date(startDate);
     d.getFullYear() <= endDate.getFullYear() &&
@@ -207,17 +214,17 @@ export const getAssetBalanceHistory = (
   }
 
   transactions.forEach((transaction) => {
-    const month = new Date(transaction.date).toISOString().slice(0, 7);
+    const month = new Date(transaction.date ?? "").toISOString().slice(0, 7);
     const { source, destination } = getTransactionNodes(transaction);
     switch (transaction.type) {
       case "income":
         balanceHistoryMap[month][destination.name] += transaction.dstAmount;
         break;
       case "expense":
-        balanceHistoryMap[month][source.name] -= transaction.srcAmount;
+        balanceHistoryMap[month][source.name] -= transaction.srcAmount ?? 0;
         break;
       case "transfer":
-        balanceHistoryMap[month][source.name] -= transaction.srcAmount;
+        balanceHistoryMap[month][source.name] -= transaction.srcAmount ?? 0;
         balanceHistoryMap[month][destination.name] += transaction.dstAmount;
         break;
     }

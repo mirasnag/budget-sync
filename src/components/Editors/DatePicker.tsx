@@ -3,7 +3,7 @@ import { FaCalendarDays } from "react-icons/fa6";
 import { formatDate, formatDateToInputValue } from "../../utils/formatting";
 
 interface DatePickerProps {
-  initialValue: Date;
+  initialValue: Date | null;
   onDateChange: (newValue: Date) => void;
 }
 
@@ -11,7 +11,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   initialValue,
   onDateChange,
 }) => {
-  const [value, setValue] = useState<Date>(initialValue);
+  const [value, setValue] = useState<Date | null>(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleIconClick = () => {

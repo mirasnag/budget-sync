@@ -207,9 +207,9 @@ export const getAllCurrencies = () => [
 // Convert Currency
 export const convertCurrency = (
   rates: CurrencyRates,
-  currencyFrom: string,
-  currencyTo: string,
-  amount: number
+  currencyFrom?: string,
+  currencyTo?: string,
+  amount: number = 0
 ) => {
   if (!currencyFrom || !currencyTo) return amount;
   return (

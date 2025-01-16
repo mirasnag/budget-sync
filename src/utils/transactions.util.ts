@@ -1,6 +1,6 @@
 import { FilterInstanceType } from "../components/Transactions/FilterEditor";
 import { SortInstanceType } from "../components/Transactions/SortEditor";
-import { getItemById } from "./services";
+import { getItemById } from "../store/contextProviders";
 import { Entity, EntityType, Transaction, TransactionType } from "./types";
 
 export const getTransactionNodes = (
@@ -13,9 +13,7 @@ export const getTransactionNodes = (
   };
 };
 
-export const getTransactionNodeTypes = (
-  type: TransactionType
-): { srcType: EntityType; dstType: EntityType } => {
+export const getTransactionNodeTypes = (type: TransactionType) => {
   switch (type) {
     case TransactionType.EXPENSE:
       return { srcType: EntityType.ASSET, dstType: EntityType.CATEGORY };
@@ -24,7 +22,7 @@ export const getTransactionNodeTypes = (
     case TransactionType.INCOME:
       return { srcType: EntityType.SOURCE, dstType: EntityType.ASSET };
     default:
-      return { srcType: EntityType.ASSET, dstType: EntityType.CATEGORY };
+      throw new Error("Invalid transaction type");
   }
 };
 
@@ -78,8 +76,8 @@ export const filterTransactions = (
 
       filterFunction = (transaction) => {
         return (
-          new Date(transaction.date) >= startDate &&
-          new Date(transaction.date) <= endDate
+          new Date(transaction.date ?? "") >= startDate &&
+          new Date(transaction.date ?? "") <= endDate
         );
       };
       break;
@@ -139,7 +137,7 @@ const getFilterFunction = (option: string[], value: string | null) => {
     case "Date":
       filterFunction = (a: Transaction) => {
         const filterDate = new Date(value);
-        const transactionDate = new Date(a.date);
+        const transactionDate = new Date(a.date ?? "");
         if (option[1] === "Is")
           return transactionDate.getTime() === filterDate.getTime();
         if (option[1] === "Is before") return transactionDate < filterDate;
@@ -214,7 +212,7 @@ const getSortFunction = (option: string, isAscending: boolean = true) => {
     //   break;
     case "Date":
       sortFunction = (a, b) =>
-        new Date(a.date).getTime() - new Date(b.date).getTime();
+        new Date(a.date ?? "").getTime() - new Date(b.date ?? "").getTime();
       break;
     // case "Amount":
     //   sortFunction = (a, b) => a.amount - b.amount;

@@ -1,11 +1,8 @@
 // react imports
 import { useState } from "react";
 
-// rrd imports
-import { Form } from "react-router-dom";
-
 // interfaces
-import { Asset, CurrencyRates } from "../../utils/types";
+import { CurrencyRates } from "../../utils/types";
 
 // components
 import AssetForm from "./AssetForm";
@@ -19,15 +16,15 @@ import CurrencySelector from "../Editors/CurrencySelector";
 import { getAssetDetails, getBalanceOfAsset } from "../../utils/entities.util";
 import { convertCurrency } from "../../utils/currency.util";
 import { formatCurrency } from "../../utils/formatting";
+import { useAssetContext } from "../../store/asset-context";
 
 export interface AssetsProps {
-  assets: Asset[];
   currencyRates: CurrencyRates;
-  showHeader?: boolean;
-  period?: string[];
 }
 
-const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
+const Assets: React.FC<AssetsProps> = ({ currencyRates }) => {
+  const { data: assets, dispatch: assetDispatch } = useAssetContext();
+
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState("");
   const [assetPeriod, setAssetPeriod] = useState<Period>({
@@ -55,6 +52,13 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
   let totalBalance = 0;
   let totalIncome = 0;
   let totalExpense = 0;
+
+  const deleteAsset = (id: string) => {
+    assetDispatch({
+      type: "DELETE",
+      payload: id,
+    });
+  };
 
   return (
     <div className="assets component">
@@ -127,11 +131,7 @@ const Assets: React.FC<AssetsProps> = ({ assets, currencyRates }) => {
                 <td>
                   <div className="table-btns">
                     <EditButton handleClick={() => setShowEditForm(asset.id)} />
-                    <Form method="post">
-                      <input type="hidden" name="_action" value="deleteAsset" />
-                      <input type="hidden" name="asset_id" value={asset.id} />
-                      <DeleteButton />
-                    </Form>
+                    <DeleteButton handleClick={() => deleteAsset(asset.id)} />
                   </div>
                 </td>
               </tr>

@@ -1,21 +1,17 @@
 // React imports
 import { useState } from "react";
-import { Form } from "react-router-dom";
 
 // Helper functions
 import {
   getTransactionNodeTypes,
   getTransactionNodes,
 } from "../../utils/transactions.util";
-import {
-  createItem,
-  editTransactionProp,
-  fetchData,
-} from "../../utils/services";
 import { useClickHandler } from "../../utils/hooks";
 
 // Types
-import { Entity, Transaction, typeToCollectionMap } from "../../utils/types";
+import { Transaction, typeToCollectionMap } from "../../utils/types";
+import { useTransactionContext } from "../../store/transaction-context";
+import { getContextData } from "../../store/contextProviders";
 
 interface TransactionNodeSelectorProps {
   transaction: Transaction;
@@ -30,6 +26,8 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
   transaction,
   nodeLabel,
 }) => {
+  const { dispatch: transactionDispatch } = useTransactionContext();
+
   const [open, setOpen] = useState<boolean>(false);
   const [filterStr, setFilterStr] = useState<string>("");
 
@@ -48,7 +46,9 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
   const nodeType = nodeLabel === "src" ? srcType : dstType;
   const name = node?.name ?? "";
 
-  const nodeOptions = fetchData(typeToCollectionMap[nodeType]) as Entity[];
+  const { data: nodeOptions, dispatch: nodeDispatch } = getContextData(
+    typeToCollectionMap[nodeType]
+  );
 
   let exactMatch: boolean = false;
   const filteredOptions = nodeOptions.filter((option) => {
@@ -57,24 +57,32 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
   });
 
   const changeNode = (newNodeId: string) => {
-    const newNode = {
-      ...transaction[nodeLabel],
-      id: newNodeId,
-    };
-    editTransactionProp(transaction.id, nodeLabel, newNode);
-    transaction[nodeLabel] = newNode;
+    transactionDispatch({
+      type: "EDIT",
+      payload: {
+        id: transaction.id,
+        prop: nodeLabel,
+        value: {
+          id: newNodeId,
+        },
+      },
+    });
     setOpen(false);
   };
 
   const createNode = (newNodeName: string) => {
     const id = crypto.randomUUID();
-    createItem({
+    const newNode = {
+      ...node,
       id: id,
-      type: nodeType,
       name: newNodeName,
+    };
+    nodeDispatch({
+      type: "ADD",
+      // @ts-expect-error
+      payload: newNode,
     });
     changeNode(id);
-    setOpen(false);
   };
 
   return (
@@ -89,40 +97,36 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
           />
           {filteredOptions.map((nodeOption) => {
             return (
-              <Form
-                method="post"
+              <button
+                onClick={() => changeNode(nodeOption.id)}
                 className="node-option"
-                onSubmit={() => changeNode(nodeOption.id)}
+                key={nodeOption.id}
               >
-                <button key={nodeOption.id}>
-                  <div
-                    key={nodeOption.id}
-                    className="flex-center frame color-blue"
-                  >
-                    {nodeOption.name}
-                  </div>
-                </button>
-              </Form>
+                <div
+                  key={nodeOption.id}
+                  className="flex-center frame color-blue"
+                >
+                  {nodeOption.name}
+                </div>
+              </button>
             );
           })}
           {!exactMatch && !isBlank(filterStr) && (
-            <Form
-              method="post"
+            <button
               className="node-option"
-              onSubmit={() => createNode(filterStr)}
+              type="submit"
+              onClick={() => createNode(filterStr)}
             >
-              <button type="submit">
-                <div className="flex-center node-selector-create">
-                  <span>Create: </span>
-                  <div
-                    key={"createOption"}
-                    className="flex-center frame color-blue"
-                  >
-                    {filterStr}
-                  </div>
+              <div className="flex-center node-selector-create">
+                <span>Create: </span>
+                <div
+                  key={"createOption"}
+                  className="flex-center frame color-blue"
+                >
+                  {filterStr}
                 </div>
-              </button>
-            </Form>
+              </div>
+            </button>
           )}
         </div>
       )}

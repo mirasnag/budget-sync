@@ -10,13 +10,9 @@ import {
   DataItemType,
   EntityType,
   FormInput,
-  Goal,
   Transaction,
   TransactionType,
   typeToCollectionMap,
-  Expense,
-  Transfer,
-  Income,
 } from "./types";
 
 export const actionHandler: ActionFunction = async ({ request }) => {
@@ -53,36 +49,6 @@ export const actionHandler: ActionFunction = async ({ request }) => {
     }
   }
 
-  if (_action === "createTransaction") {
-    try {
-      createTransaction(values as FormInput);
-      return null;
-    } catch (e) {
-      console.log(e);
-      throw new Error("Transaction is not created!");
-    }
-  }
-
-  if (_action === "editTransaction") {
-    try {
-      editTransaction(values.transaction_id as string, values as FormInput);
-      return null;
-    } catch (e) {
-      console.log(e);
-      throw new Error("Transaction is not updated!");
-    }
-  }
-
-  if (_action === "deleteTransaction") {
-    try {
-      deleteTransaction(values.transaction_id as string);
-      return null;
-    } catch (e) {
-      console.log(e);
-      throw new Error("Transaction is not deleted!");
-    }
-  }
-
   if (_action === "createCategory") {
     try {
       createCategory(values as FormInput);
@@ -113,37 +79,6 @@ export const actionHandler: ActionFunction = async ({ request }) => {
     }
   }
 
-  // if (_action === "createGoal") {
-  //   try {
-  //     createGoal(values as FormInput);
-  //     return null;
-  //   } catch (e) {
-  //     console.log(e);
-  //     throw new Error("Goal is not created!");
-  //   }
-  // }
-
-  // if (_action === "editGoal") {
-  //   console.log(values);
-  //   try {
-  //     editGoal(values.goal_id as string, values as FormInput);
-  //     return null;
-  //   } catch (e) {
-  //     console.log(e);
-  //     throw new Error("Goal is not updated!");
-  //   }
-  // }
-
-  // if (_action === "deleteGoal") {
-  //   try {
-  //     deleteGoal(values.goal_id as string);
-  //     return null;
-  //   } catch (e) {
-  //     console.log(e);
-  //     throw new Error("Goal is not deleted!");
-  //   }
-  // }
-
   return null;
 };
 
@@ -160,9 +95,7 @@ export const deleteItem = (collectionType: CollectionType, id: string) => {
   return localStorage.setItem(collectionType, JSON.stringify(newData));
 };
 
-export const createItem = (newItem: Partial<DataItem>) => {
-  if (!newItem.type) return;
-
+export const createItem = (newItem: DataItem) => {
   const collectionType = typeToCollectionMap[newItem.type];
   const collection = fetchData(collectionType) as DataItem[];
   return localStorage.setItem(
@@ -171,6 +104,9 @@ export const createItem = (newItem: Partial<DataItem>) => {
   );
 };
 
+/**
+ * @deprecated
+ */
 export const getItemById = (
   type: DataItemType,
   id: string
@@ -224,129 +160,15 @@ export const deleteAsset = (asset_id: string) => {
 
 // Transaction
 export const createEmptyTransaction = (type: TransactionType) => {
-  const transactions = fetchData(CollectionType.TRANSACTIONS) ?? [];
-
-  const newTransaction: Partial<Transaction> = {
+  const newTransaction: Transaction = {
     id: crypto.randomUUID(),
     type: type,
+    name: "",
+    src: { id: "" },
+    dst: { id: "" },
     createdAt: new Date(),
   };
-  localStorage.setItem(
-    CollectionType.TRANSACTIONS,
-    JSON.stringify([...transactions, newTransaction])
-  );
-  return;
-};
-
-export const createTransaction = (values: FormInput) => {
-  const transactions = fetchData(CollectionType.TRANSACTIONS) ?? [];
-
-  if (values.type === TransactionType.EXPENSE) {
-    const newTransaction: Expense = {
-      id: values.id ?? crypto.randomUUID(),
-      type: TransactionType.EXPENSE,
-      src: {
-        id: values.src,
-      },
-      srcAmount: parseFloat(values.amount),
-      dst: {
-        id: values.dst,
-      },
-      dstAmount: parseFloat(values.amount),
-      name: values.name,
-      date: new Date(values.date),
-      createdAt: new Date(),
-    };
-
-    return localStorage.setItem(
-      CollectionType.TRANSACTIONS,
-      JSON.stringify([...transactions, newTransaction])
-    );
-  }
-
-  if (values.type === TransactionType.TRANSFER) {
-    const newTransaction: Transfer = {
-      id: values.id ?? crypto.randomUUID(),
-      type: TransactionType.TRANSFER,
-      src: {
-        id: values.src,
-      },
-      srcAmount: parseFloat(values.amount),
-      dst: {
-        id: values.dst,
-      },
-      dstAmount: parseFloat(values.amount),
-      name: values.name,
-      date: new Date(values.date),
-      createdAt: new Date(),
-    };
-
-    return localStorage.setItem(
-      CollectionType.TRANSACTIONS,
-      JSON.stringify([...transactions, newTransaction])
-    );
-  }
-
-  if (values.type === TransactionType.INCOME) {
-    const newTransaction: Income = {
-      id: values.id ?? crypto.randomUUID(),
-      type: TransactionType.INCOME,
-      src: {
-        id: values.src,
-      },
-      srcAmount: parseFloat(values.amount),
-      dst: {
-        id: values.dst,
-      },
-      dstAmount: parseFloat(values.amount),
-      name: values.name,
-      date: new Date(values.date),
-      createdAt: new Date(),
-    };
-
-    return localStorage.setItem(
-      CollectionType.TRANSACTIONS,
-      JSON.stringify([...transactions, newTransaction])
-    );
-  }
-};
-
-export const editTransaction = (transaction_id: string, values: FormInput) => {
-  deleteItem(CollectionType.TRANSACTIONS, transaction_id);
-  values.id = transaction_id;
-  createTransaction(values);
-};
-
-export const editTransactionProp = <K extends keyof Transaction>(
-  transaction_id: string,
-  prop: K,
-  value: Transaction[K]
-) => {
-  const transactions = (fetchData(CollectionType.TRANSACTIONS) ??
-    []) as Transaction[];
-
-  const newTransactions: Transaction[] = transactions.map(
-    (transaction: Transaction) => {
-      if (transaction.id !== transaction_id) return transaction;
-      return {
-        ...transaction,
-        [prop]: value,
-      };
-    }
-  );
-
-  localStorage.setItem(
-    CollectionType.TRANSACTIONS,
-    JSON.stringify([...newTransactions])
-  );
-};
-
-export const deleteTransaction = (transaction_id: string) => {
-  return deleteItem(CollectionType.TRANSACTIONS, transaction_id);
-};
-
-export const getTransaction = (transaction_id: string): Transaction => {
-  return getItemById("transaction", transaction_id) as Transaction;
+  return newTransaction;
 };
 
 // Category
@@ -385,7 +207,7 @@ export const editCategory = (category_id: string, values: FormInput) => {
 export const deleteCategory = (category_id: string) => {
   const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
   const filteredTransactions = transactions.filter(
-    (d) => d.type === "expense" && d.dst.id !== category_id
+    (d) => d.type === "expense" && d.dst?.id !== category_id
   );
 
   localStorage.setItem(
@@ -395,45 +217,12 @@ export const deleteCategory = (category_id: string) => {
   return deleteItem(CollectionType.CATEGORIES, category_id);
 };
 
-// Goal
-export const createGoal = (values: FormInput) => {
-  const newGoal: Goal = {
-    id: values.id ?? crypto.randomUUID(),
-    type: EntityType.GOAL,
-    name: values.name,
-    amount: parseFloat(values.amount),
-    currency: values.currency,
-  };
-
-  const goals = fetchData(CollectionType.GOALS) ?? [];
-
-  return localStorage.setItem(
-    CollectionType.GOALS,
-    JSON.stringify([...goals, newGoal])
-  );
-};
-
-export const editGoal = (goal_id: string, values: FormInput) => {
-  deleteItem(CollectionType.GOALS, goal_id);
-  values.id = goal_id;
-  createGoal(values);
-};
-
-export const deleteGoal = (goal_id: string) => {
-  const goals = fetchData(CollectionType.GOALS) as Goal[];
-  const filteredGoals = goals.filter((d) => d.id !== goal_id);
-
-  localStorage.setItem(CollectionType.GOALS, JSON.stringify(filteredGoals));
-  return deleteItem(CollectionType.GOALS, goal_id);
-};
-
 // Populate / Delete
 export const deleteAllData = () => {
   localStorage.removeItem(CollectionType.TRANSACTIONS);
   localStorage.removeItem(CollectionType.ASSETS);
   localStorage.removeItem(CollectionType.CATEGORIES);
   localStorage.removeItem(CollectionType.SOURCES);
-  localStorage.removeItem(CollectionType.GOALS);
 };
 
 // Dummy data generator
@@ -442,17 +231,20 @@ const randomAmount = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
 export const generateDummyData = () => {
-  const expenses = Array.from({ length: 20 }, () => ({
-    id: generateId(),
-    type: "expense",
-    name: "Groceries",
-    src: { id: `asset-${randomAmount(1, 5)}` },
-    srcAmount: randomAmount(10, 500),
-    dst: { id: `category-${randomAmount(1, 5)}` },
-    dstAmount: randomAmount(10, 500),
-    date: new Date(Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000),
-    createdAt: new Date(),
-  }));
+  const expenses = Array.from({ length: 20 }, () => {
+    const amount = randomAmount(10, 500);
+    return {
+      id: generateId(),
+      type: "expense",
+      name: "Groceries",
+      src: { id: `asset-${randomAmount(1, 5)}` },
+      srcAmount: amount,
+      dst: { id: `category-${randomAmount(1, 5)}` },
+      dstAmount: amount,
+      date: new Date(Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000),
+      createdAt: new Date(),
+    };
+  });
 
   const transfers = Array.from({ length: 10 }, () => {
     const srcId = `asset-${randomAmount(1, 5)}`;
@@ -460,31 +252,35 @@ export const generateDummyData = () => {
     do {
       dstId = `asset-${randomAmount(1, 5)}`;
     } while (dstId === srcId);
+    const amount = randomAmount(10, 500);
 
     return {
       id: generateId(),
       type: "transfer",
       name: "Transfer",
       src: { id: srcId },
-      srcAmount: randomAmount(10, 500),
+      srcAmount: amount,
       dst: { id: dstId },
-      dstAmount: randomAmount(10, 500),
+      dstAmount: amount,
       date: new Date(Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000),
       createdAt: new Date(),
     };
   });
 
-  const incomes = Array.from({ length: 5 }, () => ({
-    id: generateId(),
-    type: "income",
-    name: "Salary",
-    src: { id: `source-${randomAmount(1, 5)}` },
-    srcAmount: randomAmount(10, 500),
-    dst: { id: `asset-${randomAmount(1, 5)}` },
-    dstAmount: randomAmount(10, 500),
-    date: new Date(Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000),
-    createdAt: new Date(),
-  }));
+  const incomes = Array.from({ length: 5 }, () => {
+    const amount = randomAmount(10, 500);
+    return {
+      id: generateId(),
+      type: "income",
+      name: "Salary",
+      src: { id: `source-${randomAmount(1, 5)}` },
+      srcAmount: amount,
+      dst: { id: `asset-${randomAmount(1, 5)}` },
+      dstAmount: amount,
+      date: new Date(Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000),
+      createdAt: new Date(),
+    };
+  });
 
   const transactions = [...expenses, ...transfers, ...incomes];
 
@@ -522,27 +318,12 @@ export const generateDummyData = () => {
     currency: "USD",
   }));
 
-  const goals = Array.from({ length: 5 }, (_, i) => ({
-    id: `goal-${i + 1}`,
-    type: "goal",
-    name: [
-      "Vacation Fund",
-      "New Car",
-      "Emergency Fund",
-      "Education",
-      "Wedding",
-    ][i],
-    currency: "USD",
-    amount: randomAmount(500, 5000),
-  }));
-
   // Store data in localStorage by collection type
   const dataMap = {
     transactions,
     categories,
     assets,
     sources,
-    goals,
   };
 
   Object.entries(dataMap).forEach(([collectionType, data]) => {

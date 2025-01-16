@@ -1,21 +1,13 @@
 // react imports
 import { useState } from "react";
 
-// rrd imports
-import { Form } from "react-router-dom";
-
 // library imports
 import { ArrowsUpDownIcon, FunnelIcon } from "@heroicons/react/20/solid";
 import { FaCoins, FaShoppingCart } from "react-icons/fa";
 import { FaRightLeft } from "react-icons/fa6";
 
 // interfaces
-import {
-  Asset,
-  Category,
-  Transaction,
-  TransactionType,
-} from "../../utils/types";
+import { TransactionType } from "../../utils/types";
 
 // UI components
 import DeleteButton from "../Editors/DeleteButton";
@@ -23,24 +15,21 @@ import FilterEditor, { FilterInstanceType } from "../Transactions/FilterEditor";
 import SortEditor, { SortInstanceType } from "../Transactions/SortEditor";
 import DatePicker from "../Editors/DatePicker";
 import TransactionNodeSelector from "../Editors/TransactionNodeSelector";
+import AddButton from "../Editors/AddButton";
 
 // helper functions
 import {
   // getTransactionNodes,
   sortFilterTransactions2,
 } from "../../utils/transactions.util";
-import {
-  createEmptyTransaction,
-  editTransactionProp,
-} from "../../utils/services";
-import AddButton from "../Editors/AddButton";
 import { useClickHandler } from "../../utils/hooks";
 
-interface TransactionTableProps {
-  transactions: Transaction[];
-  assets: Asset[];
-  categories: Category[];
-}
+import { useTransactionContext } from "../../store/transaction-context";
+import { useAssetContext } from "../../store/asset-context";
+import { useCategoryContext } from "../../store/category-context";
+import { createEmptyTransaction } from "../../utils/services";
+
+interface TransactionTableProps {}
 
 const tableTabs = [
   {
@@ -52,11 +41,12 @@ const tableTabs = [
   { type: TransactionType.INCOME, label: "Income", icon: <FaCoins /> },
 ];
 
-const TransactionTable: React.FC<TransactionTableProps> = ({
-  transactions,
-  assets,
-  categories,
-}) => {
+const TransactionTable: React.FC<TransactionTableProps> = () => {
+  const { data: transactions, dispatch: transactionDispatch } =
+    useTransactionContext();
+  const { data: assets } = useAssetContext();
+  const { data: categories } = useCategoryContext();
+
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [activeSortOrder, setActiveSortOrder] = useState<SortInstanceType[]>(
     []
@@ -100,8 +90,18 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     (transaction) => transaction.type === activeTab
   );
 
-  const addRow = () => {
-    createEmptyTransaction(activeTab);
+  const addTransaction = () => {
+    transactionDispatch({
+      type: "ADD",
+      payload: createEmptyTransaction(activeTab),
+    });
+  };
+
+  const deleteTransaction = (id: string) => {
+    transactionDispatch({
+      type: "DELETE",
+      payload: id,
+    });
   };
 
   return (
@@ -182,8 +182,14 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                       defaultValue={transaction.name}
                       onInput={(e) => {
                         const newValue = e.currentTarget.value;
-                        editTransactionProp(transaction.id, "name", newValue);
-                        transaction.name = newValue;
+                        transactionDispatch({
+                          type: "EDIT",
+                          payload: {
+                            id: transaction.id,
+                            prop: "name",
+                            value: newValue,
+                          },
+                        });
                       }}
                     />
                   </div>
@@ -191,10 +197,16 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 <td>
                   <div>
                     <DatePicker
-                      initialValue={transaction.date}
+                      initialValue={transaction.date ?? null}
                       onDateChange={(newDate: Date) => {
-                        editTransactionProp(transaction.id, "date", newDate);
-                        transaction.date = newDate;
+                        transactionDispatch({
+                          type: "EDIT",
+                          payload: {
+                            id: transaction.id,
+                            prop: "date",
+                            value: newDate,
+                          },
+                        });
                       }}
                     />
                   </div>
@@ -206,18 +218,22 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                       defaultValue={amount}
                       onInput={(e) => {
                         const newValue = parseInt(e.currentTarget.value);
-                        editTransactionProp(
-                          transaction.id,
-                          "srcAmount",
-                          newValue
-                        );
-                        editTransactionProp(
-                          transaction.id,
-                          "dstAmount",
-                          newValue
-                        );
-                        transaction.srcAmount = newValue;
-                        transaction.dstAmount = newValue;
+                        transactionDispatch({
+                          type: "EDIT",
+                          payload: {
+                            id: transaction.id,
+                            prop: "srcAmount",
+                            value: newValue,
+                          },
+                        });
+                        transactionDispatch({
+                          type: "EDIT",
+                          payload: {
+                            id: transaction.id,
+                            prop: "dstAmount",
+                            value: newValue,
+                          },
+                        });
                       }}
                     />
                     {/* <span>{currency}</span> */}
@@ -238,19 +254,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 <td>
                   <div>
                     <div className="table-btns">
-                      <Form method="post">
-                        <input
-                          type="hidden"
-                          name="_action"
-                          value="deleteTransaction"
-                        />
-                        <input
-                          type="hidden"
-                          name="transaction_id"
-                          value={transaction.id}
-                        />
-                        <DeleteButton />
-                      </Form>
+                      <DeleteButton
+                        handleClick={() => deleteTransaction(transaction.id)}
+                      />
                     </div>
                   </div>
                 </td>
@@ -261,9 +267,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         <tfoot>
           <tr>
             <td colSpan={tableHeader.length}>
-              <Form method="post" className="flex-center">
-                <AddButton handleClick={() => addRow()} />
-              </Form>
+              <div className="flex-center">
+                <AddButton handleClick={() => addTransaction()} />
+              </div>
             </td>
           </tr>
         </tfoot>

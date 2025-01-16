@@ -1,5 +1,4 @@
-.category,
-.goal {
+.category {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -12,8 +11,7 @@
   margin-right: 10px;
 }
 
-.category-bar-wrapper,
-.goal-bar-wrapper {
+.category-bar-wrapper {
   flex: 1;
 
   .labels {
@@ -23,16 +21,14 @@
   }
 }
 
-.category-bar-back,
-.goal-bar-back {
+.category-bar-back {
   flex: 1;
   background: var(--bg-dark-button);
   border-radius: 5px;
   overflow: hidden;
 }
 
-.category-bar,
-.goal-bar {
+.category-bar {
   height: 20px;
   background: var(--yellow);
   transition: width 0.3s ease;

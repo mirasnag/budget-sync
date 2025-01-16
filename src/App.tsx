@@ -17,6 +17,7 @@ import Contact, { contactAction } from "./pages/Contact";
 
 // helper functions
 import { actionHandler } from "./utils/services";
+import { ContextProviders } from "./store/contextProviders";
 
 const router = createBrowserRouter([
   {
@@ -56,7 +57,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <RouterProvider router={router} />
+      <ContextProviders>
+        <RouterProvider router={router} />
+      </ContextProviders>
     </>
   );
 }

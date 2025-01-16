@@ -1,16 +1,13 @@
 // react imports
 import { useState } from "react";
 
-// rrd imports
-import { Form } from "react-router-dom";
-
 // helper functions
 import { formatCurrency } from "../../utils/formatting";
 import { convertCurrency } from "../../utils/currency.util";
 import { spentByCategory } from "../../utils/entities.util";
 
 // interfaces
-import { Category, CurrencyRates } from "../../utils/types";
+import { CurrencyRates } from "../../utils/types";
 
 // components
 import CategoryForm from "./CategoryForm";
@@ -19,16 +16,15 @@ import EditButton from "../Editors/EditButton";
 import DeleteButton from "../Editors/DeleteButton";
 import PeriodSelector, { Period } from "../Editors/PeriodSelector";
 import CurrencySelector from "../Editors/CurrencySelector";
+import { useCategoryContext } from "../../store/category-context";
 
 interface CategoriesProps {
-  categories: Category[];
   currencyRates: CurrencyRates;
 }
 
-const Categories: React.FC<CategoriesProps> = ({
-  categories,
-  currencyRates,
-}) => {
+const Categories: React.FC<CategoriesProps> = ({ currencyRates }) => {
+  const { data: categories, dispatch: categoryDispatch } = useCategoryContext();
+
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState("");
   const [categoryPeriod, setCategoryPeriod] = useState<Period>({
@@ -64,6 +60,13 @@ const Categories: React.FC<CategoriesProps> = ({
         periodMonths = 1;
     }
   }
+
+  const deleteCategory = (id: string) => {
+    categoryDispatch({
+      type: "DELETE",
+      payload: id,
+    });
+  };
 
   return (
     <div className="categories component">
@@ -129,11 +132,7 @@ const Categories: React.FC<CategoriesProps> = ({
             </div>
             <div className="table-btns">
               <EditButton handleClick={() => setShowEditForm(category.id)} />
-              <Form method="post">
-                <input type="hidden" name="_action" value="deleteCategory" />
-                <input type="hidden" name="category_id" value={category.id} />
-                <DeleteButton />
-              </Form>
+              <DeleteButton handleClick={() => deleteCategory(category.id)} />
             </div>
           </div>
         );

@@ -17,16 +17,17 @@ import PeriodSelector, { Period } from "../components/Editors/PeriodSelector";
 import CurrencySelector from "../components/Editors/CurrencySelector";
 
 // interfaces
-import { Asset, Category, CollectionType, CurrencyRates } from "../utils/types";
+import { Asset, Category, CurrencyRates } from "../utils/types";
 
 // helper functions
-import { fetchData } from "../utils/services";
 import { getCurrencyRates } from "../utils/currency.util";
 import {
   getAssetBalanceHistory,
   getCategorySpentHistory,
 } from "../utils/entities.util";
 import { formatCurrency } from "../utils/formatting";
+import { useAssetContext } from "../store/asset-context";
+import { useCategoryContext } from "../store/category-context";
 
 // loader
 export async function spendingAnalysisLoader(): Promise<{
@@ -34,8 +35,8 @@ export async function spendingAnalysisLoader(): Promise<{
   categories: Category[];
   currencyRates: CurrencyRates;
 }> {
-  const assets = fetchData(CollectionType.ASSETS) as Asset[];
-  const categories = fetchData(CollectionType.CATEGORIES) as Category[];
+  const { data: assets } = useAssetContext();
+  const { data: categories } = useCategoryContext();
   const currencyRates = await getCurrencyRates();
 
   return { assets, categories, currencyRates };

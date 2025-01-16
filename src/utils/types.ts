@@ -9,14 +9,12 @@ export const enum EntityType {
   CATEGORY = "category",
   ASSET = "asset",
   SOURCE = "source",
-  GOAL = "goal",
 }
 
 export const enum CollectionType {
   TRANSACTIONS = "transactions",
   CATEGORIES = "categories",
   ASSETS = "assets",
-  GOALS = "goals",
   SOURCES = "sources",
 }
 
@@ -31,7 +29,6 @@ export const typeToCollectionMap: Record<DataItemType, CollectionType> = {
   [EntityType.CATEGORY]: CollectionType.CATEGORIES,
   [EntityType.ASSET]: CollectionType.ASSETS,
   [EntityType.SOURCE]: CollectionType.SOURCES,
-  [EntityType.GOAL]: CollectionType.GOALS,
 };
 
 // Base Interfaces
@@ -39,12 +36,11 @@ export interface DataItemBase {
   id: string;
   type: DataItemType;
   name: string;
-  metadata?: Record<string, unknown>;
 }
 
 export interface EntityBase extends DataItemBase {
   type: EntityType;
-  currency: string;
+  currency?: string;
 }
 
 // Specific Entities
@@ -61,11 +57,6 @@ export interface Source extends EntityBase {
   type: EntityType.SOURCE;
 }
 
-export interface Goal extends EntityBase {
-  type: EntityType.GOAL;
-  amount: number;
-}
-
 // Transaction Interfaces
 export interface TransactionNode {
   id: string;
@@ -74,10 +65,10 @@ export interface TransactionNode {
 export interface TransactionBase extends DataItemBase {
   type: TransactionType;
   src: TransactionNode;
-  srcAmount: number;
   dst: TransactionNode;
-  dstAmount: number;
-  date: Date;
+  srcAmount?: number;
+  dstAmount?: number;
+  date?: Date;
   createdAt: Date;
 }
 
@@ -96,7 +87,7 @@ export interface Income extends TransactionBase {
 // Unified Entity and Data Item Types
 export type Transaction = Expense | Transfer | Income;
 export type Entity = Category | Asset | Source;
-export type DataItem = Transaction | Entity | Goal;
+export type DataItem = Transaction | Entity;
 
 // Other
 export interface FormInput {
@@ -105,4 +96,23 @@ export interface FormInput {
 
 export interface CurrencyRates {
   [key: string]: number;
+}
+
+// Context
+type EditPayload<T> = T extends DataItem
+  ? { id: string; prop: keyof T; value: T[keyof T] }
+  : never;
+
+export type ContextAction<T extends DataItem> =
+  | { type: "INIT"; payload: T[] }
+  | { type: "ADD"; payload: T }
+  | { type: "DELETE"; payload: string }
+  | {
+      type: "EDIT";
+      payload: EditPayload<T>;
+    };
+
+export interface ContextType<T extends DataItem> {
+  data: T[];
+  dispatch: React.Dispatch<ContextAction<T>>;
 }

@@ -1,5 +1,5 @@
 // Format Date
-export const formatDate = (date: Date): string => {
+export const formatDate = (date: Date | null): string => {
   if (!date) return "";
 
   const day = new Date(date).getDate();
@@ -17,7 +17,7 @@ export const formatDateMonthStr = (monthYear: string): string => {
   return `${month} ${year}`;
 };
 
-export const formatDateToInputValue = (date: Date): string => {
+export const formatDateToInputValue = (date: Date | null): string => {
   if (!date) return "";
 
   const day = new Date(date).getDate();
@@ -30,7 +30,7 @@ export const formatDateToInputValue = (date: Date): string => {
 };
 
 // Format Currency
-export const formatCurrency = (amount: number, currency: string) => {
+export const formatCurrency = (amount: number, currency?: string) => {
   const amountStr = +(+amount).toFixed(2);
   const currencyStr = currency ? ` ${currency}` : "";
   return amountStr + currencyStr;
