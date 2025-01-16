@@ -4,10 +4,10 @@ import { useNavigate, useRouteError } from "react-router-dom";
 const ErrorPage: React.FC = () => {
   const error = useRouteError() as any;
   const navigate = useNavigate();
-
+  console.log(error.message || error.statusText);
   return (
     <div className="error-page">
-      <h1>{error.message || error.statusText}</h1>
+      <h1>{"Something went wrong!"}</h1>
       <div>
         <button className="btn btn-medium" onClick={() => navigate(-1)}>
           <span>Go Back</span>

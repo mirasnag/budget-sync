@@ -17,7 +17,7 @@ import PeriodSelector, { Period } from "../components/Editors/PeriodSelector";
 import CurrencySelector from "../components/Editors/CurrencySelector";
 
 // interfaces
-import { Asset, Category, CurrencyRates } from "../utils/types";
+import { CurrencyRates } from "../utils/types";
 
 // helper functions
 import { getCurrencyRates } from "../utils/currency.util";
@@ -31,23 +31,19 @@ import { useCategoryContext } from "../store/category-context";
 
 // loader
 export async function spendingAnalysisLoader(): Promise<{
-  assets: Asset[];
-  categories: Category[];
   currencyRates: CurrencyRates;
 }> {
-  const { data: assets } = useAssetContext();
-  const { data: categories } = useCategoryContext();
   const currencyRates = await getCurrencyRates();
 
-  return { assets, categories, currencyRates };
+  return { currencyRates };
 }
 
 const SpendingAnalysisPage: React.FC = () => {
-  const { assets, categories, currencyRates } = useLoaderData() as {
-    assets: Asset[];
-    categories: Category[];
+  const { currencyRates } = useLoaderData() as {
     currencyRates: CurrencyRates;
   };
+  const { data: assets } = useAssetContext();
+  const { data: categories } = useCategoryContext();
 
   const [assetChartType, setAssetChartType] = useState("table");
   const [assetPeriod, setAssetPeriod] = useState<Period>({

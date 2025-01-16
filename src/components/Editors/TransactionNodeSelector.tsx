@@ -1,5 +1,5 @@
 // React imports
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Helper functions
 import {
@@ -31,8 +31,17 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
   const [open, setOpen] = useState<boolean>(false);
   const [filterStr, setFilterStr] = useState<string>("");
 
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (open && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [open]);
+
   const clickRef = useClickHandler<HTMLDivElement>({
-    onInsideClick: () => setOpen(true),
+    onInsideClick: () => {
+      setOpen(true);
+    },
     onOutsideClick: () => {
       setOpen(false);
       setFilterStr("");
@@ -92,6 +101,7 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
       {open && (
         <div className="node-selector" onClick={(e) => e.stopPropagation()}>
           <input
+            ref={inputRef}
             type="text"
             onChange={(e) => setFilterStr(e.currentTarget.value)}
           />

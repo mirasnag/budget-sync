@@ -33,7 +33,7 @@ const CategoryPieChart: React.FC<Props> = ({ categories, data, formatter }) => {
 
   return (
     <div className="pie-chart-wrapper">
-      {data.map((monthData) => {
+      {data.map((monthData, id) => {
         const pieData = categories.map((category, index) => {
           return {
             name: category.name,
@@ -43,7 +43,7 @@ const CategoryPieChart: React.FC<Props> = ({ categories, data, formatter }) => {
         });
 
         return (
-          <div className="pie-chart">
+          <div className="pie-chart" key={id}>
             <h3>{formatDateMonthStr(monthData.month)}</h3>
             <ResponsiveContainer width="80%" height={300}>
               <PieChart>
