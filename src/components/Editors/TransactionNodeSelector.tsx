@@ -12,15 +12,12 @@ import { useClickHandler } from "../../utils/hooks";
 import { Transaction, typeToCollectionMap } from "../../utils/types";
 import { useTransactionContext } from "../../store/transaction-context";
 import { getContextData } from "../../store/contextProviders";
+import { isBlankString } from "../../utils/formatting";
 
 interface TransactionNodeSelectorProps {
   transaction: Transaction;
   nodeLabel: "src" | "dst";
 }
-
-const isBlank = (str: string) => {
-  return !str || /^\s*$/.test(str);
-};
 
 const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
   transaction,
@@ -121,7 +118,7 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
               </button>
             );
           })}
-          {!exactMatch && !isBlank(filterStr) && (
+          {!exactMatch && !isBlankString(filterStr) && (
             <button
               className="node-option"
               type="submit"

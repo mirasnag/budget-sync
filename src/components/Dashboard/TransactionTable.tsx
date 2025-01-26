@@ -10,11 +10,8 @@ import { FaRightLeft } from "react-icons/fa6";
 import { TransactionType } from "../../utils/types";
 
 // UI components
-import DeleteButton from "../Editors/DeleteButton";
 import FilterEditor, { FilterInstanceType } from "../Transactions/FilterEditor";
 import SortEditor, { SortInstanceType } from "../Transactions/SortEditor";
-import DatePicker from "../Editors/DatePicker";
-import TransactionNodeSelector from "../Editors/TransactionNodeSelector";
 import AddButton from "../Editors/AddButton";
 
 // helper functions
@@ -28,6 +25,7 @@ import { useTransactionContext } from "../../store/transaction-context";
 import { useAssetContext } from "../../store/asset-context";
 import { useCategoryContext } from "../../store/category-context";
 import { createEmptyTransaction } from "../../utils/services";
+import TransactionRow from "../Transactions/TransactionRow";
 
 interface TransactionTableProps {}
 
@@ -97,13 +95,6 @@ const TransactionTable: React.FC<TransactionTableProps> = () => {
     });
   };
 
-  const deleteTransaction = (id: string) => {
-    transactionDispatch({
-      type: "DELETE",
-      payload: id,
-    });
-  };
-
   return (
     <div className="transactions">
       <div className="header">
@@ -168,99 +159,8 @@ const TransactionTable: React.FC<TransactionTableProps> = () => {
         </thead>
         <tbody>
           {filteredTransactions.map((transaction) => {
-            // const { source, destination } = getTransactionNodes(transaction);
-
-            const amount = transaction.srcAmount ?? transaction.dstAmount ?? "";
-            // const currency = source?.currency ?? destination?.currency ?? "USD";
-
             return (
-              <tr key={transaction.id}>
-                <td>
-                  <div>
-                    <input
-                      type="text"
-                      defaultValue={transaction.name}
-                      onInput={(e) => {
-                        const newValue = e.currentTarget.value;
-                        transactionDispatch({
-                          type: "EDIT",
-                          payload: {
-                            id: transaction.id,
-                            prop: "name",
-                            value: newValue,
-                          },
-                        });
-                      }}
-                    />
-                  </div>
-                </td>
-                <td>
-                  <div>
-                    <DatePicker
-                      initialValue={transaction.date ?? null}
-                      onDateChange={(newDate: Date) => {
-                        transactionDispatch({
-                          type: "EDIT",
-                          payload: {
-                            id: transaction.id,
-                            prop: "date",
-                            value: newDate,
-                          },
-                        });
-                      }}
-                    />
-                  </div>
-                </td>
-                <td>
-                  <div>
-                    <input
-                      type="number"
-                      defaultValue={amount}
-                      onInput={(e) => {
-                        const newValue = parseInt(e.currentTarget.value);
-                        transactionDispatch({
-                          type: "EDIT",
-                          payload: {
-                            id: transaction.id,
-                            prop: "srcAmount",
-                            value: newValue,
-                          },
-                        });
-                        transactionDispatch({
-                          type: "EDIT",
-                          payload: {
-                            id: transaction.id,
-                            prop: "dstAmount",
-                            value: newValue,
-                          },
-                        });
-                      }}
-                    />
-                    {/* <span>{currency}</span> */}
-                  </div>
-                </td>
-                <td>
-                  <TransactionNodeSelector
-                    transaction={transaction}
-                    nodeLabel="src"
-                  />
-                </td>
-                <td>
-                  <TransactionNodeSelector
-                    transaction={transaction}
-                    nodeLabel="dst"
-                  />
-                </td>
-                <td>
-                  <div>
-                    <div className="table-btns">
-                      <DeleteButton
-                        handleClick={() => deleteTransaction(transaction.id)}
-                      />
-                    </div>
-                  </div>
-                </td>
-              </tr>
+              <TransactionRow key={transaction.id} transaction={transaction} />
             );
           })}
         </tbody>

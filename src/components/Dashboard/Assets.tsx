@@ -7,7 +7,6 @@ import { CurrencyRates } from "../../utils/types";
 // components
 import AssetForm from "./AssetForm";
 import AddButton from "../Editors/AddButton";
-import EditButton from "../Editors/EditButton";
 import DeleteButton from "../Editors/DeleteButton";
 import PeriodSelector, { Period } from "../Editors/PeriodSelector";
 import CurrencySelector from "../Editors/CurrencySelector";
@@ -17,6 +16,7 @@ import { getAssetDetails, getBalanceOfAsset } from "../../utils/entities.util";
 import { convertCurrency } from "../../utils/currency.util";
 import { formatCurrency } from "../../utils/formatting";
 import { useAssetContext } from "../../store/asset-context";
+import CurrencySelector2 from "../Editors/CurrencySelector2";
 
 export interface AssetsProps {
   currencyRates: CurrencyRates;
@@ -26,7 +26,6 @@ const Assets: React.FC<AssetsProps> = ({ currencyRates }) => {
   const { data: assets, dispatch: assetDispatch } = useAssetContext();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [showEditForm, setShowEditForm] = useState("");
   const [assetPeriod, setAssetPeriod] = useState<Period>({
     type: "relative",
     option: "This",
@@ -37,7 +36,6 @@ const Assets: React.FC<AssetsProps> = ({ currencyRates }) => {
 
   const closeForm = () => {
     setShowCreateForm(false);
-    setShowEditForm("");
   };
 
   const tableHeader: string[] = [
@@ -57,6 +55,17 @@ const Assets: React.FC<AssetsProps> = ({ currencyRates }) => {
     assetDispatch({
       type: "DELETE",
       payload: id,
+    });
+  };
+
+  const handleCurrencyChange = (asset_id: string, newValue: string) => {
+    assetDispatch({
+      type: "EDIT",
+      payload: {
+        id: asset_id,
+        prop: "currency",
+        value: newValue,
+      },
     });
   };
 
@@ -114,9 +123,21 @@ const Assets: React.FC<AssetsProps> = ({ currencyRates }) => {
             return (
               <tr key={index}>
                 <td>
-                  <div className="frame frame-large color-blue">
-                    {asset.name}
-                  </div>
+                  <input
+                    type="text"
+                    defaultValue={asset.name}
+                    onInput={(e) => {
+                      const newValue = e.currentTarget.value;
+                      assetDispatch({
+                        type: "EDIT",
+                        payload: {
+                          id: asset.id,
+                          prop: "name",
+                          value: newValue,
+                        },
+                      });
+                    }}
+                  />
                 </td>
                 <td>
                   {formatCurrency(balance, baseCurrency ?? asset.currency)}
@@ -127,10 +148,16 @@ const Assets: React.FC<AssetsProps> = ({ currencyRates }) => {
                 <td>
                   {formatCurrency(expense, baseCurrency ?? asset.currency)}
                 </td>
-                <td>{asset.currency}</td>
+                <td>
+                  <CurrencySelector2
+                    initialValue={asset.currency ?? "USD"}
+                    setValue={(newValue) =>
+                      handleCurrencyChange(asset.id, newValue)
+                    }
+                  />{" "}
+                </td>
                 <td>
                   <div className="table-btns">
-                    <EditButton handleClick={() => setShowEditForm(asset.id)} />
                     <DeleteButton handleClick={() => deleteAsset(asset.id)} />
                   </div>
                 </td>
@@ -140,7 +167,7 @@ const Assets: React.FC<AssetsProps> = ({ currencyRates }) => {
 
           <tr key="summary">
             <td>
-              <div className="frame frame-large color-blue">Total</div>
+              <div className="frame frame-large">Total</div>
             </td>
             <td>
               {baseCurrency ? formatCurrency(totalBalance, baseCurrency) : ""}
@@ -158,10 +185,6 @@ const Assets: React.FC<AssetsProps> = ({ currencyRates }) => {
       </table>
 
       {showCreateForm && <AssetForm onClose={closeForm} asset_id="" />}
-
-      {showEditForm !== "" && (
-        <AssetForm onClose={closeForm} asset_id={showEditForm} />
-      )}
     </div>
   );
 };

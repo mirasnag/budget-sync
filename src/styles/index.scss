@@ -5,13 +5,13 @@
 @use "category";
 @use "chart";
 @use "period-selector";
-@use "currency-widget";
+@use "currency";
 
 :root {
   /* Background Colors */
-  --bg-component: #ddd;
-  --bg-content: #eee;
-  --bg-primary: #ddd;
+  --bg-component: #eae7e0;
+  --bg-content: #c6beab;
+  --bg-primary: #eae7e0;
   --bg-dark-button: #ccc;
   --bg-light-button: #ccc;
   --bg-effect: #eee;
@@ -21,13 +21,14 @@
   --text-light: #333333;
 
   /* Accent Colors */
-  --blue: #74b7fd;
+  --blue: #7da8c5;
   --green: #27ae60;
-  --yellow: #f39c12;
-  --red: #e74c3c;
+  --yellow: #e3d06d;
+  --red: #bf5a3c;
 
   /* Other */
-  --border: #000;
+  --border: #666;
+  --border-dark: #000;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -100,6 +101,13 @@ table {
   height: 1px;
   border-collapse: collapse;
 
+  input {
+    width: 100%;
+    background: unset;
+    border: unset;
+    color: unset;
+  }
+
   tr {
     border-bottom: 1px solid var(--border-dark);
   }
@@ -110,24 +118,29 @@ table {
 
   th,
   td {
-    // height: 100%;
     padding: 5px;
     padding: 0px 10px;
     text-align: left;
+  }
+
+  thead {
+    tr {
+      line-height: 3em;
+    }
   }
 
   tbody {
     tr {
       td {
         border: 0.5px solid var(--border-dark);
-      }
 
-      :first-child {
-        border-left-width: 0px;
-      }
+        &:first-child {
+          border-left-width: 0px;
+        }
 
-      :last-child {
-        border-right-width: 0px;
+        &:last-child {
+          border-right-width: 0px;
+        }
       }
     }
   }

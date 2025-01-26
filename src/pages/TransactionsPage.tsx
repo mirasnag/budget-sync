@@ -9,7 +9,7 @@ import { CurrencyRates } from "../utils/types";
 
 // UI components
 import CurrencyWidget from "../components/CurrencyWidget";
-import TransactionTable from "../components/Dashboard/Transactions";
+import TransactionTable from "../components/Dashboard/TransactionTable";
 
 // loader
 export async function transactionsPageLoader(): Promise<{

@@ -25,12 +25,20 @@ const assetReducer = (state: Asset[], action: AssetAction): Asset[] => {
       return [...state, action.payload];
     case "DELETE":
       return state.filter((asset) => asset.id !== action.payload);
+    case "EDIT":
+      return state.map((asset) =>
+        asset.id === action.payload.id
+          ? { ...asset, [action.payload.prop]: action.payload.value }
+          : asset
+      );
     default:
       return state;
   }
 };
 
-const AssetContext = createContext<ContextType<Asset> | undefined>(undefined);
+export const AssetContext = createContext<ContextType<Asset> | undefined>(
+  undefined
+);
 
 const initialValue = fetchData(CollectionType.ASSETS);
 

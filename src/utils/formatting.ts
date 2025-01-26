@@ -35,3 +35,7 @@ export const formatCurrency = (amount: number, currency?: string) => {
   const currencyStr = currency ? ` ${currency}` : "";
   return amountStr + currencyStr;
 };
+
+export const isBlankString = (str: string) => {
+  return !str || /^\s*$/.test(str);
+};
