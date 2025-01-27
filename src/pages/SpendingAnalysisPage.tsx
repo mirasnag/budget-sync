@@ -10,11 +10,11 @@ import AssetLineChart from "../components/Charts/AssetLineChart";
 import CategoryLineChart from "../components/Charts/CategoryLineChart";
 import CategoryBarChart from "../components/Charts/CategoryBarChart";
 import AssetBarChart from "../components/Charts/AssetBarChart";
-import AssetTable from "../components/Charts/AssetTable";
-import CategoryTable from "../components/Charts/CategoryTable";
-import CurrencyWidget from "../components/CurrencyWidget";
-import PeriodSelector, { Period } from "../components/Editors/PeriodSelector";
-import CurrencySelector from "../components/Editors/CurrencySelector";
+import AssetTableChart from "../components/Charts/AssetTableChart";
+import CategoryTableChart from "../components/Charts/CategoryTableChart";
+import CurrencyWidget from "../components/Currency/CurrencyWidget";
+import PeriodSelector, { Period } from "../components/Buttons/PeriodSelector";
+import CurrencySelector from "../components/Currency/CurrencySelector";
 
 // interfaces
 import { CurrencyRates } from "../utils/types";
@@ -26,8 +26,11 @@ import {
   getCategorySpentHistory,
 } from "../utils/entities.util";
 import { formatCurrency } from "../utils/formatting";
+
+// context
 import { useAssetContext } from "../store/asset-context";
 import { useCategoryContext } from "../store/category-context";
+import { useTransactionContext } from "../store/transaction-context";
 
 // loader
 export async function spendingAnalysisLoader(): Promise<{
@@ -44,6 +47,7 @@ const SpendingAnalysisPage: React.FC = () => {
   };
   const { data: assets } = useAssetContext();
   const { data: categories } = useCategoryContext();
+  const { data: transactions } = useTransactionContext();
 
   const [assetChartType, setAssetChartType] = useState("table");
   const [assetPeriod, setAssetPeriod] = useState<Period>({
@@ -72,13 +76,14 @@ const SpendingAnalysisPage: React.FC = () => {
     getCategorySpentHistory(
       categoryPeriod,
       categoryBaseCurrency,
-      currencyRates
+      currencyRates,
+      transactions
     ) ?? [];
 
   const renderAssetChart = () => {
     if (assetChartType === "table") {
       return (
-        <AssetTable
+        <AssetTableChart
           assets={assets}
           data={assetData}
           formatter={(value, index) =>
@@ -110,7 +115,7 @@ const SpendingAnalysisPage: React.FC = () => {
       );
     }
     return (
-      <AssetTable
+      <AssetTableChart
         assets={assets}
         data={assetData}
         formatter={(value, index) =>
@@ -123,7 +128,7 @@ const SpendingAnalysisPage: React.FC = () => {
   const renderCategoryChart = () => {
     if (categoryChartType === "table") {
       return (
-        <CategoryTable
+        <CategoryTableChart
           categories={categories}
           data={categoryData}
           formatter={(value, index) =>
@@ -179,7 +184,7 @@ const SpendingAnalysisPage: React.FC = () => {
     }
 
     return (
-      <CategoryTable
+      <CategoryTableChart
         categories={categories}
         data={categoryData}
         formatter={(value, index) =>

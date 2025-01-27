@@ -8,10 +8,10 @@ import { getCurrencyRates } from "../utils/currency.util";
 import { CurrencyRates } from "../utils/types";
 
 // components
-import TransactionTable from "../components/Dashboard/TransactionTable";
 import Assets from "../components/Dashboard/Assets";
 import Categories from "../components/Dashboard/Categories";
-import CurrencyWidget from "../components/CurrencyWidget";
+import Transactions from "../components/Dashboard/Transactions";
+import CurrencyWidget from "../components/Currency/CurrencyWidget";
 
 // loader
 export async function dashboardLoader(): Promise<{
@@ -32,7 +32,7 @@ const Dashboard: React.FC = () => {
         <CurrencyWidget rates={currencyRates} />
         <Assets currencyRates={currencyRates} />
         <Categories currencyRates={currencyRates} />
-        <TransactionTable />
+        <Transactions />
       </div>
     </>
   );

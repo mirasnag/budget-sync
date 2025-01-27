@@ -1,5 +1,5 @@
-import { FilterInstanceType } from "../components/Transactions/FilterEditor";
-import { SortInstanceType } from "../components/Transactions/SortEditor";
+import { FilterInstanceType } from "../components/Transaction/FilterEditor";
+import { SortInstanceType } from "../components/Transaction/SortEditor";
 import { getItemById } from "../store/contextProviders";
 import { Entity, EntityType, Transaction, TransactionType } from "./types";
 
@@ -111,9 +111,11 @@ const getFilterFunction = (option: string[], value: string | null) => {
   switch (option[0]) {
     case "Name":
       filterFunction = (a: Transaction) => {
-        if (option[1] === "Contains") return a.name.includes(value);
+        if (option[1] === "Contains")
+          return a.name.toLowerCase().includes(value.toLowerCase());
         if (option[1] === "Is") return a.name === value;
-        if (option[1] === "Starts With") return a.name.startsWith(value);
+        if (option[1] === "Starts With")
+          return a.name.toLowerCase().startsWith(value.toLowerCase());
         return true;
       };
       break;

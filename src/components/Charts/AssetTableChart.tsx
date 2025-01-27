@@ -13,7 +13,7 @@ interface Props {
   formatter: (value: number, index: number) => string;
 }
 
-const AssetTable: React.FC<Props> = ({ assets, data, formatter }) => {
+const AssetTableChart: React.FC<Props> = ({ assets, data, formatter }) => {
   const tableHeader = [
     "Name",
     ...data?.map((d) => formatDateMonthStr(d.month)),
@@ -64,4 +64,4 @@ const AssetTable: React.FC<Props> = ({ assets, data, formatter }) => {
     </table>
   );
 };
-export default AssetTable;
+export default AssetTableChart;

@@ -1,5 +1,4 @@
-import { Period } from "../components/Editors/PeriodSelector";
-import { useTransactionContext } from "../store/transaction-context";
+import { Period } from "../components/Buttons/PeriodSelector";
 import { convertCurrency } from "./currency.util";
 import { formatDateToInputValue } from "./formatting";
 import { fetchData } from "./services";
@@ -21,9 +20,9 @@ import {
 export const spentByCategory = (
   category: Category,
   currencyRates: CurrencyRates,
-  period: Period
+  period: Period,
+  transactions: Transaction[]
 ) => {
-  const { data: transactions } = useTransactionContext();
   const filteredTransactions = filterTransactions(
     transactions,
     "Date",
@@ -55,9 +54,9 @@ export const spentByCategory = (
 export const getCategorySpentHistory = (
   period: Period,
   baseCurrency: string | null,
-  rates: CurrencyRates
+  rates: CurrencyRates,
+  transactions: Transaction[]
 ) => {
-  const { data: transactions } = useTransactionContext();
   const filteredTransactions = sortFilterTransactions(
     transactions,
     "Date",
@@ -128,8 +127,10 @@ export const getCategorySpentHistory = (
 };
 
 // Calculate Balance of Asset
-export const getBalanceOfAsset = (asset: Asset) => {
-  const { data: transactions } = useTransactionContext();
+export const getBalanceOfAsset = (
+  asset: Asset,
+  transactions: Transaction[]
+) => {
   let balance: number = 0;
   const now = new Date();
 
@@ -150,8 +151,11 @@ export const getBalanceOfAsset = (asset: Asset) => {
   return balance;
 };
 
-export const getAssetDetails = (asset: Asset, period: Period) => {
-  const { data: transactions } = useTransactionContext();
+export const getAssetDetails = (
+  asset: Asset,
+  period: Period,
+  transactions: Transaction[]
+) => {
   const filteredTransactions = filterTransactions(
     transactions,
     "Date",

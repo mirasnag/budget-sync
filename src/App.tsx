@@ -16,7 +16,6 @@ import ErrorPage from "./pages/Error";
 import Contact, { contactAction } from "./pages/Contact";
 
 // helper functions
-import { actionHandler } from "./utils/services";
 import { ContextProviders } from "./store/contextProviders";
 
 const router = createBrowserRouter([
@@ -29,14 +28,12 @@ const router = createBrowserRouter([
         path: "/",
         element: <Dashboard />,
         loader: dashboardLoader,
-        action: actionHandler,
         errorElement: <ErrorPage />,
       },
       {
         path: "/transactions",
         element: <TransactionsPage />,
         loader: transactionsPageLoader,
-        action: actionHandler,
         errorElement: <ErrorPage />,
       },
       {

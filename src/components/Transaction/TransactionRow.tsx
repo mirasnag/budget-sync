@@ -1,8 +1,8 @@
 import { useTransactionContext } from "../../store/transaction-context";
 import { Transaction } from "../../utils/types";
-import DatePicker from "../Editors/DatePicker";
-import DeleteButton from "../Editors/DeleteButton";
-import TransactionNodeSelector from "../Editors/TransactionNodeSelector";
+import DatePicker from "../Buttons/DatePicker";
+import DeleteButton from "../Buttons/DeleteButton";
+import TransactionNodeSelector from "./TransactionNodeSelector";
 
 interface TransactionRowProp {
   transaction: Transaction;
@@ -66,7 +66,7 @@ const TransactionRow: React.FC<TransactionRowProp> = ({ transaction }) => {
             type="number"
             defaultValue={amount}
             onInput={(e) => {
-              const newValue = parseInt(e.currentTarget.value);
+              const newValue = parseFloat(e.currentTarget.value);
               transactionDispatch({
                 type: "EDIT",
                 payload: {

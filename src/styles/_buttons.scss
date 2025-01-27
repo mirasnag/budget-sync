@@ -1,12 +1,16 @@
 .btn {
-  background: var(--bg-light-button);
-  color: var(--text-dark);
-  border: 0.5px solid var(--border);
+  background: var(--bg-dark-button);
+  color: var(--text-light);
+  border: 0.5px solid var(--border-dark);
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 
   &:hover {
+    background: var(--bg-effect) !important;
+  }
+
+  &-blue:hover {
     background: var(--blue) !important;
   }
 

@@ -2,10 +2,10 @@
 import { useState, useEffect } from "react";
 
 // helper functions
-import { getAllCurrencies } from "../utils/currency.util";
+import { getAllCurrencies } from "../../utils/currency.util";
 
 // interfaces
-import { CurrencyRates } from "../utils/types";
+import { CurrencyRates } from "../../utils/types";
 
 interface Props {
   rates: CurrencyRates;

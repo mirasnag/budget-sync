@@ -28,6 +28,12 @@ const categoryReducer = (
       return [...state, action.payload];
     case "DELETE":
       return state.filter((category) => category.id !== action.payload);
+    case "EDIT":
+      return state.map((category) =>
+        category.id === action.payload.id
+          ? { ...category, [action.payload.prop]: action.payload.value }
+          : category
+      );
     default:
       return state;
   }

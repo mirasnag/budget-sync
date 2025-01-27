@@ -13,7 +13,6 @@ const CurrencySelector2: React.FC<CurrencySelectorProps> = ({
 }) => {
   const currencies = getAllCurrencies();
   const name = initialValue;
-
   const [open, setOpen] = useState<boolean>(false);
   const [filterStr, setFilterStr] = useState<string>("");
 

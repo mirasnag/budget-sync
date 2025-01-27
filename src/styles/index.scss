@@ -14,7 +14,7 @@
   --bg-primary: #eae7e0;
   --bg-dark-button: #ccc;
   --bg-light-button: #ccc;
-  --bg-effect: #eee;
+  --bg-effect: #c9d6df;
 
   /* Text Colors */
   --text-dark: #000000;
@@ -37,9 +37,9 @@
     --bg-component: #1c1c1c;
     --bg-content: #2b2b2b;
     --bg-primary: #1c1c1c;
-    --bg-dark-button: #333;
+    --bg-dark-button: #666;
     --bg-light-button: #ccc;
-    --bg-effect: #444;
+    --bg-effect: #38454e;
 
     /* Dark Mode Text Colors */
     --text-dark: #000;
@@ -48,8 +48,8 @@
     /* Accent Colors */
     --blue: #038ffa;
     --green: #acf3aecf;
-    --yellow: #f9fb92bb;
-    --red: #fa6b83e2;
+    --yellow: #dedf83bb;
+    --red: #da5f74e2;
 
     /* Other */
     --border: #ccc;
@@ -90,10 +90,15 @@ input[type="submit"] {
 
 select,
 input {
-  background: var(--bg-light-button);
-  color: var(--text-dark);
+  cursor: pointer;
+  background: var(--bg-dark-button);
+  color: var(--text-light);
   border: 0.5px solid var(--border);
   outline: 0px;
+
+  &:hover {
+    background: var(--bg-effect);
+  }
 }
 
 table {
@@ -102,10 +107,15 @@ table {
   border-collapse: collapse;
 
   input {
+    cursor: pointer;
     width: 100%;
     background: unset;
     border: unset;
     color: unset;
+
+    &:hover {
+      background-color: unset;
+    }
   }
 
   tr {
@@ -125,7 +135,7 @@ table {
 
   thead {
     tr {
-      line-height: 3em;
+      line-height: 2.5em;
     }
   }
 
@@ -140,6 +150,27 @@ table {
 
         &:last-child {
           border-right-width: 0px;
+        }
+      }
+    }
+  }
+
+  tfoot {
+    td {
+      cursor: pointer;
+      text-align: center;
+      padding: 5px;
+      color: var(--text-light);
+
+      button {
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-component) !important;
+        color: var(--text-light) !important;
+        border: none !important;
+
+        &:hover {
+          background-color: var(--bg-effect) !important;
         }
       }
     }

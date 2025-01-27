@@ -13,7 +13,11 @@ interface Props {
   formatter: (value: number, index: number) => string;
 }
 
-const CategoryTable: React.FC<Props> = ({ categories, data, formatter }) => {
+const CategoryTableChart: React.FC<Props> = ({
+  categories,
+  data,
+  formatter,
+}) => {
   const tableHeader = [
     "Name",
     ...data?.map((d) => formatDateMonthStr(d.month)),
@@ -67,4 +71,4 @@ const CategoryTable: React.FC<Props> = ({ categories, data, formatter }) => {
   );
 };
 
-export default CategoryTable;
+export default CategoryTableChart;

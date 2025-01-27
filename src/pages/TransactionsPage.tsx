@@ -8,8 +8,8 @@ import { getCurrencyRates } from "../utils/currency.util";
 import { CurrencyRates } from "../utils/types";
 
 // UI components
-import CurrencyWidget from "../components/CurrencyWidget";
-import TransactionTable from "../components/Dashboard/TransactionTable";
+import CurrencyWidget from "../components/Currency/CurrencyWidget";
+import Transactions from "../components/Dashboard/Transactions";
 
 // loader
 export async function transactionsPageLoader(): Promise<{
@@ -27,7 +27,7 @@ const TransactionsPage = () => {
   return (
     <div className="page">
       <CurrencyWidget rates={currencyRates} />
-      <TransactionTable />
+      <Transactions />
     </div>
   );
 };

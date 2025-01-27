@@ -1,86 +1,14 @@
-// rrd imports
-import { ActionFunction } from "react-router-dom";
-
 // Interfaces
 import {
   Asset,
   Category,
   CollectionType,
   DataItem,
-  DataItemType,
   EntityType,
-  FormInput,
   Transaction,
   TransactionType,
   typeToCollectionMap,
 } from "./types";
-
-export const actionHandler: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const { _action, ...values } = Object.fromEntries(formData);
-
-  if (_action === "createAsset") {
-    try {
-      createAsset(values as FormInput);
-      return null;
-    } catch (e) {
-      console.log(e);
-      throw new Error("Asset is not created!");
-    }
-  }
-
-  if (_action === "editAsset") {
-    try {
-      editAsset(values.asset_id as string, values as FormInput);
-      return null;
-    } catch (e) {
-      console.log(e);
-      throw new Error("Transaction is not updated!");
-    }
-  }
-
-  if (_action === "deleteAsset") {
-    try {
-      deleteAsset(values.asset_id as string);
-      return null;
-    } catch (e) {
-      console.log(e);
-      throw new Error("Asset is not deleted!");
-    }
-  }
-
-  if (_action === "createCategory") {
-    try {
-      createCategory(values as FormInput);
-      return null;
-    } catch (e) {
-      console.log(e);
-      throw new Error("Category is not created!");
-    }
-  }
-
-  if (_action === "editCategory") {
-    try {
-      editCategory(values.category_id as string, values as FormInput);
-      return null;
-    } catch (e) {
-      console.log(e);
-      throw new Error("Category is not updated!");
-    }
-  }
-
-  if (_action === "deleteCategory") {
-    try {
-      deleteCategory(values.category_id as string);
-      return null;
-    } catch (e) {
-      console.log(e);
-      throw new Error("Category is not deleted!");
-    }
-  }
-
-  return null;
-};
 
 export const fetchData = (
   collection: CollectionType | "currencyRatesCache"
@@ -104,61 +32,15 @@ export const createItem = (newItem: DataItem) => {
   );
 };
 
-/**
- * @deprecated
- */
-export const getItemById = (
-  type: DataItemType,
-  id: string
-): Partial<DataItem> => {
-  if (!id) {
-    return {};
-  }
-  const collectionType = typeToCollectionMap[type];
-  const collection = fetchData(collectionType);
-  return collection.filter((d: DataItem) => d.id === id)[0];
-};
-
-// Asset
-export const createAsset = (values: FormInput) => {
+export const createEmptyAsset = () => {
   const newAsset: Asset = {
-    id: values.id ?? crypto.randomUUID(),
+    id: crypto.randomUUID(),
     type: EntityType.ASSET,
-    name: values.name,
-    currency: values.currency,
+    name: "",
   };
-  const assets = fetchData(CollectionType.ASSETS) ?? [];
-  return localStorage.setItem(
-    CollectionType.ASSETS,
-    JSON.stringify([...assets, newAsset])
-  );
+  return newAsset;
 };
 
-export const editAsset = (asset_id: string, values: FormInput) => {
-  const assets: Asset[] = fetchData(CollectionType.ASSETS) ?? [];
-  assets.forEach((asset) => {
-    if (asset.id === asset_id) {
-      asset.name = values.name;
-      asset.currency = values.currency;
-    }
-  });
-  return localStorage.setItem(CollectionType.ASSETS, JSON.stringify(assets));
-};
-
-export const deleteAsset = (asset_id: string) => {
-  const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
-  const filteredTransactions = transactions.filter((d) => {
-    return d.src?.id !== asset_id && d.dst?.id !== asset_id;
-  });
-
-  localStorage.setItem(
-    CollectionType.TRANSACTIONS,
-    JSON.stringify(filteredTransactions)
-  );
-  return deleteItem(CollectionType.ASSETS, asset_id);
-};
-
-// Transaction
 export const createEmptyTransaction = (type: TransactionType) => {
   const newTransaction: Transaction = {
     id: crypto.randomUUID(),
@@ -171,50 +53,14 @@ export const createEmptyTransaction = (type: TransactionType) => {
   return newTransaction;
 };
 
-// Category
-export const createCategory = (values: FormInput) => {
+export const createEmptyCategory = () => {
   const newCategory: Category = {
-    id: values.id ?? crypto.randomUUID(),
+    id: crypto.randomUUID(),
     type: EntityType.CATEGORY,
-    name: values.name,
-    amount: parseFloat(values.amount),
-    currency: values.currency,
+    name: "",
+    amount: 0,
   };
-
-  const categories = fetchData(CollectionType.CATEGORIES) ?? [];
-
-  return localStorage.setItem(
-    CollectionType.CATEGORIES,
-    JSON.stringify([...categories, newCategory])
-  );
-};
-
-export const editCategory = (category_id: string, values: FormInput) => {
-  const categories: Category[] = fetchData(CollectionType.CATEGORIES) ?? [];
-  categories.forEach((category) => {
-    if (category.id === category_id) {
-      category.name = values.name;
-      category.currency = values.currency;
-      category.amount = parseFloat(values.amount);
-    }
-  });
-  return localStorage.setItem(
-    CollectionType.CATEGORIES,
-    JSON.stringify(categories)
-  );
-};
-
-export const deleteCategory = (category_id: string) => {
-  const transactions = fetchData(CollectionType.TRANSACTIONS) as Transaction[];
-  const filteredTransactions = transactions.filter(
-    (d) => d.type === "expense" && d.dst?.id !== category_id
-  );
-
-  localStorage.setItem(
-    CollectionType.TRANSACTIONS,
-    JSON.stringify(filteredTransactions)
-  );
-  return deleteItem(CollectionType.CATEGORIES, category_id);
+  return newCategory;
 };
 
 // Populate / Delete

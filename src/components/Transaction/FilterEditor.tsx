@@ -241,7 +241,7 @@ const FilterEditor: React.FC<FilterEditorProps> = ({
   };
 
   return (
-    <div className="sort-filter-container">
+    <div className="sort-filter-container" onClick={(e) => e.stopPropagation()}>
       <div className="sort-filter-menu">
         <span>Filter By</span>
         <div className="filter-menu">

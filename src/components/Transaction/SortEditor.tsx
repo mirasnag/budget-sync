@@ -49,7 +49,7 @@ const SortEditor: React.FC<SortEditorProps> = ({ sortOrder, setSortOrder }) => {
   };
 
   return (
-    <div className="sort-filter-container">
+    <div className="sort-filter-container" onClick={(e) => e.stopPropagation()}>
       <div className="sort-filter-menu">
         <span>Sort By</span>
         <div className="sort-menu">
