@@ -13,7 +13,7 @@ import AssetBarChart from "../components/Charts/AssetBarChart";
 import AssetTableChart from "../components/Charts/AssetTableChart";
 import CategoryTableChart from "../components/Charts/CategoryTableChart";
 import CurrencyWidget from "../components/Currency/CurrencyWidget";
-import PeriodSelector, { Period } from "../components/Buttons/PeriodSelector";
+import PeriodSelector, { Period } from "../components/Controls/PeriodSelector";
 import CurrencySelector from "../components/Currency/CurrencySelector";
 
 // interfaces
@@ -60,7 +60,12 @@ const SpendingAnalysisPage: React.FC = () => {
     null
   );
   const assetData =
-    getAssetBalanceHistory(assetPeriod, assetBaseCurrency, currencyRates) ?? [];
+    getAssetBalanceHistory(
+      assetPeriod,
+      assetBaseCurrency,
+      currencyRates,
+      transactions
+    ) ?? [];
 
   const [categoryChartType, setCategoryChartType] = useState("table");
   const [categoryPeriod, setCategoryPeriod] = useState<Period>({

@@ -63,3 +63,54 @@
   gap: 20px;
   align-items: flex-end;
 }
+
+.selector-container {
+  cursor: pointer;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+
+  input {
+    border: 0.5px dotted var(--border-dark);
+    width: unset;
+    height: 2em;
+  }
+
+  .selector {
+    cursor: default;
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    margin-top: 5px;
+    padding: 5px;
+    background-color: var(--bg-dark-button);
+    border-radius: 5px;
+    border: 0.5px solid var(--text-light);
+    min-width: 100px;
+
+    .selector-options {
+      display: flex;
+      flex-direction: column;
+      max-height: 200px;
+      overflow-y: auto;
+
+      .selector-option {
+        cursor: pointer;
+        padding: 2px 5px;
+        border-radius: 5px;
+
+        &:hover {
+          background: var(--bg-effect);
+        }
+      }
+    }
+
+    .selector-create {
+      width: fit-content;
+    }
+  }
+}

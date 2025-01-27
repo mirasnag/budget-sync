@@ -1,4 +1,4 @@
-import { Period } from "../components/Buttons/PeriodSelector";
+import { Period } from "../components/Controls/PeriodSelector";
 import { convertCurrency } from "./currency.util";
 import { formatDateToInputValue } from "./formatting";
 import { fetchData } from "./services";
@@ -185,21 +185,25 @@ interface balanceHistoryItem {
 export const getAssetBalanceHistory = (
   period: Period,
   baseCurrency: string | null,
-  rates: CurrencyRates
+  rates: CurrencyRates,
+  transactions: Transaction[]
 ) => {
-  const transactions = sortFilterTransactions(
-    fetchData(CollectionType.TRANSACTIONS),
+  const processedTransactions = sortFilterTransactions(
+    transactions,
     "Date",
     convertPeriodToString(period),
     "Date",
     "Ascending"
   ) as Transaction[];
-  if (!transactions || transactions.length === 0) return undefined;
+  if (!processedTransactions || processedTransactions.length === 0)
+    return undefined;
   const assets = fetchData(CollectionType.ASSETS) as Asset[];
 
   const months: string[] = [];
-  const startDate = new Date(transactions[0].date ?? "");
-  const endDate = new Date(transactions[transactions.length - 1].date ?? "");
+  const startDate = new Date(processedTransactions[0].date ?? "");
+  const endDate = new Date(
+    processedTransactions[processedTransactions.length - 1].date ?? ""
+  );
   for (
     let d = new Date(startDate);
     d.getFullYear() <= endDate.getFullYear() &&
@@ -217,7 +221,7 @@ export const getAssetBalanceHistory = (
     }
   }
 
-  transactions.forEach((transaction) => {
+  processedTransactions.forEach((transaction) => {
     const month = new Date(transaction.date ?? "").toISOString().slice(0, 7);
     const { source, destination } = getTransactionNodes(transaction);
     switch (transaction.type) {

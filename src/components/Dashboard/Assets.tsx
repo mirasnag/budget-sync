@@ -5,7 +5,7 @@ import { useState } from "react";
 import { CurrencyRates } from "../../utils/types";
 
 // components
-import PeriodSelector, { Period } from "../Buttons/PeriodSelector";
+import PeriodSelector, { Period } from "../Controls/PeriodSelector";
 import CurrencySelector from "../Currency/CurrencySelector";
 
 // context

@@ -1,7 +1,7 @@
 import { useTransactionContext } from "../../store/transaction-context";
 import { Transaction } from "../../utils/types";
-import DatePicker from "../Buttons/DatePicker";
-import DeleteButton from "../Buttons/DeleteButton";
+import DatePicker from "../Controls/DatePicker";
+import DeleteButton from "../Controls/DeleteButton";
 import TransactionNodeSelector from "./TransactionNodeSelector";
 
 interface TransactionRowProp {

@@ -1,13 +1,13 @@
 import { useAssetContext } from "../../store/asset-context";
 import { useTransactionContext } from "../../store/transaction-context";
 import { getAssetDetails, getBalanceOfAsset } from "../../utils/entities.util";
-import { Period } from "../Buttons/PeriodSelector";
+import { Period } from "../Controls/PeriodSelector";
 import { convertCurrency } from "../../utils/currency.util";
 import { CurrencyRates } from "../../utils/types";
 import { formatCurrency } from "../../utils/formatting";
 import CurrencySelector2 from "../Currency/CurrencySelector2";
-import DeleteButton from "../Buttons/DeleteButton";
-import AddButton from "../Buttons/AddButton";
+import DeleteButton from "../Controls/DeleteButton";
+import AddButton from "../Controls/AddButton";
 import { createEmptyAsset } from "../../utils/services";
 
 interface AssetTableProps {

@@ -7,7 +7,7 @@ import { FaRightLeft } from "react-icons/fa6";
 
 // components
 import TransactionRow from "./TransactionRow";
-import AddButton from "../Buttons/AddButton";
+import AddButton from "../Controls/AddButton";
 
 // utils
 import { Transaction, TransactionType } from "../../utils/types";

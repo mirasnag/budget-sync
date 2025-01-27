@@ -1,8 +1,8 @@
 // components
-import { Period } from "../Buttons/PeriodSelector";
+import { Period } from "../Controls/PeriodSelector";
 import CurrencySelector2 from "../Currency/CurrencySelector2";
-import DeleteButton from "../Buttons/DeleteButton";
-import AddButton from "../Buttons/AddButton";
+import DeleteButton from "../Controls/DeleteButton";
+import AddButton from "../Controls/AddButton";
 
 // helper functions
 import { convertCurrency } from "../../utils/currency.util";
