@@ -11,20 +11,14 @@
     padding: 10px;
     gap: 20px;
     border-radius: 10px;
-    background-color: var(--bg-light-button);
+    background-color: var(--bg-dark-button);
 
-    select {
-      font-size: large;
-      text-align: center;
-      border: none;
-      border-bottom: 1px solid black;
-    }
-
+    select,
     input {
       font-size: large;
       text-align: center;
       border: none;
-      border-bottom: 1px solid black;
+      border-bottom: 1px solid var(--border);
     }
   }
 }

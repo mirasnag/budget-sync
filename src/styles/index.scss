@@ -12,6 +12,7 @@
   --bg-component: #eae7e0;
   --bg-content: #c6beab;
   --bg-primary: #eae7e0;
+  --bg-header: #eae7e0;
   --bg-dark-button: #ccc;
   --bg-light-button: #ccc;
   --bg-effect: #c9d6df;
@@ -37,6 +38,7 @@
     --bg-component: #1c1c1c;
     --bg-content: #2b2b2b;
     --bg-primary: #1c1c1c;
+    --bg-header: #2e3a42;
     --bg-dark-button: #666;
     --bg-light-button: #ccc;
     --bg-effect: #38454e;
@@ -59,6 +61,7 @@
 
 body {
   background: var(--bg-primary);
+  margin: 0;
 }
 
 .content {
@@ -136,7 +139,12 @@ table {
 
   thead {
     tr {
-      line-height: 2.5em;
+      line-height: 2em;
+    }
+
+    th,
+    td {
+      padding-left: 10px;
     }
   }
 

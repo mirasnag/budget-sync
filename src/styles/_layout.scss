@@ -1,33 +1,40 @@
 .layout {
   display: flex;
+  flex-direction: column;
   height: 100vh;
 }
 
 .navbar {
-  width: 20vw;
-  max-width: 200px;
-  background: var(--bg-primary);
+  background: var(--bg-header);
   color: var(--text-light);
   position: sticky;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
-  padding: 20px;
+  padding: 0 10vw;
+
+  .logo {
+    display: flex;
+  }
+
+  nav {
+    width: 100%;
+  }
 
   .menu {
-    display: grid;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
 
     .menu-item {
       display: flex;
-      margin: 10px 0;
+      height: 100%;
       text-decoration: none;
       color: var(--text-light);
-      border-radius: 15px;
       padding: 20px 10px;
-      border: 2.5px solid rgba(0, 0, 0, 0);
 
       &.active {
-        border-color: var(--blue);
+        background-color: var(--blue);
       }
 
       &:hover {
@@ -46,7 +53,7 @@
 /* Media Query for Small Screens */
 @media (max-width: 768px) {
   .layout {
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
 
   .navbar {
@@ -55,7 +62,6 @@
     height: auto;
     flex-direction: row;
     justify-content: center;
-    padding: 10px;
 
     nav {
       width: 100%;
@@ -80,10 +86,6 @@
     }
   }
 }
-
-// @media (max-width: 480px) {
-
-// }
 
 .content {
   flex-grow: 1;

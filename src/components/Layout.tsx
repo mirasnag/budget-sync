@@ -1,6 +1,9 @@
 // rrd imports
 import { Form, Link, Outlet, useLocation } from "react-router-dom";
 
+// assets
+import logo from "../assets/logo.svg";
+
 // library imports
 import { FaChartPie, FaPhone } from "react-icons/fa";
 import { FaHouse, FaMoneyBillTransfer } from "react-icons/fa6";
@@ -13,6 +16,9 @@ const Layout: React.FC = () => {
   return (
     <div className="layout">
       <div className="navbar">
+        <div className="logo flex-center">
+          <img src={logo} alt="logo" height={50} />
+        </div>
         <nav>
           <div className="menu">
             <Link
@@ -52,6 +58,7 @@ const Layout: React.FC = () => {
               <span>Contact</span>
             </Link>
           </div>
+
           {addDevButtons && (
             <div>
               <Form method="post" onSubmit={() => generateDummyData()}>
