@@ -58,18 +58,30 @@ const Layout: React.FC = () => {
               <span>Contact</span>
             </Link>
           </div>
-
-          {addDevButtons && (
-            <div>
-              <Form method="post" onSubmit={() => generateDummyData()}>
-                <button className="btn btn-rect">Set Dummy Data</button>
-              </Form>
-              <Form method="post" onSubmit={() => deleteAllData()}>
-                <button className="btn btn-rect">Delete All Data</button>
-              </Form>
-            </div>
-          )}
         </nav>
+
+        {addDevButtons && (
+          <div className="dev-buttons">
+            <Form
+              method="post"
+              onSubmit={(e) => {
+                e.preventDefault();
+                generateDummyData();
+              }}
+            >
+              <button className="btn btn-rect ">Set Dummy Data</button>
+            </Form>
+            <Form
+              method="post"
+              onSubmit={(e) => {
+                e.preventDefault();
+                deleteAllData();
+              }}
+            >
+              <button className="btn btn-rect ">Delete All Data</button>
+            </Form>
+          </div>
+        )}
       </div>
       <main className="content">
         <Outlet />

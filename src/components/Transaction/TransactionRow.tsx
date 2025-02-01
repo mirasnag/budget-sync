@@ -46,14 +46,16 @@ const TransactionRow: React.FC<TransactionRowProp> = ({ transaction }) => {
       <td>
         <div>
           <DatePicker
-            initialValue={transaction.date ?? null}
+            initialValue={
+              transaction.date_utc ? new Date(transaction.date_utc) : null
+            }
             onDateChange={(newDate: Date) => {
               transactionDispatch({
                 type: "EDIT",
                 payload: {
                   id: transaction.id,
-                  prop: "date",
-                  value: newDate,
+                  prop: "date_utc",
+                  value: newDate.toISOString(),
                 },
               });
             }}

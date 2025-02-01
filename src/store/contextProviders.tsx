@@ -32,16 +32,14 @@ export const getContextData = <C extends CollectionType>(collection: C) => {
   return contextHook();
 };
 
-export const getItemById = (
-  type: DataItemType,
-  id: string
-): Partial<DataItem> => {
-  if (!id) {
-    return {};
-  }
+export const getItemById = <T extends DataItemType>(
+  type: T,
+  id?: string
+): DataItem => {
   const collectionType = typeToCollectionMap[type];
   const { data } = getContextData(collectionType);
-  return data.filter((d: DataItem) => d.id === id)[0];
+  const filteredData = data.filter((d: DataItem) => d.id === id);
+  return filteredData[0];
 };
 
 export const ContextProviders: React.FC<{ children: ReactNode }> = ({

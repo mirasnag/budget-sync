@@ -4,7 +4,7 @@ import { useNavigate, useRouteError } from "react-router-dom";
 const ErrorPage: React.FC = () => {
   const error = useRouteError() as any;
   const navigate = useNavigate();
-  console.log(error.message || error.statusText);
+  console.trace(error);
   return (
     <div className="error-page">
       <h1>{"Something went wrong!"}</h1>

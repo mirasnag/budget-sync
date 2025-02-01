@@ -32,7 +32,7 @@ export const spentByCategory = (
   const total = filteredTransactions.reduce((spent: number, transaction) => {
     if (
       transaction.type === TransactionType.EXPENSE &&
-      transaction.dst?.id === category.id
+      transaction.dst === category.id
     ) {
       const { source, destination } = getTransactionNodes(transaction);
 
@@ -70,9 +70,9 @@ export const getCategorySpentHistory = (
   const categories = fetchData(CollectionType.CATEGORIES) as Category[];
 
   const months: string[] = [];
-  const startDate = new Date(filteredTransactions[0].date ?? "");
+  const startDate = new Date(filteredTransactions[0].date_utc ?? "");
   const endDate = new Date(
-    filteredTransactions[filteredTransactions.length - 1].date ?? ""
+    filteredTransactions[filteredTransactions.length - 1].date_utc ?? ""
   );
 
   for (
@@ -93,8 +93,10 @@ export const getCategorySpentHistory = (
   }
 
   filteredTransactions.forEach((transaction) => {
-    const month = new Date(transaction.date ?? "").toISOString().slice(0, 7);
-    const category = categories.find((a) => a.id === transaction.dst?.id);
+    const month = new Date(transaction.date_utc ?? "")
+      .toISOString()
+      .slice(0, 7);
+    const category = categories.find((a) => a.id === transaction.dst);
     if (category) {
       spentHistoryMap[month][category.name] += transaction.dstAmount ?? 0;
     }
@@ -136,13 +138,13 @@ export const getBalanceOfAsset = (
 
   transactions.forEach((transaction) => {
     if (
-      new Date(transaction.date ?? "") < new Date(now) &&
-      transaction.src.id === asset.id
+      new Date(transaction.date_utc ?? "") < new Date(now) &&
+      transaction.src === asset.id
     ) {
       balance -= transaction.srcAmount ?? 0;
     } else if (
-      new Date(transaction.date ?? "") < new Date(now) &&
-      transaction.dst.id === asset.id
+      new Date(transaction.date_utc ?? "") < new Date(now) &&
+      transaction.dst === asset.id
     ) {
       balance += transaction.dstAmount ?? 0;
     }
@@ -168,9 +170,9 @@ export const getAssetDetails = (
   };
 
   filteredTransactions.forEach((transaction) => {
-    if (transaction.src.id === asset.id)
+    if (transaction.src === asset.id)
       data[transaction.type] -= transaction.srcAmount ?? 0;
-    else if (transaction.dst.id === asset.id)
+    else if (transaction.dst === asset.id)
       data[transaction.type] += transaction.dstAmount ?? 0;
   });
 
@@ -200,9 +202,9 @@ export const getAssetBalanceHistory = (
   const assets = fetchData(CollectionType.ASSETS) as Asset[];
 
   const months: string[] = [];
-  const startDate = new Date(processedTransactions[0].date ?? "");
+  const startDate = new Date(processedTransactions[0].date_utc ?? "");
   const endDate = new Date(
-    processedTransactions[processedTransactions.length - 1].date ?? ""
+    processedTransactions[processedTransactions.length - 1].date_utc ?? ""
   );
   for (
     let d = new Date(startDate);
@@ -222,7 +224,9 @@ export const getAssetBalanceHistory = (
   }
 
   processedTransactions.forEach((transaction) => {
-    const month = new Date(transaction.date ?? "").toISOString().slice(0, 7);
+    const month = new Date(transaction.date_utc ?? "")
+      .toISOString()
+      .slice(0, 7);
     const { source, destination } = getTransactionNodes(transaction);
     switch (transaction.type) {
       case "income":

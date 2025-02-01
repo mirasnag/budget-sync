@@ -1,15 +1,17 @@
 import { FilterInstanceType } from "../components/Transaction/FilterEditor";
 import { SortInstanceType } from "../components/Transaction/SortEditor";
 import { getItemById } from "../store/contextProviders";
-import { Entity, EntityType, Transaction, TransactionType } from "./types";
+import { EntityType, Transaction, TransactionType } from "./types";
 
-export const getTransactionNodes = (
-  transaction: Transaction
-): { source: Entity; destination: Entity } => {
+export const getTransactionNodes = (transaction: Transaction) => {
   const { srcType, dstType } = getTransactionNodeTypes(transaction.type);
+
+  const source = getItemById(srcType, transaction.src);
+  const destination = getItemById(dstType, transaction.dst);
+
   return {
-    source: getItemById(srcType, transaction.src?.id ?? "") as Entity,
-    destination: getItemById(dstType, transaction.dst?.id ?? "") as Entity,
+    source,
+    destination,
   };
 };
 
@@ -76,8 +78,8 @@ export const filterTransactions = (
 
       filterFunction = (transaction) => {
         return (
-          new Date(transaction.date ?? "") >= startDate &&
-          new Date(transaction.date ?? "") <= endDate
+          new Date(transaction.date_utc ?? "") >= startDate &&
+          new Date(transaction.date_utc ?? "") <= endDate
         );
       };
       break;
@@ -139,7 +141,7 @@ const getFilterFunction = (option: string[], value: string | null) => {
     case "Date":
       filterFunction = (a: Transaction) => {
         const filterDate = new Date(value);
-        const transactionDate = new Date(a.date ?? "");
+        const transactionDate = new Date(a.date_utc ?? "");
         if (option[1] === "Is")
           return transactionDate.getTime() === filterDate.getTime();
         if (option[1] === "Is before") return transactionDate < filterDate;
@@ -191,10 +193,10 @@ const getSortFunction = (option: string, isAscending: boolean = true) => {
   let sortFunction: (a: Transaction, b: Transaction) => number;
   const directionMultiplier = isAscending ? 1 : -1;
   switch (option) {
-    case "Last Edited":
-      sortFunction = (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      break;
+    // case "Last Edited":
+    //   sortFunction = (a, b) =>
+    //     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    //   break;
     case "Name":
       sortFunction = (a, b) => a.name.localeCompare(b.name);
       break;
@@ -214,7 +216,8 @@ const getSortFunction = (option: string, isAscending: boolean = true) => {
     //   break;
     case "Date":
       sortFunction = (a, b) =>
-        new Date(a.date ?? "").getTime() - new Date(b.date ?? "").getTime();
+        new Date(a.date_utc ?? "").getTime() -
+        new Date(b.date_utc ?? "").getTime();
       break;
     // case "Amount":
     //   sortFunction = (a, b) => a.amount - b.amount;

@@ -18,11 +18,10 @@ export const enum CollectionType {
   SOURCES = "sources",
 }
 
-export type DataItemType = TransactionType | EntityType | "transaction";
+export type DataItemType = TransactionType | EntityType;
 
 // Mapping between types and collections
 export const typeToCollectionMap: Record<DataItemType, CollectionType> = {
-  ["transaction"]: CollectionType.TRANSACTIONS,
   [TransactionType.EXPENSE]: CollectionType.TRANSACTIONS,
   [TransactionType.TRANSFER]: CollectionType.TRANSACTIONS,
   [TransactionType.INCOME]: CollectionType.TRANSACTIONS,
@@ -58,18 +57,13 @@ export interface Source extends EntityBase {
 }
 
 // Transaction Interfaces
-export interface TransactionNode {
-  id: string;
-}
-
 export interface TransactionBase extends DataItemBase {
   type: TransactionType;
-  src: TransactionNode;
-  dst: TransactionNode;
+  src?: string;
+  dst?: string;
   srcAmount?: number;
   dstAmount?: number;
-  date?: Date;
-  createdAt: Date;
+  date_utc?: string; // ISO string
 }
 
 export interface Expense extends TransactionBase {

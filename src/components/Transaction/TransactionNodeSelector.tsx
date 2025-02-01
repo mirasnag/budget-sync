@@ -37,9 +37,7 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
       payload: {
         id: transaction.id,
         prop: nodeLabel,
-        value: {
-          id: newNodeId,
-        },
+        value: newNodeId,
       },
     });
   };

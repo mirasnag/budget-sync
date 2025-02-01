@@ -5,8 +5,11 @@ import {
   CollectionType,
   DataItem,
   EntityType,
+  Expense,
+  Income,
   Transaction,
   TransactionType,
+  Transfer,
   typeToCollectionMap,
 } from "./types";
 
@@ -46,9 +49,6 @@ export const createEmptyTransaction = (type: TransactionType) => {
     id: crypto.randomUUID(),
     type: type,
     name: "",
-    src: { id: "" },
-    dst: { id: "" },
-    createdAt: new Date(),
   };
   return newTransaction;
 };
@@ -76,91 +76,114 @@ const generateId = () => crypto.randomUUID();
 const randomAmount = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
+const generateRandomTransaction = (type: TransactionType) => {
+  const amount = randomAmount(10, 500);
+  switch (type) {
+    case TransactionType.EXPENSE:
+      return {
+        id: generateId(),
+        type: "expense",
+        name: "Groceries",
+        src: `asset-${randomAmount(1, 5)}`,
+        srcAmount: amount,
+        dst: `category-${randomAmount(1, 5)}`,
+        dstAmount: amount,
+        date_utc: new Date(
+          Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000
+        ).toISOString(),
+      } as Expense;
+
+    case TransactionType.TRANSFER:
+      const srcId = `asset-${randomAmount(1, 5)}`;
+      let dstId;
+      do {
+        dstId = `asset-${randomAmount(1, 5)}`;
+      } while (dstId === srcId);
+
+      return {
+        id: generateId(),
+        type: "transfer",
+        name: "Transfer",
+        src: srcId,
+        srcAmount: amount,
+        dst: dstId,
+        dstAmount: amount,
+        date_utc: new Date(
+          Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000
+        ).toISOString(),
+      } as Transfer;
+
+    case TransactionType.INCOME:
+      return {
+        id: generateId(),
+        type: "income",
+        name: "Salary",
+        src: `source-${randomAmount(1, 5)}`,
+        srcAmount: amount,
+        dst: `asset-${randomAmount(1, 5)}`,
+        dstAmount: amount,
+        date_utc: new Date(
+          Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000
+        ).toISOString(),
+      } as Income;
+  }
+};
+
 export const generateDummyData = () => {
   const expenses = Array.from({ length: 20 }, () => {
-    const amount = randomAmount(10, 500);
-    return {
-      id: generateId(),
-      type: "expense",
-      name: "Groceries",
-      src: { id: `asset-${randomAmount(1, 5)}` },
-      srcAmount: amount,
-      dst: { id: `category-${randomAmount(1, 5)}` },
-      dstAmount: amount,
-      date: new Date(Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000),
-      createdAt: new Date(),
-    };
+    return generateRandomTransaction(TransactionType.EXPENSE);
   });
 
   const transfers = Array.from({ length: 10 }, () => {
-    const srcId = `asset-${randomAmount(1, 5)}`;
-    let dstId;
-    do {
-      dstId = `asset-${randomAmount(1, 5)}`;
-    } while (dstId === srcId);
-    const amount = randomAmount(10, 500);
-
-    return {
-      id: generateId(),
-      type: "transfer",
-      name: "Transfer",
-      src: { id: srcId },
-      srcAmount: amount,
-      dst: { id: dstId },
-      dstAmount: amount,
-      date: new Date(Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000),
-      createdAt: new Date(),
-    };
+    return generateRandomTransaction(TransactionType.TRANSFER);
   });
 
   const incomes = Array.from({ length: 5 }, () => {
-    const amount = randomAmount(10, 500);
-    return {
-      id: generateId(),
-      type: "income",
-      name: "Salary",
-      src: { id: `source-${randomAmount(1, 5)}` },
-      srcAmount: amount,
-      dst: { id: `asset-${randomAmount(1, 5)}` },
-      dstAmount: amount,
-      date: new Date(Date.now() - randomAmount(0, 30) * 24 * 60 * 60 * 1000),
-      createdAt: new Date(),
-    };
+    return generateRandomTransaction(TransactionType.INCOME);
   });
 
   const transactions = [...expenses, ...transfers, ...incomes];
 
+  const categoryNames = [
+    "Food & Drinks",
+    "Housing",
+    "Transportation",
+    "Entertainment",
+    "Savings",
+  ];
   const categories = Array.from({ length: 5 }, (_, i) => ({
     id: `category-${i + 1}`,
     type: "category",
-    name: [
-      "Food & Drinks",
-      "Housing",
-      "Transportation",
-      "Entertainment",
-      "Savings",
-    ][i],
+    name: categoryNames[i],
     currency: "USD",
     amount: randomAmount(100, 1000),
   }));
 
+  const assetNames = [
+    "Bank Account",
+    "Cash",
+    "Credit Card",
+    "Investment Account",
+    "Savings Account",
+  ];
   const assets = Array.from({ length: 5 }, (_, i) => ({
     id: `asset-${i + 1}`,
     type: "asset",
-    name: [
-      "Bank Account",
-      "Cash",
-      "Credit Card",
-      "Investment Account",
-      "Savings Account",
-    ][i],
+    name: assetNames[i],
     currency: "USD",
   }));
 
+  const sourceNames = [
+    "Company",
+    "Freelance",
+    "Rental Income",
+    "Gift",
+    "Other",
+  ];
   const sources = Array.from({ length: 5 }, (_, i) => ({
     id: `source-${i + 1}`,
     type: "source",
-    name: ["Company", "Freelance", "Rental Income", "Gift", "Other"][i],
+    name: sourceNames[i],
     currency: "USD",
   }));
 
