@@ -14,6 +14,7 @@ import SpendingAnalysisPage, {
 } from "./pages/SpendingAnalysisPage";
 import ErrorPage from "./pages/Error";
 import Contact, { contactAction } from "./pages/Contact";
+import AuthPage from "./pages/AuthPage";
 
 // helper functions
 import { ContextProviders } from "./store/contextProviders";
@@ -28,6 +29,11 @@ const router = createBrowserRouter([
         path: "/",
         element: <Dashboard />,
         loader: dashboardLoader,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "/auth",
+        element: <AuthPage />,
         errorElement: <ErrorPage />,
       },
       {

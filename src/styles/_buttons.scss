@@ -1,7 +1,7 @@
 .btn {
   background: var(--bg-dark-button);
-  color: var(--text-light);
-  border: 0.5px solid var(--border-dark);
+  color: var(--text-dark);
+  border: 0.5px solid var(--border);
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -89,7 +89,7 @@
     padding: 5px;
     background-color: var(--bg-dark-button);
     border-radius: 5px;
-    border: 0.5px solid var(--text-light);
+    border: 0.5px solid var(--border);
     min-width: 100px;
 
     .selector-options {

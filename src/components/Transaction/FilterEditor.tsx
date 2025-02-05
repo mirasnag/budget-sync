@@ -241,8 +241,8 @@ const FilterEditor: React.FC<FilterEditorProps> = ({
   };
 
   return (
-    <div className="sort-filter-container" onClick={(e) => e.stopPropagation()}>
-      <div className="sort-filter-menu">
+    <div className="filter-container" onClick={(e) => e.stopPropagation()}>
+      <div className="filter-menu">
         <span>Filter By</span>
         <div className="filter-menu">
           {filterOrder.map((inst) => {

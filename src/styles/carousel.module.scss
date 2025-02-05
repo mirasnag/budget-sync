@@ -1,0 +1,17 @@
+.carousel {
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+
+.carouselItem {
+  position: absolute;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+}

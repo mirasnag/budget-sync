@@ -11,55 +11,59 @@ import { deleteAllData, generateDummyData } from "../utils/services";
 
 const Layout: React.FC = () => {
   const location = useLocation();
+  const showLogin = location.pathname == "/auth";
   const addDevButtons = false;
 
   return (
     <div className="layout">
       <div className="navbar">
-        <div className="logo flex-center">
-          <img src={logo} alt="logo" height={50} />
-        </div>
-        <nav>
-          <div className="menu">
-            <Link
-              to="/"
-              className={`menu-item ${
-                location.pathname === "/" ? "active" : ""
-              }`}
-            >
-              <FaHouse className="icon" />
-              <span>Home</span>
-            </Link>
-            <Link
-              to="/transactions"
-              className={`menu-item ${
-                location.pathname === "/transactions" ? "active" : ""
-              }`}
-            >
-              <FaMoneyBillTransfer className="icon" />
-              <span>Transactions</span>
-            </Link>
-            <Link
-              to="/spending-analysis"
-              className={`menu-item ${
-                location.pathname === "/spending-analysis" ? "active" : ""
-              }`}
-            >
-              <FaChartPie className="icon" />
-              <span>Charts</span>
-            </Link>
-            <Link
-              to="/contact"
-              className={`menu-item ${
-                location.pathname === "/contact" ? "active" : ""
-              }`}
-            >
-              <FaPhone className="icon" />
-              <span>Contact</span>
-            </Link>
-          </div>
-        </nav>
-
+        {!showLogin && (
+          <>
+            <div className="logo flex-center">
+              <img src={logo} alt="logo" height={50} />
+            </div>
+            <nav>
+              <div className="menu">
+                <Link
+                  to="/"
+                  className={`menu-item ${
+                    location.pathname === "/" ? "active" : ""
+                  }`}
+                >
+                  <FaHouse className="icon" />
+                  <span>Home</span>
+                </Link>
+                <Link
+                  to="/transactions"
+                  className={`menu-item ${
+                    location.pathname === "/transactions" ? "active" : ""
+                  }`}
+                >
+                  <FaMoneyBillTransfer className="icon" />
+                  <span>Transactions</span>
+                </Link>
+                <Link
+                  to="/spending-analysis"
+                  className={`menu-item ${
+                    location.pathname === "/spending-analysis" ? "active" : ""
+                  }`}
+                >
+                  <FaChartPie className="icon" />
+                  <span>Charts</span>
+                </Link>
+                <Link
+                  to="/contact"
+                  className={`menu-item ${
+                    location.pathname === "/contact" ? "active" : ""
+                  }`}
+                >
+                  <FaPhone className="icon" />
+                  <span>Contact</span>
+                </Link>
+              </div>
+            </nav>
+          </>
+        )}
         {addDevButtons && (
           <div className="dev-buttons">
             <Form

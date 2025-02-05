@@ -14,12 +14,12 @@
 
 .navbar {
   background: var(--bg-header);
-  color: var(--text-light);
+  color: var(--text-dark);
   position: sticky;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0 10vw;
+  padding: 0 3rem;
 
   .logo {
     display: flex;
@@ -38,11 +38,11 @@
       display: flex;
       height: 100%;
       text-decoration: none;
-      color: var(--text-light);
+      color: var(--text-dark);
       padding: 20px 10px;
 
       &.active {
-        background-color: var(--blue);
+        color: var(--blue);
       }
 
       &:hover {
@@ -59,7 +59,7 @@
 }
 
 /* Media Query for Small Screens */
-@media (max-width: 768px) {
+@media (max-width: 834px) {
   .layout {
     flex-direction: column-reverse;
   }
@@ -70,6 +70,11 @@
     height: auto;
     flex-direction: row;
     justify-content: center;
+    padding: 0;
+
+    .logo {
+      display: none;
+    }
 
     nav {
       width: 100%;
@@ -99,7 +104,7 @@
   flex-grow: 1;
   background: var(--bg-content);
   padding: 20px;
-  color: var(--text-light);
+  color: var(--text-dark);
 }
 
 .menu-link span {
@@ -129,53 +134,6 @@
 
   input {
     min-width: 40px;
-  }
-}
-
-.contact-section {
-  margin-bottom: 20px;
-
-  h3 {
-    color: var(--blue);
-  }
-
-  ul {
-    list-style-type: none;
-    padding-left: 0;
-
-    li {
-      margin-bottom: 5px;
-    }
-  }
-
-  span {
-    color: var(--blue);
-    text-decoration: underline;
-  }
-}
-
-.social-links a {
-  color: var(--text-light);
-  text-decoration: none;
-  font-size: 40px;
-  margin: 0px 5px;
-
-  &:hover {
-    color: var(--blue);
-  }
-}
-
-.contact-form {
-  margin-top: 10px;
-
-  textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0px;
-    border: 1px solid var(--blue);
-    background: var(--bg-dark-button);
-    color: var(--text-light);
-    border-radius: 4px;
   }
 }
 
