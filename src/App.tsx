@@ -18,6 +18,7 @@ import AuthPage from "./pages/AuthPage";
 
 // helper functions
 import { ContextProviders } from "./store/contextProviders";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -27,25 +28,24 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Dashboard />,
-        loader: dashboardLoader,
-        errorElement: <ErrorPage />,
+        element: <ProtectedRoute />,
+        children: [
+          { path: "/", element: <Dashboard />, loader: dashboardLoader },
+          {
+            path: "/transactions",
+            element: <TransactionsPage />,
+            loader: transactionsPageLoader,
+          },
+          {
+            path: "/spending-analysis",
+            element: <SpendingAnalysisPage />,
+            loader: spendingAnalysisLoader,
+          },
+        ],
       },
       {
         path: "/auth",
         element: <AuthPage />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/transactions",
-        element: <TransactionsPage />,
-        loader: transactionsPageLoader,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/spending-analysis",
-        element: <SpendingAnalysisPage />,
-        loader: spendingAnalysisLoader,
         errorElement: <ErrorPage />,
       },
       {

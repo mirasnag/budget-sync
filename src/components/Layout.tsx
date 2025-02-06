@@ -5,19 +5,23 @@ import { Form, Link, Outlet, useLocation } from "react-router-dom";
 import logo from "../assets/logo.svg";
 
 // library imports
-import { FaChartPie, FaPhone } from "react-icons/fa";
+import { FaChartPie, FaPhone, FaSignOutAlt } from "react-icons/fa";
 import { FaHouse, FaMoneyBillTransfer } from "react-icons/fa6";
+
+// utils
 import { deleteAllData, generateDummyData } from "../utils/services";
+import { useLogout } from "../utils/hooks";
 
 const Layout: React.FC = () => {
   const location = useLocation();
-  const showLogin = location.pathname == "/auth";
+  const { logout } = useLogout();
+  const showNav = location.pathname != "/auth";
   const addDevButtons = false;
 
   return (
     <div className="layout">
       <div className="navbar">
-        {!showLogin && (
+        {showNav && (
           <>
             <div className="logo flex-center">
               <img src={logo} alt="logo" height={50} />
@@ -62,6 +66,10 @@ const Layout: React.FC = () => {
                 </Link>
               </div>
             </nav>
+            <div className="logout flex-center" onClick={logout}>
+              <FaSignOutAlt className="icon" />
+              <span>Logout</span>
+            </div>
           </>
         )}
         {addDevButtons && (

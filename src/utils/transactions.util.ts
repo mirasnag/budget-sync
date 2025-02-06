@@ -1,13 +1,13 @@
 import { FilterInstanceType } from "../components/Transaction/FilterEditor";
 import { SortInstanceType } from "../components/Transaction/SortEditor";
 import { getItemById } from "../store/contextProviders";
-import { EntityType, Transaction, TransactionType } from "./types";
+import { Entity, EntityType, Transaction, TransactionType } from "./types";
 
 export const getTransactionNodes = (transaction: Transaction) => {
   const { srcType, dstType } = getTransactionNodeTypes(transaction.type);
 
-  const source = getItemById(srcType, transaction.src);
-  const destination = getItemById(dstType, transaction.dst);
+  const source = getItemById(srcType, transaction.src) as Entity;
+  const destination = getItemById(dstType, transaction.dst) as Entity;
 
   return {
     source,

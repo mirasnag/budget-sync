@@ -7,6 +7,7 @@ import {
 import { AssetProvider, useAssetContext } from "./asset-context";
 import { CategoryProvider, useCategoryContext } from "./category-context";
 import { SourceProvider, useSourceContext } from "./source-context";
+import { AuthProvider } from "./auth-context";
 
 import {
   CollectionType,
@@ -46,12 +47,14 @@ export const ContextProviders: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   return (
-    <TransactionProvider>
-      <AssetProvider>
-        <CategoryProvider>
-          <SourceProvider>{children}</SourceProvider>
-        </CategoryProvider>
-      </AssetProvider>
-    </TransactionProvider>
+    <AuthProvider>
+      <TransactionProvider>
+        <AssetProvider>
+          <CategoryProvider>
+            <SourceProvider>{children}</SourceProvider>
+          </CategoryProvider>
+        </AssetProvider>
+      </TransactionProvider>
+    </AuthProvider>
   );
 };

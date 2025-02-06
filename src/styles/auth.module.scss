@@ -81,6 +81,12 @@
   }
 }
 
+.error {
+  display: flex;
+  justify-content: center;
+  color: var(--red);
+}
+
 .carouselWrapper {
   display: flex;
   align-items: center;

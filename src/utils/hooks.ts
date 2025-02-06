@@ -1,13 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useAuthContext } from "../store/auth-context";
 
-type ClickHandler = (event: MouseEvent) => void;
-
+// ui
 export const useClickHandler = <T extends HTMLElement>({
   onInsideClick,
   onOutsideClick,
 }: {
-  onInsideClick?: ClickHandler;
-  onOutsideClick?: ClickHandler;
+  onInsideClick?: (event: MouseEvent) => void;
+  onOutsideClick?: (event: MouseEvent) => void;
 }) => {
   const ref = useRef<T | null>(null);
 
@@ -27,4 +27,59 @@ export const useClickHandler = <T extends HTMLElement>({
   }, [onInsideClick, onOutsideClick]);
 
   return ref;
+};
+
+// authorization
+export const useLogin = () => {
+  const [error, setError] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { dispatch } = useAuthContext();
+
+  const login = async (
+    email: string,
+    password: string,
+    action: "login" | "signup"
+  ) => {
+    // setIsLoading(true);
+    setError(null);
+
+    const response = await fetch(`/api/user/${action}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      setIsLoading(false);
+      setError(json.error);
+    }
+    if (response.ok) {
+      // save the user to local storage
+      localStorage.setItem("user", JSON.stringify(json));
+
+      // update the auth context
+      dispatch({ type: "LOGIN", payload: json });
+
+      // update loading state
+      setIsLoading(false);
+    }
+  };
+
+  return { login, isLoading, error };
+};
+
+export const useLogout = () => {
+  const { dispatch } = useAuthContext();
+
+  const logout = () => {
+    // remove user from storage
+    localStorage.removeItem("user");
+
+    // dispatch logout action
+    dispatch({ type: "LOGOUT", payload: null });
+  };
+
+  return { logout };
 };

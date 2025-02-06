@@ -93,17 +93,13 @@ export interface CurrencyRates {
 }
 
 // Context
-type EditPayload<T> = T extends DataItem
-  ? { id: string; prop: keyof T; value: T[keyof T] }
-  : never;
-
 export type ContextAction<T extends DataItem> =
   | { type: "INIT"; payload: T[] }
   | { type: "ADD"; payload: T }
   | { type: "DELETE"; payload: string }
   | {
       type: "EDIT";
-      payload: EditPayload<T>;
+      payload: { id: string; prop: keyof T; value: T[keyof T] };
     };
 
 export interface ContextType<T extends DataItem> {
