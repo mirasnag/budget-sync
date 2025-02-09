@@ -11,7 +11,7 @@ import { CurrencyRates } from "../utils/types";
 import Assets from "../components/Dashboard/Assets";
 import Categories from "../components/Dashboard/Categories";
 import Transactions from "../components/Dashboard/Transactions";
-import CurrencyWidget from "../components/Currency/CurrencyWidget";
+import CurrencyWidget from "../components/Dashboard/CurrencyWidget";
 
 // loader
 export async function dashboardLoader(): Promise<{

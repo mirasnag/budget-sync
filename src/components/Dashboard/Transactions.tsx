@@ -18,7 +18,7 @@ import { useClickHandler } from "../../utils/hooks";
 import { useTransactionContext } from "../../store/transaction-context";
 import { useAssetContext } from "../../store/asset-context";
 import { useCategoryContext } from "../../store/category-context";
-import TransactionTable from "../Transaction/TransactionTable";
+import TransactionTable from "../Transaction/Table";
 
 interface Transactions {}
 

@@ -3,7 +3,7 @@ import { deleteItem } from "../../utils/api";
 import { CollectionType, Transaction } from "../../utils/types";
 import DatePicker from "../Controls/DatePicker";
 import DeleteButton from "../Controls/DeleteButton";
-import TransactionNodeSelector from "./TransactionNodeSelector";
+import TransactionNodeSelector from "./NodeSelector";
 
 interface TransactionRowProp {
   transaction: Transaction;

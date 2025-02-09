@@ -7,7 +7,7 @@ import { CurrencyRates } from "../../utils/types";
 // components
 import PeriodSelector, { Period } from "../Controls/PeriodSelector";
 import CurrencySelector from "../Currency/CurrencySelector";
-import CategoryTable from "../Category/CategoryTable";
+import CategoryTable from "../Category/Table";
 
 interface CategoriesProps {
   currencyRates: CurrencyRates;

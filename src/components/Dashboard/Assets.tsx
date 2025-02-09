@@ -9,7 +9,7 @@ import PeriodSelector, { Period } from "../Controls/PeriodSelector";
 import CurrencySelector from "../Currency/CurrencySelector";
 
 // context
-import AssetTable from "../Asset/AssetTable";
+import AssetTable from "../Asset/Table";
 
 interface AssetsProps {
   currencyRates: CurrencyRates;

@@ -8,7 +8,7 @@ import { getCurrencyRates } from "../utils/currency.util";
 import { CurrencyRates } from "../utils/types";
 
 // UI components
-import CurrencyWidget from "../components/Currency/CurrencyWidget";
+import CurrencyWidget from "../components/Dashboard/CurrencyWidget";
 import Transactions from "../components/Dashboard/Transactions";
 
 // loader

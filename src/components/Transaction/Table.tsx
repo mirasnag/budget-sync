@@ -6,7 +6,7 @@ import { FaCoins, FaShoppingCart } from "react-icons/fa";
 import { FaRightLeft } from "react-icons/fa6";
 
 // components
-import TransactionRow from "./TransactionRow";
+import TransactionRow from "./TableRow";
 import AddButton from "../Controls/AddButton";
 
 // utils

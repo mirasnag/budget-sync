@@ -12,7 +12,7 @@ import CategoryBarChart from "../components/Charts/CategoryBarChart";
 import AssetBarChart from "../components/Charts/AssetBarChart";
 import AssetTableChart from "../components/Charts/AssetTableChart";
 import CategoryTableChart from "../components/Charts/CategoryTableChart";
-import CurrencyWidget from "../components/Currency/CurrencyWidget";
+import CurrencyWidget from "../components/Dashboard/CurrencyWidget";
 import PeriodSelector, { Period } from "../components/Controls/PeriodSelector";
 import CurrencySelector from "../components/Currency/CurrencySelector";
 
