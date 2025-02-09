@@ -7,8 +7,8 @@ import AddButton from "../Controls/AddButton";
 // helper functions
 import { convertCurrency } from "../../utils/currency.util";
 import { formatCurrency } from "../../utils/formatting";
-import { CurrencyRates } from "../../utils/types";
-import { createEmptyCategory } from "../../utils/services";
+import { CollectionType, CurrencyRates } from "../../utils/types";
+import { createEmptyCategory, deleteItem } from "../../utils/api";
 import { spentByCategory } from "../../utils/entities.util";
 
 // context
@@ -60,14 +60,16 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
     }
   }
 
-  const addCategory = () => {
+  const addCategory = async () => {
+    const newCategory = await createEmptyCategory();
     categoryDispatch({
       type: "ADD",
-      payload: createEmptyCategory(),
+      payload: newCategory,
     });
   };
 
-  const deleteCategory = (id: string) => {
+  const deleteCategory = async (id: string) => {
+    await deleteItem(CollectionType.CATEGORIES, id);
     categoryDispatch({
       type: "DELETE",
       payload: id,
@@ -95,85 +97,86 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
         </tr>
       </thead>
       <tbody>
-        {categories.map((category, index) => {
-          const periodBudgeted = (category.amount ?? 0) * periodMonths;
-          const total = baseCurrency
-            ? convertCurrency(
-                currencyRates,
-                category.currency,
-                baseCurrency,
-                periodBudgeted
-              )
-            : periodBudgeted;
-          const spent = baseCurrency
-            ? convertCurrency(
-                currencyRates,
-                category.currency,
-                baseCurrency,
-                spentByCategory(category, currencyRates, period, transactions)
-              )
-            : spentByCategory(category, currencyRates, period, transactions);
+        {categories &&
+          categories.map((category, index) => {
+            const periodBudgeted = (category.amount ?? 0) * periodMonths;
+            const total = baseCurrency
+              ? convertCurrency(
+                  currencyRates,
+                  category.currency,
+                  baseCurrency,
+                  periodBudgeted
+                )
+              : periodBudgeted;
+            const spent = baseCurrency
+              ? convertCurrency(
+                  currencyRates,
+                  category.currency,
+                  baseCurrency,
+                  spentByCategory(category, currencyRates, period, transactions)
+                )
+              : spentByCategory(category, currencyRates, period, transactions);
 
-          const remaining = total - spent;
-          const currency = baseCurrency ?? category.currency;
+            const remaining = total - spent;
+            const currency = baseCurrency ?? category.currency;
 
-          return (
-            <tr key={index}>
-              <td>
-                <input
-                  type="text"
-                  defaultValue={category.name}
-                  onInput={(e) => {
-                    const newValue = e.currentTarget.value;
-                    categoryDispatch({
-                      type: "EDIT",
-                      payload: {
-                        id: category.id,
-                        prop: "name",
-                        value: newValue,
-                      },
-                    });
-                  }}
-                />
-              </td>
-              <td>{formatCurrency(periodBudgeted, currency)}</td>
-              <td>{formatCurrency(spent, currency)}</td>
-              <td>{formatCurrency(remaining, currency)}</td>
-              <td>
-                <input
-                  type="number"
-                  value={category.amount}
-                  onInput={(e) => {
-                    const newValue = parseFloat(e.currentTarget.value);
-                    categoryDispatch({
-                      type: "EDIT",
-                      payload: {
-                        id: category.id,
-                        prop: "amount",
-                        value: newValue,
-                      },
-                    });
-                  }}
-                />
-              </td>
-              <td>
-                <CurrencySelector2
-                  initialValue={category.currency ?? null}
-                  setValue={(newValue) =>
-                    handleCurrencyChange(category.id, newValue)
-                  }
-                />{" "}
-              </td>
-              <td>
-                <div className="table-btns">
-                  <DeleteButton
-                    handleClick={() => deleteCategory(category.id)}
+            return (
+              <tr key={index}>
+                <td>
+                  <input
+                    type="text"
+                    defaultValue={category.name}
+                    onInput={(e) => {
+                      const newValue = e.currentTarget.value;
+                      categoryDispatch({
+                        type: "EDIT",
+                        payload: {
+                          id: category.id,
+                          prop: "name",
+                          value: newValue,
+                        },
+                      });
+                    }}
                   />
-                </div>
-              </td>
-            </tr>
-          );
-        })}
+                </td>
+                <td>{formatCurrency(periodBudgeted, currency)}</td>
+                <td>{formatCurrency(spent, currency)}</td>
+                <td>{formatCurrency(remaining, currency)}</td>
+                <td>
+                  <input
+                    type="number"
+                    value={category.amount}
+                    onInput={(e) => {
+                      const newValue = parseFloat(e.currentTarget.value);
+                      categoryDispatch({
+                        type: "EDIT",
+                        payload: {
+                          id: category.id,
+                          prop: "amount",
+                          value: newValue,
+                        },
+                      });
+                    }}
+                  />
+                </td>
+                <td>
+                  <CurrencySelector2
+                    initialValue={category.currency ?? null}
+                    setValue={(newValue) =>
+                      handleCurrencyChange(category.id, newValue)
+                    }
+                  />{" "}
+                </td>
+                <td>
+                  <div className="table-btns">
+                    <DeleteButton
+                      handleClick={() => deleteCategory(category.id)}
+                    />
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
       </tbody>
       <tfoot>
         <tr>

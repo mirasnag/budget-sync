@@ -40,7 +40,7 @@ export const useLogin = () => {
     password: string,
     action: "login" | "signup"
   ) => {
-    // setIsLoading(true);
+    setIsLoading(true);
     setError(null);
 
     const response = await fetch(`/api/user/${action}`, {

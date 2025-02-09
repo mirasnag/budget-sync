@@ -17,8 +17,8 @@ import Contact, { contactAction } from "./pages/Contact";
 import AuthPage from "./pages/AuthPage";
 
 // helper functions
-import { ContextProviders } from "./store/contextProviders";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./store/auth-context";
 
 const router = createBrowserRouter([
   {
@@ -60,9 +60,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <ContextProviders>
+      <AuthProvider>
         <RouterProvider router={router} />
-      </ContextProviders>
+      </AuthProvider>
     </>
   );
 }

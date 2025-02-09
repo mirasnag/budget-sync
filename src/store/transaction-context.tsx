@@ -5,7 +5,7 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-import { fetchData } from "../utils/services";
+import { fetchData } from "../utils/api";
 import {
   CollectionType,
   ContextAction,
@@ -42,7 +42,7 @@ const TransactionContext = createContext<ContextType<Transaction> | undefined>(
   undefined
 );
 
-const initialValue = fetchData(CollectionType.TRANSACTIONS);
+const initialValue = [] as Transaction[];
 
 export const TransactionProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -54,9 +54,9 @@ export const TransactionProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      const fetchedData = fetchData(
+      const fetchedData = (await fetchData(
         CollectionType.TRANSACTIONS
-      ) as Transaction[];
+      )) as Transaction[];
       transactionDispatch({ type: "INIT", payload: fetchedData });
     };
     fetchTransactions();

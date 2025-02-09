@@ -1,5 +1,6 @@
 import { useTransactionContext } from "../../store/transaction-context";
-import { Transaction } from "../../utils/types";
+import { deleteItem } from "../../utils/api";
+import { CollectionType, Transaction } from "../../utils/types";
 import DatePicker from "../Controls/DatePicker";
 import DeleteButton from "../Controls/DeleteButton";
 import TransactionNodeSelector from "./TransactionNodeSelector";
@@ -15,7 +16,8 @@ const TransactionRow: React.FC<TransactionRowProp> = ({ transaction }) => {
   const amount = transaction.srcAmount ?? transaction.dstAmount ?? "";
   // const currency = source?.currency ?? destination?.currency ?? "USD";
 
-  const deleteTransaction = (id: string) => {
+  const deleteTransaction = async (id: string) => {
+    await deleteItem(CollectionType.TRANSACTIONS, id);
     transactionDispatch({
       type: "DELETE",
       payload: id,

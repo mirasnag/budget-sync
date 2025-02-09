@@ -5,7 +5,7 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-import { fetchData } from "../utils/services";
+import { fetchData } from "../utils/api";
 import {
   CollectionType,
   Asset,
@@ -40,7 +40,7 @@ export const AssetContext = createContext<ContextType<Asset> | undefined>(
   undefined
 );
 
-const initialValue = fetchData(CollectionType.ASSETS);
+const initialValue = [] as Asset[];
 
 export const AssetProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -49,7 +49,7 @@ export const AssetProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const fetchAssets = async () => {
-      const fetchedData = fetchData(CollectionType.ASSETS) as Asset[];
+      const fetchedData = (await fetchData(CollectionType.ASSETS)) as Asset[];
       assetDispatch({ type: "INIT", payload: fetchedData });
     };
     fetchAssets();

@@ -31,12 +31,15 @@ const AuthReducer = (state: AuthType, action: AuthContextAction): AuthType => {
   }
 };
 
-const user = JSON.parse(localStorage.getItem("user") ?? "");
+const getUser = () => {
+  const user = localStorage.getItem("user");
+  return user ? JSON.parse(user) : null;
+};
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [auth, authDispatch] = useReducer(AuthReducer, user ?? null);
+  const [auth, authDispatch] = useReducer(AuthReducer, getUser());
 
   return (
     <AuthContext.Provider value={{ data: auth, dispatch: authDispatch }}>

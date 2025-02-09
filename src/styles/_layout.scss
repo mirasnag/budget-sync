@@ -20,6 +20,7 @@
   flex-direction: row;
   justify-content: space-between;
   padding: 0 3rem;
+  border-bottom: 2px solid var(--border-dark);
 
   .logo {
     display: flex;

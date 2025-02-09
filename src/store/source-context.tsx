@@ -5,7 +5,7 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-import { fetchData } from "../utils/services";
+import { fetchData } from "../utils/api";
 import {
   CollectionType,
   ContextAction,
@@ -27,7 +27,7 @@ const sourceReducer = (state: Source[], action: SourceAction): Source[] => {
 
 const SourceContext = createContext<ContextType<Source> | undefined>(undefined);
 
-const initialValue = fetchData(CollectionType.SOURCES);
+const initialValue = [] as Source[];
 
 export const SourceProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -36,7 +36,7 @@ export const SourceProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const fetchSources = async () => {
-      const fetchedData = fetchData(CollectionType.SOURCES) as Source[];
+      const fetchedData = (await fetchData(CollectionType.SOURCES)) as Source[];
       sourceDispatch({ type: "INIT", payload: fetchedData });
     };
     fetchSources();

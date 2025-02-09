@@ -5,10 +5,11 @@ import {
 } from "../../utils/transactions.util";
 
 // Types
-import { Transaction, typeToCollectionMap } from "../../utils/types";
+import { Entity, Transaction, typeToCollectionMap } from "../../utils/types";
 import { useTransactionContext } from "../../store/transaction-context";
 import { getContextData } from "../../store/contextProviders";
 import Selector from "../Controls/Selector";
+import { createItem } from "../../utils/api";
 
 interface TransactionNodeSelectorProps {
   transaction: Transaction;
@@ -42,19 +43,18 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
     });
   };
 
-  const createNode = (newNodeName: string) => {
-    const id = crypto.randomUUID();
-    const newNode = {
-      ...node,
-      id: id,
+  const createNode = async (newNodeName: string) => {
+    const newNode = (await createItem({
+      type: nodeType,
       name: newNodeName,
-    };
+    })) as Entity;
+
     nodeDispatch({
       type: "ADD",
       // @ts-expect-error
       payload: newNode,
     });
-    changeNode(id);
+    changeNode(newNode.id);
   };
 
   return (

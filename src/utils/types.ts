@@ -92,6 +92,11 @@ export interface CurrencyRates {
   [key: string]: number;
 }
 
+export interface User {
+  email: string;
+  token: string;
+}
+
 // Context
 export type ContextAction<T extends DataItem> =
   | { type: "INIT"; payload: T[] }

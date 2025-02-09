@@ -61,10 +61,11 @@ const SpendingAnalysisPage: React.FC = () => {
   );
   const assetData =
     getAssetBalanceHistory(
+      assets,
+      transactions,
       assetPeriod,
       assetBaseCurrency,
-      currencyRates,
-      transactions
+      currencyRates
     ) ?? [];
 
   const [categoryChartType, setCategoryChartType] = useState("table");
@@ -79,10 +80,11 @@ const SpendingAnalysisPage: React.FC = () => {
   >(null);
   const categoryData =
     getCategorySpentHistory(
+      categories,
+      transactions,
       categoryPeriod,
       categoryBaseCurrency,
-      currencyRates,
-      transactions
+      currencyRates
     ) ?? [];
 
   const renderAssetChart = () => {

@@ -11,7 +11,7 @@ import AddButton from "../Controls/AddButton";
 
 // utils
 import { Transaction, TransactionType } from "../../utils/types";
-import { createEmptyTransaction } from "../../utils/services";
+import { createEmptyTransaction } from "../../utils/api";
 
 // context
 import { useTransactionContext } from "../../store/transaction-context";
@@ -40,14 +40,15 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
   const [activeTab, setActiveTab] = useState<TransactionType>(
     TransactionType.EXPENSE
   );
-  const filteredTransactions = transactions.filter(
-    (transaction) => transaction.type === activeTab
-  );
+  const filteredTransactions = transactions
+    ? transactions.filter((transaction) => transaction.type === activeTab)
+    : [];
 
-  const addTransaction = () => {
+  const addTransaction = async () => {
+    const newTransaction = await createEmptyTransaction(activeTab);
     transactionDispatch({
       type: "ADD",
-      payload: createEmptyTransaction(activeTab),
+      payload: newTransaction,
     });
   };
 
@@ -74,11 +75,10 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {filteredTransactions.map((transaction) => {
-            return (
-              <TransactionRow key={transaction.id} transaction={transaction} />
-            );
-          })}
+          {filteredTransactions &&
+            filteredTransactions.map((transaction, id) => {
+              return <TransactionRow key={id} transaction={transaction} />;
+            })}
         </tbody>
         <tfoot>
           <tr>

@@ -9,7 +9,7 @@ import { FaChartPie, FaPhone, FaSignOutAlt } from "react-icons/fa";
 import { FaHouse, FaMoneyBillTransfer } from "react-icons/fa6";
 
 // utils
-import { deleteAllData, generateDummyData } from "../utils/services";
+import { deleteAllData, generateDummyData } from "../utils/api";
 import { useLogout } from "../utils/hooks";
 
 const Layout: React.FC = () => {

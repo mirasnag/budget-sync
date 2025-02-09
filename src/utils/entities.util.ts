@@ -1,7 +1,6 @@
 import { Period } from "../components/Controls/PeriodSelector";
 import { convertCurrency } from "./currency.util";
 import { formatDateToInputValue } from "./formatting";
-import { fetchData } from "./services";
 import {
   filterTransactions,
   getTransactionNodes,
@@ -10,7 +9,6 @@ import {
 import {
   Asset,
   Category,
-  CollectionType,
   CurrencyRates,
   Transaction,
   TransactionType,
@@ -52,10 +50,11 @@ export const spentByCategory = (
 };
 
 export const getCategorySpentHistory = (
+  categories: Category[],
+  transactions: Transaction[],
   period: Period,
   baseCurrency: string | null,
-  rates: CurrencyRates,
-  transactions: Transaction[]
+  rates: CurrencyRates
 ) => {
   const filteredTransactions = sortFilterTransactions(
     transactions,
@@ -66,8 +65,6 @@ export const getCategorySpentHistory = (
   ) as Transaction[];
   if (!filteredTransactions || filteredTransactions.length === 0)
     return undefined;
-
-  const categories = fetchData(CollectionType.CATEGORIES) as Category[];
 
   const months: string[] = [];
   const startDate = new Date(filteredTransactions[0].date_utc ?? "");
@@ -185,10 +182,11 @@ interface balanceHistoryItem {
 }
 
 export const getAssetBalanceHistory = (
+  assets: Asset[],
+  transactions: Transaction[],
   period: Period,
   baseCurrency: string | null,
-  rates: CurrencyRates,
-  transactions: Transaction[]
+  rates: CurrencyRates
 ) => {
   const processedTransactions = sortFilterTransactions(
     transactions,
@@ -199,7 +197,6 @@ export const getAssetBalanceHistory = (
   ) as Transaction[];
   if (!processedTransactions || processedTransactions.length === 0)
     return undefined;
-  const assets = fetchData(CollectionType.ASSETS) as Asset[];
 
   const months: string[] = [];
   const startDate = new Date(processedTransactions[0].date_utc ?? "");

@@ -91,8 +91,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--blue);
-  color: var(--text-light);
+  background: var(--bg-component);
+  opacity: 1;
+  color: var(--text-dark);
   padding: 2rem;
   transition: all 0.5s linear;
+  border-radius: 10px;
 }

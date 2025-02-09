@@ -5,7 +5,7 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-import { fetchData } from "../utils/services";
+import { fetchData } from "../utils/api";
 import {
   CollectionType,
   Category,
@@ -43,7 +43,7 @@ const CategoryContext = createContext<ContextType<Category> | undefined>(
   undefined
 );
 
-const initialValue = fetchData(CollectionType.CATEGORIES);
+const initialValue = [] as Category[];
 
 export const CategoryProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -55,7 +55,9 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const fetchedData = fetchData(CollectionType.CATEGORIES) as Category[];
+      const fetchedData = (await fetchData(
+        CollectionType.CATEGORIES
+      )) as Category[];
       categoryDispatch({ type: "INIT", payload: fetchedData });
     };
     fetchCategories();

@@ -1,14 +1,19 @@
-import { useAssetContext } from "../../store/asset-context";
-import { useTransactionContext } from "../../store/transaction-context";
-import { getAssetDetails, getBalanceOfAsset } from "../../utils/entities.util";
+// components
 import { Period } from "../Controls/PeriodSelector";
-import { convertCurrency } from "../../utils/currency.util";
-import { CurrencyRates } from "../../utils/types";
-import { formatCurrency } from "../../utils/formatting";
 import CurrencySelector2 from "../Currency/CurrencySelector2";
 import DeleteButton from "../Controls/DeleteButton";
 import AddButton from "../Controls/AddButton";
-import { createEmptyAsset } from "../../utils/services";
+
+// context
+import { useAssetContext } from "../../store/asset-context";
+import { useTransactionContext } from "../../store/transaction-context";
+
+// utils
+import { getAssetDetails, getBalanceOfAsset } from "../../utils/entities.util";
+import { convertCurrency } from "../../utils/currency.util";
+import { Asset, CollectionType, CurrencyRates } from "../../utils/types";
+import { formatCurrency } from "../../utils/formatting";
+import { createEmptyAsset, deleteItem } from "../../utils/api";
 
 interface AssetTableProps {
   baseCurrency: string | null;
@@ -33,29 +38,43 @@ const AssetTable: React.FC<AssetTableProps> = ({
     "",
   ];
 
-  const addAsset = () => {
+  const addAsset = async () => {
+    const newAsset = await createEmptyAsset();
     assetDispatch({
       type: "ADD",
-      payload: createEmptyAsset(),
+      payload: newAsset,
     });
   };
 
-  const deleteAsset = (id: string) => {
+  const deleteAsset = async (id: string) => {
+    await deleteItem(CollectionType.ASSETS, id);
     assetDispatch({
       type: "DELETE",
       payload: id,
     });
   };
 
-  const handleCurrencyChange = (asset_id: string, newValue: string) => {
+  const editAsset = <T extends keyof Asset>(
+    id: string,
+    prop: T,
+    value: Asset[T]
+  ) => {
     assetDispatch({
       type: "EDIT",
       payload: {
-        id: asset_id,
-        prop: "currency",
-        value: newValue,
+        id,
+        prop,
+        value,
       },
     });
+  };
+
+  const handleCurrencyChange = (id: string, newValue: string) => {
+    editAsset(id, "currency", newValue);
+  };
+
+  const handleNameChange = (id: string, newValue: string) => {
+    editAsset(id, "name", newValue);
   };
 
   // let totalBalance = 0;
@@ -72,76 +91,76 @@ const AssetTable: React.FC<AssetTableProps> = ({
         </tr>
       </thead>
       <tbody>
-        {assets.map((asset, index) => {
-          let balance = getBalanceOfAsset(asset, transactions);
-          let { income, expense } = getAssetDetails(
-            asset,
-            period,
-            transactions
-          );
-
-          if (baseCurrency) {
-            balance = convertCurrency(
-              currencyRates,
-              asset.currency,
-              baseCurrency,
-              balance
-            );
-            expense = convertCurrency(
-              currencyRates,
-              asset.currency,
-              baseCurrency,
-              expense
-            );
-            income = convertCurrency(
-              currencyRates,
-              asset.currency,
-              baseCurrency,
-              income
+        {assets &&
+          assets.map((asset, index) => {
+            let balance = getBalanceOfAsset(asset, transactions);
+            let { income, expense } = getAssetDetails(
+              asset,
+              period,
+              transactions
             );
 
-            // totalBalance += +balance;
-            // totalExpense += +expense;
-            // totalIncome += +income;
-          }
-          return (
-            <tr key={index}>
-              <td>
-                <input
-                  type="text"
-                  defaultValue={asset.name}
-                  onInput={(e) => {
-                    const newValue = e.currentTarget.value;
-                    assetDispatch({
-                      type: "EDIT",
-                      payload: {
-                        id: asset.id,
-                        prop: "name",
-                        value: newValue,
-                      },
-                    });
-                  }}
-                />
-              </td>
-              <td>{formatCurrency(balance, baseCurrency ?? asset.currency)}</td>
-              <td>{formatCurrency(income, baseCurrency ?? asset.currency)}</td>
-              <td>{formatCurrency(expense, baseCurrency ?? asset.currency)}</td>
-              <td>
-                <CurrencySelector2
-                  initialValue={asset.currency ?? null}
-                  setValue={(newValue) =>
-                    handleCurrencyChange(asset.id, newValue)
-                  }
-                />{" "}
-              </td>
-              <td>
-                <div className="table-btns">
-                  <DeleteButton handleClick={() => deleteAsset(asset.id)} />
-                </div>
-              </td>
-            </tr>
-          );
-        })}
+            if (baseCurrency) {
+              balance = convertCurrency(
+                currencyRates,
+                asset.currency,
+                baseCurrency,
+                balance
+              );
+              expense = convertCurrency(
+                currencyRates,
+                asset.currency,
+                baseCurrency,
+                expense
+              );
+              income = convertCurrency(
+                currencyRates,
+                asset.currency,
+                baseCurrency,
+                income
+              );
+
+              // totalBalance += +balance;
+              // totalExpense += +expense;
+              // totalIncome += +income;
+            }
+            return (
+              <tr key={index}>
+                <td>
+                  <input
+                    type="text"
+                    defaultValue={asset.name}
+                    onInput={(e) => {
+                      const newValue = e.currentTarget.value;
+                      handleNameChange(asset.id, newValue);
+                    }}
+                  />
+                </td>
+                <td>
+                  {formatCurrency(balance, baseCurrency ?? asset.currency)}
+                </td>
+                <td>
+                  {formatCurrency(income, baseCurrency ?? asset.currency)}
+                </td>
+                <td>
+                  {formatCurrency(expense, baseCurrency ?? asset.currency)}
+                </td>
+                <td>
+                  <CurrencySelector2
+                    initialValue={asset.currency ?? null}
+                    setValue={(newValue) =>
+                      handleCurrencyChange(asset.id, newValue)
+                    }
+                  />{" "}
+                </td>
+                <td>
+                  <div className="table-btns">
+                    <DeleteButton handleClick={() => deleteAsset(asset.id)} />
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
 
         {/* <tr key="summary">
           <td>

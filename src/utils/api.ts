@@ -10,57 +10,168 @@ import {
   Transaction,
   TransactionType,
   Transfer,
+  User,
   typeToCollectionMap,
 } from "./types";
 
-export const fetchData = (
-  collection: CollectionType | "currencyRatesCache"
-) => {
-  const data = localStorage.getItem(collection);
-  return data ? JSON.parse(data) : [];
+type ErrorHandling = { error: string };
+type BackendJson = DataItem & { _id: string };
+
+export const getErrorMessage = (json: unknown) => {
+  if (json instanceof Error) {
+    return json.message;
+  }
+
+  return (json as ErrorHandling).error ?? "Unknown Error";
 };
 
-export const deleteItem = (collectionType: CollectionType, id: string) => {
-  const collection = fetchData(collectionType) as DataItem[];
-  const newData = collection.filter((d) => d.id !== id);
-  return localStorage.setItem(collectionType, JSON.stringify(newData));
+export const getUser = () => {
+  const user = localStorage.getItem("user");
+  return user ? (JSON.parse(user) as User) : null;
 };
 
-export const createItem = (newItem: DataItem) => {
-  const collectionType = typeToCollectionMap[newItem.type];
-  const collection = fetchData(collectionType) as DataItem[];
-  return localStorage.setItem(
-    collectionType,
-    JSON.stringify([...collection, newItem])
-  );
+export const convertBackendJSON = (json: BackendJson) => {
+  return { ...json, id: json._id };
 };
 
-export const createEmptyAsset = () => {
-  const newAsset: Asset = {
-    id: crypto.randomUUID(),
+export const fetchData = async (collection: CollectionType) => {
+  const user = getUser();
+
+  if (!user) {
+    console.error("Request is not authenticated, please login");
+    return;
+  }
+
+  const response = await fetch(`/api/${collection}`, {
+    headers: { Authorization: `Bearer ${user.token}` },
+  });
+
+  const data = (await response.json()) as unknown;
+
+  if (!Array.isArray(data)) {
+    throw new Error("Invalid response format: expected an array");
+  }
+
+  return data.map((d: BackendJson) => convertBackendJSON(d));
+};
+
+export const createItem = async (newItem: Partial<DataItem>) => {
+  const user = getUser();
+
+  if (!user) {
+    throw new Error("Request is not authenticated, please login");
+  }
+
+  if (!newItem.type) {
+    throw new Error("Type of new item must be defined");
+  }
+
+  const collection = typeToCollectionMap[newItem.type];
+  const convertedItem = JSON.stringify(newItem);
+
+  const response = await fetch(`/api/${collection}`, {
+    method: "POST",
+    body: convertedItem,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${user.token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const json = (await response.json()) as unknown;
+    throw new Error(
+      `There was an error creating new ${newItem.type}: ${getErrorMessage(
+        json
+      )}`
+    );
+  }
+
+  const json = (await response.json()) as BackendJson;
+  return convertBackendJSON(json);
+};
+
+export const createEmptyAsset = async () => {
+  const newAsset: Partial<Asset> = {
     type: EntityType.ASSET,
     name: "",
   };
-  return newAsset;
+  return (await createItem(newAsset)) as Asset;
 };
 
-export const createEmptyTransaction = (type: TransactionType) => {
-  const newTransaction: Transaction = {
-    id: crypto.randomUUID(),
+export const createEmptyTransaction = async (type: TransactionType) => {
+  const newTransaction: Partial<Transaction> = {
     type: type,
     name: "",
   };
-  return newTransaction;
+  return (await createItem(newTransaction)) as Transaction;
 };
 
-export const createEmptyCategory = () => {
-  const newCategory: Category = {
-    id: crypto.randomUUID(),
+export const createEmptyCategory = async () => {
+  const newCategory: Partial<Category> = {
     type: EntityType.CATEGORY,
     name: "",
     amount: 0,
   };
-  return newCategory;
+  return (await createItem(newCategory)) as Category;
+};
+
+export const deleteItem = async (collection: CollectionType, id: string) => {
+  const user = getUser();
+
+  if (!user) {
+    throw new Error("Request is not authenticated, please login");
+  }
+
+  const response = await fetch(`/api/${collection}/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${user.token}` },
+  });
+
+  if (!response.ok) {
+    const json = (await response.json()) as unknown;
+    throw new Error(
+      `There was an error deleting item in collection ${collection} with id ${id}: ${getErrorMessage(
+        json
+      )}`
+    );
+  }
+};
+
+export const editItem = async <T extends DataItem>(
+  collection: CollectionType,
+  id: string,
+  prop: keyof T,
+  value: T[keyof T]
+) => {
+  console.log("!");
+  const user = getUser();
+
+  if (!user) {
+    throw new Error("Request is not authenticated, please login");
+  }
+  const body = JSON.stringify({ [prop]: value });
+
+  const response = await fetch(`/api/${collection}/${id}`, {
+    method: "PATCH",
+    body: body,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${user.token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const json = (await response.json()) as unknown;
+    throw new Error(
+      `There was an error editing item in collection ${collection} with id ${id}: ${getErrorMessage(
+        json
+      )}`
+    );
+  }
+
+  const json = (await response.json()) as BackendJson;
+  return convertBackendJSON(json);
 };
 
 // Populate / Delete
