@@ -7,8 +7,8 @@ import AddButton from "../Controls/AddButton";
 // helper functions
 import { convertCurrency } from "../../utils/currency.util";
 import { formatCurrency } from "../../utils/formatting";
-import { CollectionType, CurrencyRates } from "../../utils/types";
-import { createEmptyCategory, deleteItem } from "../../utils/api";
+import { Category, CollectionType, CurrencyRates } from "../../utils/types";
+import { createEmptyCategory, deleteItem, editItem } from "../../utils/api";
 import { spentByCategory } from "../../utils/entities.util";
 
 // context
@@ -76,13 +76,18 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
     });
   };
 
-  const handleCurrencyChange = (category_id: string, newValue: string) => {
+  const editCategory = <T extends keyof Category>(
+    id: string,
+    prop: T,
+    value: Category[T]
+  ) => {
+    editItem<Category>(CollectionType.CATEGORIES, id, prop, value);
     categoryDispatch({
       type: "EDIT",
       payload: {
-        id: category_id,
-        prop: "currency",
-        value: newValue,
+        id,
+        prop,
+        value,
       },
     });
   };
@@ -126,16 +131,9 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                   <input
                     type="text"
                     defaultValue={category.name}
-                    onInput={(e) => {
+                    onBlur={(e) => {
                       const newValue = e.currentTarget.value;
-                      categoryDispatch({
-                        type: "EDIT",
-                        payload: {
-                          id: category.id,
-                          prop: "name",
-                          value: newValue,
-                        },
-                      });
+                      editCategory(category.id, "name", newValue);
                     }}
                   />
                 </td>
@@ -145,17 +143,10 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                 <td>
                   <input
                     type="number"
-                    value={category.amount}
-                    onInput={(e) => {
+                    defaultValue={category.amount}
+                    onBlur={(e) => {
                       const newValue = parseFloat(e.currentTarget.value);
-                      categoryDispatch({
-                        type: "EDIT",
-                        payload: {
-                          id: category.id,
-                          prop: "amount",
-                          value: newValue,
-                        },
-                      });
+                      editCategory(category.id, "amount", newValue);
                     }}
                   />
                 </td>
@@ -163,7 +154,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                   <CurrencySelector2
                     initialValue={category.currency ?? null}
                     setValue={(newValue) =>
-                      handleCurrencyChange(category.id, newValue)
+                      editCategory(category.id, "currency", newValue)
                     }
                   />{" "}
                 </td>

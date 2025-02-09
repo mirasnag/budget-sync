@@ -144,7 +144,6 @@ export const editItem = async <T extends DataItem>(
   prop: keyof T,
   value: T[keyof T]
 ) => {
-  console.log("!");
   const user = getUser();
 
   if (!user) {

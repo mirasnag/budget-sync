@@ -6,7 +6,6 @@ import {
 
 // Types
 import { Entity, Transaction, typeToCollectionMap } from "../../utils/types";
-import { useTransactionContext } from "../../store/transaction-context";
 import { getContextData } from "../../store/contextProviders";
 import Selector from "../Controls/Selector";
 import { createItem } from "../../utils/api";
@@ -14,14 +13,14 @@ import { createItem } from "../../utils/api";
 interface TransactionNodeSelectorProps {
   transaction: Transaction;
   nodeLabel: "src" | "dst";
+  onNodeChange: (newNodeId: string) => void;
 }
 
 const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
   transaction,
   nodeLabel,
+  onNodeChange,
 }) => {
-  const { dispatch: transactionDispatch } = useTransactionContext();
-
   const { source, destination } = getTransactionNodes(transaction);
   const { srcType, dstType } = getTransactionNodeTypes(transaction.type);
 
@@ -33,14 +32,7 @@ const TransactionNodeSelector: React.FC<TransactionNodeSelectorProps> = ({
   );
 
   const changeNode = (newNodeId: string) => {
-    transactionDispatch({
-      type: "EDIT",
-      payload: {
-        id: transaction.id,
-        prop: nodeLabel,
-        value: newNodeId,
-      },
-    });
+    onNodeChange(newNodeId);
   };
 
   const createNode = async (newNodeName: string) => {

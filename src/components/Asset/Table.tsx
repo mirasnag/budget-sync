@@ -13,7 +13,7 @@ import { getAssetDetails, getBalanceOfAsset } from "../../utils/entities.util";
 import { convertCurrency } from "../../utils/currency.util";
 import { Asset, CollectionType, CurrencyRates } from "../../utils/types";
 import { formatCurrency } from "../../utils/formatting";
-import { createEmptyAsset, deleteItem } from "../../utils/api";
+import { createEmptyAsset, deleteItem, editItem } from "../../utils/api";
 
 interface AssetTableProps {
   baseCurrency: string | null;
@@ -59,6 +59,7 @@ const AssetTable: React.FC<AssetTableProps> = ({
     prop: T,
     value: Asset[T]
   ) => {
+    editItem<Asset>(CollectionType.ASSETS, id, prop, value);
     assetDispatch({
       type: "EDIT",
       payload: {
@@ -67,14 +68,6 @@ const AssetTable: React.FC<AssetTableProps> = ({
         value,
       },
     });
-  };
-
-  const handleCurrencyChange = (id: string, newValue: string) => {
-    editAsset(id, "currency", newValue);
-  };
-
-  const handleNameChange = (id: string, newValue: string) => {
-    editAsset(id, "name", newValue);
   };
 
   // let totalBalance = 0;
@@ -130,9 +123,9 @@ const AssetTable: React.FC<AssetTableProps> = ({
                   <input
                     type="text"
                     defaultValue={asset.name}
-                    onInput={(e) => {
+                    onBlur={(e) => {
                       const newValue = e.currentTarget.value;
-                      handleNameChange(asset.id, newValue);
+                      editAsset(asset.id, "name", newValue);
                     }}
                   />
                 </td>
@@ -149,7 +142,7 @@ const AssetTable: React.FC<AssetTableProps> = ({
                   <CurrencySelector2
                     initialValue={asset.currency ?? null}
                     setValue={(newValue) =>
-                      handleCurrencyChange(asset.id, newValue)
+                      editAsset(asset.id, "currency", newValue)
                     }
                   />{" "}
                 </td>
